@@ -4,6 +4,7 @@
 void ImguiWrapper::Initialize(ID3D12Device* device, int bufferCount, DXGI_FORMAT rtvFormat, ID3D12DescriptorHeap* srvHeap)
 {
 	IMGUI_CHECKVERSION();
+	#ifdef _DEBUG
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(Window::GetHandle());
@@ -13,6 +14,7 @@ void ImguiWrapper::Initialize(ID3D12Device* device, int bufferCount, DXGI_FORMAT
 		srvHeap,
 		srvHeap->GetCPUDescriptorHandleForHeapStart(),
 		srvHeap->GetGPUDescriptorHandleForHeapStart());
+	#endif
 }
 
 void ImguiWrapper::Finalize()
