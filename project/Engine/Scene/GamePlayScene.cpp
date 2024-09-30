@@ -13,15 +13,18 @@ void GamePlayScene::Initialize()
 	Camera::Set(camera); // 現在のカメラをセット
 
 	// SpriteCommonの生成と初期化
-	spriteCommon = new SpriteCommon();
+	spriteCommon = std::make_unique<SpriteCommon>();
 	spriteCommon->Initialize(DirectXBase::GetInstance());
 
 	// TextureManagerの初期化
 	TextureManager::Initialize(dxBase->GetDevice(), SRVManager::GetInstance());
 
 	// SoundManagerの初期化
-	soundManager = new SoundManager();
+	soundManager = std::make_unique<SoundManager>();
 	soundManager->Initialize();
+
+	// Inputの初期化
+	input = Input::GetInstance();
 
 	///
 	///	↓ ゲームシーン用
@@ -35,22 +38,15 @@ void GamePlayScene::Initialize()
 	model_.material.textureHandle = uvCheckerGH;
 
 	// オブジェクトの生成とモデル設定
-	object_ = new Object3D();
+	object_ = std::make_unique<Object3D>();
 	object_->model_ = &model_;
 	object_->transform_.rotate = {0.0f, 3.14f, 0.0f};
 }
 
 void GamePlayScene::Finalize()
 {
-	// SoundManager開放
-	delete soundManager;
-	// SpriteCommon開放
-	delete spriteCommon;
 	// カメラの開放
 	delete camera;
-
-	// 3Dオブジェクト開放
-	delete object_;
 }
 
 void GamePlayScene::Update() { 

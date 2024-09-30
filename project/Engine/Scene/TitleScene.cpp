@@ -15,14 +15,14 @@ void TitleScene::Initialize()
 	Camera::Set(camera); // 現在のカメラをセット
 
 	// SpriteCommonの生成と初期化
-	spriteCommon = new SpriteCommon();
+	spriteCommon = std::make_unique<SpriteCommon>();
 	spriteCommon->Initialize(DirectXBase::GetInstance());
 
 	// TextureManagerの初期化
 	TextureManager::Initialize(dxBase->GetDevice(), SRVManager::GetInstance());
 
 	// SoundManagerの初期化
-	soundManager = new SoundManager();
+	soundManager = std::make_unique<SoundManager>();
 	soundManager->Initialize();
 
 	// Inputの初期化
@@ -36,33 +36,21 @@ void TitleScene::Initialize()
 	uint32_t titleGH = TextureManager::Load("resources/Images/title.png", dxBase->GetDevice());
 
 	// スプライトの生成と初期化
-	sprite_ = new Sprite();
-	sprite_->Initialize(spriteCommon, titleGH);
+	sprite_ = std::make_unique<Sprite>();
+	sprite_->Initialize(spriteCommon.get(), titleGH);
 	sprite_->SetSize({ 500.0f, 500.0f });
 
 	// モデル読み込み
 	model_ = ModelManager::LoadModelFile("resources/Models", "plane.obj", dxBase->GetDevice());
 
 	// 3Dオブジェクトの生成とモデル指定
-	object_ = new Object3D();
+	object_ = std::make_unique<Object3D>();
 	object_->model_ = &model_;
 	object_->transform_.rotate = { 0.0f, 3.14f, 0.0f };
 }
 
 void TitleScene::Finalize()
 {
-	// SoundManager開放
-	delete soundManager;
-
-	// 3Dオブジェクト開放
-	delete object_;
-
-	// Sprite開放
-	delete sprite_;
-
-	// SpriteCommon開放
-	delete spriteCommon;
-
 	// カメラの開放
 	delete camera;
 }

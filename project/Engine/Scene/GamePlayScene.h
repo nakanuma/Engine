@@ -7,6 +7,7 @@
 #include "ModelManager.h"
 #include "Object3D.h"
 #include "SoundManager.h"
+#include "Input.h"
 
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
@@ -26,8 +27,9 @@ public:
 
 private:
 	Camera* camera = nullptr;
-	SpriteCommon* spriteCommon = nullptr;
-	SoundManager* soundManager = nullptr;
+	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
+	std::unique_ptr<SoundManager> soundManager = nullptr;
+	Input* input = nullptr;
 
 	///
 	/// ↓ ゲームシーン用
@@ -36,6 +38,6 @@ private:
 	// モデルデータ
 	ModelManager::ModelData model_;
 	// 3Dオブジェクト
-	Object3D* object_;
+	std::unique_ptr<Object3D> object_;
 };
 

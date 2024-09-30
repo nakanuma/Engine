@@ -27,8 +27,8 @@ public:
 
 private:
 	Camera* camera = nullptr;
-	SpriteCommon* spriteCommon = nullptr;
-	SoundManager* soundManager = nullptr;
+	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
+	std::unique_ptr<SoundManager> soundManager = nullptr;
 	Input* input = nullptr;
 
 	///
@@ -38,9 +38,9 @@ private:
 	// モデルデータ
 	ModelManager::ModelData model_;
 	// 3Dオブジェクト
-	Object3D* object_;
+	std::unique_ptr<Object3D> object_;
 
 	// スプライト
-	Sprite* sprite_;
+	std::unique_ptr<Sprite> sprite_;
 };
 
