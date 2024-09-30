@@ -27,27 +27,34 @@ void GamePlayScene::Initialize()
 	///	↓ ゲームシーン用
 	///	
 	
+	// Texture読み込み
+	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/uvChecker.png", dxBase->GetDevice());
+
+	// モデルの読み込みとテクスチャの設定
+	model_ = ModelManager::LoadModelFile("resources/Models", "plane.obj", dxBase->GetDevice());
+	model_.material.textureHandle = uvCheckerGH;
+
+	// オブジェクトの生成とモデル設定
+	object_ = new Object3D();
+	object_->model_ = &model_;
+	object_->transform_.rotate = {0.0f, 3.14f, 0.0f};
 }
 
 void GamePlayScene::Finalize()
 {
-	// 音声データ開放
-	soundManager->Unload(&soundData_);
 	// SoundManager開放
 	delete soundManager;
+	// SpriteCommon開放
+	delete spriteCommon;
+	// カメラの開放
+	delete camera;
 
 	// 3Dオブジェクト開放
 	delete object_;
-
-	// SpriteCommon開放
-	delete spriteCommon;
-
-	// カメラの開放
-	delete camera;
 }
 
-void GamePlayScene::Update()
-{
+void GamePlayScene::Update() { 
+	object_->UpdateMatrix(); 
 }
 
 void GamePlayScene::Draw()
@@ -69,9 +76,8 @@ void GamePlayScene::Draw()
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
 
-	///
-	///	Jointの位置に球を描画
-	/// 
+	// オブジェクトの描画
+	object_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -87,8 +93,12 @@ void GamePlayScene::Draw()
 	///
 	/// ↑ ここまでスプライトの描画コマンド
 	/// 
-
+	
 	ImGui::Begin("window");
+
+	ImGui::DragFloat3("translation", &object_->transform_.translate.x, 0.01f);
+	ImGui::DragFloat3("rotation", &object_->transform_.rotate.x, 0.01f);
+
 	ImGui::End();
 
 	// ImGuiの内部コマンドを生成する
