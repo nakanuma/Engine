@@ -159,43 +159,43 @@
     <ClCompile Include="Engine\Input\Input.cpp">
       <Filter>Engine\Input</Filter>
     </ClCompile>
-    <ClCompile Include="SRVManager.cpp">
+    <ClCompile Include="Engine\Texture\SRVManager.cpp">
       <Filter>Engine\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleManager.cpp">
+    <ClCompile Include="Engine\Particle\ParticleManager.cpp">
       <Filter>Engine\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleEmitter.cpp">
+    <ClCompile Include="Engine\Particle\ParticleEmitter.cpp">
       <Filter>Engine\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="SoundManager.cpp">
+    <ClCompile Include="Engine\Sound\SoundManager.cpp">
       <Filter>Engine\Sound</Filter>
     </ClCompile>
-    <ClCompile Include="Framework.cpp">
+    <ClCompile Include="Engine\Game\Framework.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="MyGame.cpp">
+    <ClCompile Include="Engine\Game\MyGame.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="GamePlayScene.cpp">
+    <ClCompile Include="Engine\Scene\GamePlayScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="TitleScene.cpp">
+    <ClCompile Include="Engine\Scene\TitleScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="BaseScene.cpp">
+    <ClCompile Include="Engine\Scene\BaseScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
+    <ClCompile Include="Engine\Scene\SceneManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="SceneFactory.cpp">
+    <ClCompile Include="Engine\Scene\SceneFactory.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Quaternion.cpp">
+    <ClCompile Include="Engine\Math\Quaternion.cpp">
       <Filter>Engine\Math</Filter>
     </ClCompile>
-    <ClCompile Include="QuaternionTransform.cpp">
+    <ClCompile Include="Engine\Math\QuaternionTransform.cpp">
       <Filter>Engine\Math</Filter>
     </ClCompile>
   </ItemGroup>
@@ -293,49 +293,49 @@
     <ClInclude Include="Engine\Input\Input.h">
       <Filter>Engine\Input</Filter>
     </ClInclude>
-    <ClInclude Include="SRVManager.h">
+    <ClInclude Include="Engine\Texture\SRVManager.h">
       <Filter>Engine\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="StructuredBuffer.h">
+    <ClInclude Include="Engine\Util\StructuredBuffer.h">
       <Filter>Engine\DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleManager.h">
+    <ClInclude Include="Engine\Particle\ParticleManager.h">
       <Filter>Engine\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleEmitter.h">
+    <ClInclude Include="Engine\Particle\ParticleEmitter.h">
       <Filter>Engine\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="SoundManager.h">
+    <ClInclude Include="Engine\Sound\SoundManager.h">
       <Filter>Engine\Sound</Filter>
     </ClInclude>
-    <ClInclude Include="Framework.h">
+    <ClInclude Include="Engine\Game\Framework.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="MyGame.h">
+    <ClInclude Include="Engine\Game\MyGame.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="GamePlayScene.h">
+    <ClInclude Include="Engine\Scene\GamePlayScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="TitleScene.h">
+    <ClInclude Include="Engine\Scene\TitleScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="BaseScene.h">
+    <ClInclude Include="Engine\Scene\BaseScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="SceneManager.h">
+    <ClInclude Include="Engine\Scene\SceneManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="AbstractSceneFactory.h">
+    <ClInclude Include="Engine\Scene\AbstractSceneFactory.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="SceneFactory.h">
+    <ClInclude Include="Engine\Scene\SceneFactory.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Quaternion.h">
+    <ClInclude Include="Engine\Math\Quaternion.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
-    <ClInclude Include="QuaternionTransform.h">
+    <ClInclude Include="Engine\Math\QuaternionTransform.h">
       <Filter>Engine\Math</Filter>
     </ClInclude>
   </ItemGroup>
