@@ -26,7 +26,7 @@ public:
 	void Draw() override;
 
 private:
-	Camera* camera = nullptr;
+	std::unique_ptr<Camera> camera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
 	Input* input = nullptr;

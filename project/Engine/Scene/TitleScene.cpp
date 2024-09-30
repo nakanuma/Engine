@@ -11,8 +11,8 @@ void TitleScene::Initialize()
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// カメラのインスタンスを生成
-	camera = new Camera({ 0.0f, 0.0f, -10.0f }, { 0.0f, 0.0f, 0.0f }, 0.45f);
-	Camera::Set(camera); // 現在のカメラをセット
+	camera = std::make_unique<Camera>(Float3{ 0.0f, 0.0f, -10.0f }, Float3{ 0.0f, 0.0f, 0.0f }, 0.45f);
+	Camera::Set(camera.get()); // 現在のカメラをセット
 
 	// SpriteCommonの生成と初期化
 	spriteCommon = std::make_unique<SpriteCommon>();
@@ -51,8 +51,6 @@ void TitleScene::Initialize()
 
 void TitleScene::Finalize()
 {
-	// カメラの開放
-	delete camera;
 }
 
 void TitleScene::Update()
