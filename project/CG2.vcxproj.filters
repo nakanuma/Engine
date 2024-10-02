@@ -177,10 +177,10 @@
     <ClCompile Include="Engine\Game\MyGame.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Scene\GamePlayScene.cpp">
+    <ClCompile Include="Application\Scene\GamePlayScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Scene\TitleScene.cpp">
+    <ClCompile Include="Application\Scene\TitleScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Scene\BaseScene.cpp">
@@ -314,10 +314,10 @@
     <ClInclude Include="Engine\Game\MyGame.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Scene\GamePlayScene.h">
+    <ClInclude Include="Application\Scene\GamePlayScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Scene\TitleScene.h">
+    <ClInclude Include="Application\Scene\TitleScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Scene\BaseScene.h">
