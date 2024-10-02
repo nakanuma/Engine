@@ -27,7 +27,7 @@ void GamePlayScene::Initialize()
 	input = Input::GetInstance();
 
 	///
-	///	↓ ゲームシーン用
+	///	↓ ゲームシーン用 
 	///	
 	
 	// Texture読み込み
