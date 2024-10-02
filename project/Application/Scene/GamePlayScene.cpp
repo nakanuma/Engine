@@ -4,7 +4,7 @@
 #include "SRVManager.h"
 #include "SpriteCommon.h" 
 
-void GamePlayScene::Initialize()
+void GamePlayScene::Initialize() 
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
