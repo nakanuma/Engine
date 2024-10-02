@@ -15,62 +15,27 @@ struct Float3
     /// 
 
     // 加算
-    Float3 operator+(const Float3& other) const
-    {
-        return { x + other.x, y + other.y, z + other.z };
-    }
-
+	Float3 operator+(const Float3& other) const;
     // 減算
-    Float3 operator-(const Float3& other) const
-    {
-        return { x - other.x, y - other.y, z - other.z };
-    }
-
+	Float3 operator-(const Float3& other) const;
     // 右辺のスカラーと乗算
-    Float3 operator*(float scalar) const
-    {
-        return { x * scalar, y * scalar, z * scalar };
-    }
-
+	Float3 operator*(float scalar) const;
     // 左辺のスカラーと乗算
-    friend Float3 operator*(float scalar, const Float3& vec)
-    {
-        return { vec.x * scalar, vec.y * scalar, vec.z * scalar };
-    }
+	friend Float3 operator*(float scalar, const Float3& vec);
 
     ///
     /// 複合代入演算子のオーバーロード
     /// 
 
-    Float3& operator+=(const Float3& other)
-    {
-        x += other.x;
-        y += other.y;
-        z += other.z;
-        return *this;
-    }
+    Float3& operator+=(const Float3& other);
+	Float3& operator-=(const Float3& other);
 
-    Float3& operator-=(const Float3& other)
-    {
-        x -= other.x;
-        y -= other.y;
-        z -= other.z;
-        return *this;
-    }
-
+    // 長さ（ノルム）
+	static float Length(const Float3& v);
     // 正規化
-    static Float3 Normalize(const Float3& a) {
-        float length = std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
-        return Float3(a.x / length, a.y / length, a.z / length);
-    }
-
+	static Float3 Normalize(const Float3& a);
     // 線形補間
-    static Float3 Lerp(const Float3& a, const Float3& b, float t)
-    {
-        return {
-            a.x * (1.0f - t) + b.x * t,
-            a.y * (1.0f - t) + b.y * t,
-            a.z * (1.0f - t) + b.z * t,
-        };
-    }
+	static Float3 Lerp(const Float3& a, const Float3& b, float t);
+
+
 };
