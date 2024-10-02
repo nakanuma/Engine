@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <cassert>
+#include <vector>
 
 class Matrix;
 
@@ -37,5 +38,9 @@ struct Float3
     // 線形補間
 	static Float3 Lerp(const Float3& a, const Float3& b, float t);
 
+    // CatmullRom補間
+	static Float3 CatmullRomInterplation(const Float3& p0, const Float3& p1, const Float3& p2, const Float3& p3, float t);
+    // CatmullRomスプライン曲線上の座標を得る
+	static Float3 CatmullRomPosition(const std::vector<Float3>& points, float t);
 
 };
