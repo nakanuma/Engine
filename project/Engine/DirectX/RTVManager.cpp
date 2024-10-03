@@ -18,7 +18,7 @@ int32_t RTVManager::CreateRenderTargetTexture(uint32_t width, uint32_t height, F
 	// テクスチャに対してレンダーターゲットを作成
 	DirectXBase::GetInstance()->GetDevice()->CreateRenderTargetView(TextureManager::GetResource(emptyTexture), nullptr, DirectXBase::GetInstance()->GetRTVHeap()->GetCPUHandle(GetInstance().rtvIndex));
 
-	// 深度テクスチャの作成(あとで)
+	// 深度テクスチャの作成
 	// DepthStencilTextureをウィンドウのサイズで作成
 	ID3D12Resource* depthResource;
 	GetInstance().dsvResourceMap[emptyTexture] = CreateDepthStencilTextureResource(DirectXBase::GetInstance()->GetDevice(), Window::GetWidth(), Window::GetHeight(), true);
