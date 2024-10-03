@@ -221,7 +221,7 @@ D3D12_RASTERIZER_DESC SpriteCommon::SetRasterizerState()
 void SpriteCommon::CreateDepthBuffer()
 {
 	// DepthStencilTextureをウィンドウのサイズで作成
-	depthStencilResource_ = CreateDepthStencilTextureResource(dxBase_->GetDevice(), Window::GetWidth(), Window::GetHeight());
+	depthStencilResource_ = CreateDepthStencilTextureResource(dxBase_->GetDevice(), Window::GetWidth(), Window::GetHeight(), false);
 
 	// DSVの生成
 	dsvDescriptorHeap_.Create(dxBase_->GetDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
