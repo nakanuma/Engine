@@ -5,6 +5,7 @@
 #include "Logger.h"
 #include "StringUtil.h"
 #include "DirectXUtil.h"
+#include "RTVManager.h"
 
 DirectXBase::~DirectXBase()
 {
@@ -160,7 +161,7 @@ void DirectXBase::CreateFinalRenderTargets()
 	HRESULT result = S_FALSE;
 
 	// ディスクリプタヒープの生成
-	rtvDescriptorHeap_.Create(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	rtvDescriptorHeap_.Create(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 128, false);
 
 	// SwapChainからResourceを引っ張ってくる
 	swapChainResources_[0] = nullptr;
@@ -515,6 +516,13 @@ void DirectXBase::ShaderCompile()
 
 	pixelShaderBlobParticle_ = CompileShader(L"resources/Shaders/Particle.PS.hlsl", L"ps_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
 	assert(pixelShaderBlobParticle_ != nullptr);
+
+	// SobelFilter用Shader
+	vertexShaderBlobSobel_ = CompileShader(L"resources/Shaders/SobelFilter.VS.hlsl", L"vs_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
+	assert(vertexShaderBlob_ != nullptr);
+
+	pixelShaderBlobSobel_ = CompileShader(L"resources/Shaders/SobelFilter.PS.hlsl", L"ps_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
+	assert(pixelShaderBlob_ != nullptr);
 }
 
 void DirectXBase::CreatePipelineStateObject()
@@ -594,6 +602,14 @@ void DirectXBase::CreatePipelineStateObject()
 	// 生成
 	graphicsPipelineStateParticle_ = nullptr;
 	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateParticleDesc, IID_PPV_ARGS(&graphicsPipelineStateParticle_));
+
+	// ソベルフィルターのPSOを作成
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateSobelDesc = graphicsPipelineStateDefault;
+	graphicsPipelineStateSobelDesc.VS = {vertexShaderBlobSobel_->GetBufferPointer(), vertexShaderBlobSobel_->GetBufferSize()}; // VertexShader
+	graphicsPipelineStateSobelDesc.PS = {pixelShaderBlobSobel_->GetBufferPointer(), pixelShaderBlobSobel_->GetBufferSize()};   // PixelShader
+	// 生成
+	graphicsPipelineStateSobelFilter_ = nullptr;
+	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateSobelDesc, IID_PPV_ARGS(&graphicsPipelineStateSobelFilter_));
 }
 
 void DirectXBase::SetViewport()
@@ -619,10 +635,10 @@ void DirectXBase::SetScissor()
 void DirectXBase::CreateDepthBuffer()
 {
 	// DepthStencilTextureをウィンドウのサイズで作成
-	depthStencilResource_ = CreateDepthStencilTextureResource(device_.Get(), Window::GetWidth(), Window::GetHeight());
+	depthStencilResource_ = CreateDepthStencilTextureResource(device_.Get(), Window::GetWidth(), Window::GetHeight(), false);
 
 	// DSVの生成
-	dsvDescriptorHeap_.Create(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	dsvDescriptorHeap_.Create(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 128, false);
 
 	// DSVの設定
 	dsvDesc_.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // Format。基本的にはResourceに合わせる
@@ -717,11 +733,7 @@ void DirectXBase::PostDraw()
 	HRESULT result = S_FALSE;
 
 	// 画面に書く処理はすべて終わり、画面に映すので、状態を遷移
-	// 今回はRendertargetからPresentにする
-	barrier_.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrier_.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-	// TransitionBarrierを張る
-	commandList_->ResourceBarrier(1, &barrier_);
+	RTVManager::ResetResourceBarrier();
 
 	// コマンドリストの内容を確定させる
 	result = commandList_->Close();
@@ -745,9 +757,15 @@ ID3D12GraphicsCommandList* DirectXBase::GetCommandList()
 	return commandList_.Get();
 }
 
-DXGI_SWAP_CHAIN_DESC1 DirectXBase::GetSwapChainDesc()
-{
-	return swapChainDesc_;
+IDXGISwapChain4* DirectXBase::GetSwapChain() { 
+	return swapChain_.Get(); 
+}
+
+DXGI_SWAP_CHAIN_DESC1 DirectXBase::GetSwapChainDesc() {
+	return swapChainDesc_; }
+
+DescriptorHeap* DirectXBase::GetRTVHeap() { 
+	return &rtvDescriptorHeap_;
 }
 
 D3D12_RENDER_TARGET_VIEW_DESC DirectXBase::GetRtvDesc()
@@ -767,7 +785,12 @@ ID3D12PipelineState* DirectXBase::GetPipelineStateOutline()
 
 ID3D12PipelineState* DirectXBase::GetPipelineStateNoCulling()
 {
-	return graphicsPipelineStateNoCulling_.Get();
+	return graphicsPipelineStateNoCulling_.Get(); 
+}
+
+DescriptorHeap* DirectXBase::GetDSVHeap() 
+{ 
+	return &dsvDescriptorHeap_;
 }
 
 void DirectXBase::InitializeFixFPS()

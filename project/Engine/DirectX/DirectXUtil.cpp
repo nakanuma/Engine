@@ -90,7 +90,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device
     return std::move(vertexResource); // デストラクタを呼ばないように返す
 }
 
-Microsoft::WRL::ComPtr <ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
+Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height, bool isReading) {
     D3D12_RESOURCE_DESC resourceDesc{};
     resourceDesc.Width = width; // Textureの幅
     resourceDesc.Height = height; // Textureの高さ
@@ -116,7 +116,9 @@ Microsoft::WRL::ComPtr <ID3D12Resource> CreateDepthStencilTextureResource(ID3D12
         &heapProperties, // Heapの設定
         D3D12_HEAP_FLAG_NONE, // Heapの特殊な設定。特になし
         &resourceDesc, // Resourceの設定
-        D3D12_RESOURCE_STATE_DEPTH_WRITE, // 深度値を書き込む状態にしておく
+        isReading ? 
+        D3D12_RESOURCE_STATE_GENERIC_READ 
+        : D3D12_RESOURCE_STATE_DEPTH_WRITE, // 深度値を書き込む状態にしておく
         &depthClearValue, // Clear最適値
         IID_PPV_ARGS(&resource)); // 作成するResourceポインタへのポインタ
     assert(SUCCEEDED(hr));

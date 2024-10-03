@@ -207,6 +207,9 @@
     <ClCompile Include="Application\Scene\GamePlayScene.cpp">
       <Filter>Application\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\DirectX\RTVManager.cpp">
+      <Filter>Engine\DirectX\Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Util\StringUtil.h">
@@ -347,6 +350,9 @@
     <ClInclude Include="Application\Scene\GamePlayScene.h">
       <Filter>Application\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\DirectX\RTVManager.h">
+      <Filter>Engine\DirectX\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\Shaders\Object3d.VS.hlsl">
@@ -370,6 +376,12 @@
     <FxCompile Include="resources\Shaders\SkinningObject3d.VS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="resources\Shaders\SobelFilter.VS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\Shaders\SobelFilter.PS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -384,6 +396,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="resources\Shaders\Particle.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="resources\Shaders\SobelFilter.hlsli">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
