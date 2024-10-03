@@ -8,6 +8,7 @@
 #include "Object3D.h"
 #include "SoundManager.h"
 #include "Input.h"
+#include "Application/MapChip.h"
 
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
@@ -25,6 +26,8 @@ public:
 	// 描画
 	void Draw() override;
 
+	void GenerateBloks();
+
 private:
 	std::unique_ptr<Camera> camera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
@@ -39,5 +42,14 @@ private:
 	ModelManager::ModelData model_;
 	// 3Dオブジェクト
 	std::unique_ptr<Object3D> object_;
+
+	/// マップチップ
+	std::unique_ptr<MapChip> mapChip_;
+	
+	// モデルデータ(マップチップ)
+	ModelManager::ModelData modelBlock_;
+	// 複数並べるために配列にする(マップチップ)
+	std::vector<std::vector<std::unique_ptr<Object3D>>> objectBlocks_;
+
 };
 
