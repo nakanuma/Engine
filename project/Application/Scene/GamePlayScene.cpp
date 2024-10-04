@@ -57,7 +57,7 @@ void GamePlayScene::Initialize()
 
 	// カメラ位置
 	camera->transform.rotate = { 1.14f,0,0 };
-	camera->transform.translate = { 10.0f,50.0f,0 };
+	camera->transform.translate = { 20,50.0f,0 };
 }
 
 void GamePlayScene::Finalize()
