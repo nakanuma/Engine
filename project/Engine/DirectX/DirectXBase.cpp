@@ -5,7 +5,7 @@
 #include "Logger.h"
 #include "StringUtil.h"
 #include "DirectXUtil.h"
-#include "RTVManager.h"
+#include "RTVManager.h" 
 
 DirectXBase::~DirectXBase()
 {
