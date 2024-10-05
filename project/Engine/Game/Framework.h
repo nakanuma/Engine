@@ -31,6 +31,8 @@
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
 
+#include "GlobalVariables.h"
+
 class Framework
 {
 public:
@@ -68,6 +70,8 @@ protected:
 	SoundManager* soundManager = nullptr;
 	// シーンファクトリー
 	AbstractSceneFactory* sceneFactory_ = nullptr;
+
+	GlobalVariables* variables_ = nullptr;
 
 private:
 	bool endRequest_;

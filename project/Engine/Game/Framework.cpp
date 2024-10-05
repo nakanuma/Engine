@@ -39,6 +39,9 @@ void Framework::Initialize()
     // SoundManagerの生成と初期化
     soundManager = new SoundManager;
     soundManager->Initialize();
+
+    variables_ = GlobalVariables::getInstance();
+    variables_->LoadAllFile();
 }
 
 void Framework::Finalize()
@@ -72,6 +75,8 @@ void Framework::Update()
     dxBase->BeginFrame();
     // パーティクルマネージャの更新
     particleManager->Update();
+
+    variables_->Update();
 
     // SceneManagerの更新
     SceneManager::GetInstance()->Update();
