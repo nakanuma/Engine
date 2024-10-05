@@ -208,12 +208,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir);$(ProjectDir)Engine;$(ProjectDir)Engine\3D;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\DirectX;$(ProjectDir)Engine\Math;$(ProjectDir)Engine\Model;$(ProjectDir)Engine\Texture;$(ProjectDir)Engine\Util;$(ProjectDir)Engine\Window;$(ProjectDir)Engine\Wrapper;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)Engine;$(ProjectDir)Engine\3D;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\DirectX;$(ProjectDir)Engine\Math;$(ProjectDir)Engine\Model;$(ProjectDir)Engine\Texture;$(ProjectDir)Engine\Util;$(ProjectDir)Engine\Window;$(ProjectDir)Engine\Wrapper;$(ProjectDir)..\External\nlohmann;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir);$(ProjectDir)Engine;$(ProjectDir)Engine\3D;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\DirectX;$(ProjectDir)Engine\Math;$(ProjectDir)Engine\Model;$(ProjectDir)Engine\Texture;$(ProjectDir)Engine\Util;$(ProjectDir)Engine\Window;$(ProjectDir)Engine\Wrapper;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)Engine;$(ProjectDir)Engine\3D;$(ProjectDir)Engine\Debugger;$(ProjectDir)Engine\DirectX;$(ProjectDir)Engine\Math;$(ProjectDir)Engine\Model;$(ProjectDir)Engine\Texture;$(ProjectDir)Engine\Util;$(ProjectDir)Engine\Window;$(ProjectDir)Engine\Wrapper;$(ProjectDir)..\External\nlohmann;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
