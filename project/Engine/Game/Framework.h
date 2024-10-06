@@ -31,7 +31,7 @@
 #include "SceneManager.h"
 #include "AbstractSceneFactory.h"
 
-#include "GlobalVariables.h"
+#include "DeltaTime.h"
 
 class Framework
 {
@@ -71,7 +71,7 @@ protected:
 	// シーンファクトリー
 	AbstractSceneFactory* sceneFactory_ = nullptr;
 
-
+	DeltaTime* deltaTime_;
 private:
 	bool endRequest_;
 };

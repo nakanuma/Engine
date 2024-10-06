@@ -44,8 +44,8 @@ void GamePlayScene::Initialize()
 	object_->model_ = &model_;
 	object_->transform_.rotate = {0.0f, 3.14f, 0.0f};
 
-	int dummy = 0;
-	GlobalVariables::getInstance()->addValue("Game","Dummy","dummy",dummy);
+	player_ = std::make_unique<Player>();
+	player_->Initialize();
 }
 
 void GamePlayScene::Finalize()
@@ -54,6 +54,8 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update() { 
 	object_->UpdateMatrix(); 
+
+	player_->Update();
 }
 
 void GamePlayScene::Draw()
@@ -77,6 +79,7 @@ void GamePlayScene::Draw()
 
 	// オブジェクトの描画
 	object_->Draw();
+	player_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド

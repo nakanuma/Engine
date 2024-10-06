@@ -9,6 +9,8 @@
 #include "SoundManager.h"
 #include "Input.h"
 
+#include "Application/Player/Player.h"
+
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
 {
@@ -39,5 +41,7 @@ private:
 	ModelManager::ModelData model_;
 	// 3Dオブジェクト
 	std::unique_ptr<Object3D> object_;
+
+	std::unique_ptr<Player> player_;
 };
 
