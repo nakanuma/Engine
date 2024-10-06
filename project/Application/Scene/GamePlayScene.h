@@ -39,5 +39,10 @@ private:
 	ModelManager::ModelData model_;
 	// 3Dオブジェクト
 	std::unique_ptr<Object3D> object_;
+
+	// 地形モデルデータ
+	ModelManager::ModelData modelTerrain_;
+	// 地形オブジェクト
+	std::unique_ptr<Object3D> objectTerrain_;
 };
 

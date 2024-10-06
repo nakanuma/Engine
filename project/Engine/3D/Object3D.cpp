@@ -20,7 +20,8 @@ Object3D::Object3D()
 	// 平行光源のデフォルト値を書き込む
 	directionalLightCB_.data_->color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLightCB_.data_->direction = { 0.0f, -1.0f, 0.0f };
-	directionalLightCB_.data_->intensity = 1.0f;
+	/*directionalLightCB_.data_->intensity = 1.0f;*/   // 平行光源有効
+	directionalLightCB_.data_->intensity = 0.0f;   // 平行光源無効
 }
 
 void Object3D::UpdateMatrix()

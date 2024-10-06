@@ -9,7 +9,7 @@ void GamePlayScene::Initialize()
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// カメラのインスタンスを生成
-	camera = std::make_unique<Camera>(Float3{0.0f, 0.0f, -10.0f}, Float3{0.0f, 0.0f, 0.0f}, 0.45f);
+	camera = std::make_unique<Camera>(Float3{0.0f, 5.5f, -20.0f}, Float3{0.25f, 0.0f, 0.0f}, 0.45f);
 	Camera::Set(camera.get()); // 現在のカメラをセット
 
 	// SpriteCommonの生成と初期化
@@ -32,6 +32,7 @@ void GamePlayScene::Initialize()
 	
 	// Texture読み込み
 	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/monsterball.png", dxBase->GetDevice());
+	uint32_t grassGH = TextureManager::Load("resources/Images/grass.png", dxBase->GetDevice());
 
 	// モデルの読み込みとテクスチャの設定
 	model_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
@@ -40,7 +41,14 @@ void GamePlayScene::Initialize()
 	// オブジェクトの生成とモデル設定
 	object_ = std::make_unique<Object3D>();
 	object_->model_ = &model_;
-	object_->transform_.rotate = {0.0f, 0.0f, 0.0f};
+
+	
+	// 地形モデル読み込みとオブジェクト生成
+	modelTerrain_ = ModelManager::LoadModelFile("resources/Models", "terrain.obj", dxBase->GetDevice());
+	modelTerrain_.material.textureHandle = grassGH;
+
+	objectTerrain_ = std::make_unique<Object3D>();
+	objectTerrain_->model_ = &modelTerrain_;
 }
 
 void GamePlayScene::Finalize()
@@ -49,6 +57,8 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update() { 
 	object_->UpdateMatrix(); 
+
+	objectTerrain_->UpdateMatrix();
 }
 
 void GamePlayScene::Draw()
@@ -72,6 +82,8 @@ void GamePlayScene::Draw()
 
 	// オブジェクトの描画
 	object_->Draw();
+
+	objectTerrain_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド

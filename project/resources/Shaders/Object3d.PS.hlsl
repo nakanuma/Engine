@@ -49,35 +49,34 @@ PixelShaderOutput main(VertexShaderOutput input) {
         discard;
     }
     
-    if (gMaterial.enableLighting != 0) { // Lightingする場合
-        // half lambert
-        float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
-        float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
-        
-        float32_t3 halfVector = normalize(-gDirectionalLight.direction + toEye);
-        float NdotH = dot(normalize(input.normal), halfVector);
-        float specularPow = pow(saturate(NdotH), gMaterial.shininess); // 反射強度
-        
+    if (gMaterial.enableLighting != 0) { // Lightingする場合  
         ///
         /// DirectionalLight
         ///
         
         // 拡散反射
-        float32_t3 diffuse =
+        float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
+        float cos = pow(NdotL * 0.5f + 0.5f, 2.0f); // half lambert
+        
+        float32_t3 diffuseDirectionalLight =
         gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
         
         // 鏡面反射
-        float32_t3 specular =
+        float32_t3 halfVector = normalize(-gDirectionalLight.direction + toEye);
+        float NdotH = dot(normalize(input.normal), halfVector);
+        float specularPow = pow(saturate(NdotH), gMaterial.shininess); // 反射強度
+        
+        float32_t3 specularDirectionalLight =
         gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
         
         
         
         // ライティングテスト用
         // 拡散反射+鏡面反射
-        output.color.rgb = diffuse + specular;
+        output.color.rgb = diffuseDirectionalLight + specularDirectionalLight;
         
         // 基本的にはこっちを適用
-        //output.color.rgb = diffuse;
+        //output.color.rgb = diffuseDirectionalLight;
         
         
         // アルファは今まで通り
