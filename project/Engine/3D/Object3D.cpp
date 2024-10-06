@@ -14,6 +14,8 @@ Object3D::Object3D()
 	materialCB_.data_->enableLighting = true;
 	// 単位行列で初期化
 	materialCB_.data_->uvTransform = Matrix::Identity();
+	// 光沢を初期化
+	materialCB_.data_->shininess = 50.0f;
 
 	// 平行光源のデフォルト値を書き込む
 	directionalLightCB_.data_->color = { 1.0f,1.0f,1.0f,1.0f };

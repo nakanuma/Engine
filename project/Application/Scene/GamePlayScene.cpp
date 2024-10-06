@@ -9,7 +9,7 @@ void GamePlayScene::Initialize()
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// カメラのインスタンスを生成
-	camera = std::make_unique<Camera>(Float3{0.0f, 0.0f, -50.0f}, Float3{0.0f, 0.0f, 0.0f}, 0.45f);
+	camera = std::make_unique<Camera>(Float3{0.0f, 0.0f, -10.0f}, Float3{0.0f, 0.0f, 0.0f}, 0.45f);
 	Camera::Set(camera.get()); // 現在のカメラをセット
 
 	// SpriteCommonの生成と初期化
@@ -31,16 +31,16 @@ void GamePlayScene::Initialize()
 	///	
 	
 	// Texture読み込み
-	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/uvChecker.png", dxBase->GetDevice());
+	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/monsterball.png", dxBase->GetDevice());
 
 	// モデルの読み込みとテクスチャの設定
-	model_ = ModelManager::LoadModelFile("resources/Models", "plane.obj", dxBase->GetDevice());
+	model_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
 	model_.material.textureHandle = uvCheckerGH;
 
 	// オブジェクトの生成とモデル設定
 	object_ = std::make_unique<Object3D>();
 	object_->model_ = &model_;
-	object_->transform_.rotate = {0.0f, 3.14f, 0.0f};
+	object_->transform_.rotate = {0.0f, 0.0f, 0.0f};
 }
 
 void GamePlayScene::Finalize()
@@ -89,9 +89,19 @@ void GamePlayScene::Draw()
 	/// 
 	
 	ImGui::Begin("window");
-
-	ImGui::DragFloat3("translation", &object_->transform_.translate.x, 0.01f);
-	ImGui::DragFloat3("rotation", &object_->transform_.rotate.x, 0.01f);
+	// ライティング確認用モンスターボール
+	ImGui::Text("monsterBall");
+	ImGui::DragFloat3("monsterBall.translation", &object_->transform_.translate.x, 0.01f);
+	ImGui::DragFloat3("monsterBall.rotation", &object_->transform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("monsterBall.scale", &object_->transform_.scale.x, 0.01f);
+	// モンスターボールのライト
+	ImGui::Text("DirectionalLight");
+	ImGui::DragFloat3("directionalLight.direction", &object_->directionalLightCB_.data_->direction.x, 0.01f);
+	object_->directionalLightCB_.data_->direction = Float3::Normalize(object_->directionalLightCB_.data_->direction);
+	// カメラ
+	ImGui::Text("camera");
+	ImGui::DragFloat3("camera.translation", &camera->transform.translate.x, 0.01f);
+	ImGui::DragFloat3("camera.rotation", &camera->transform.rotate.x, 0.01f);
 
 	ImGui::End();
 
