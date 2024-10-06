@@ -14,75 +14,65 @@
 
 #include <string>
 
-class GlobalVariables
-{
+class GlobalVariables{
 public:
-	static GlobalVariables* getInstance();
+	static GlobalVariables *getInstance();
 
-#ifdef _DEBUG
-	void DebugUpdate();
-#endif // _DEBUG
+	void Update();
 
-
-	void CreateScene(const std::string& scene);
+	void CreateScene(const std::string &scene);
 
 	void LoadAllFile();
-	void LoadFile(const std::string& scene,const std::string& groupName);
-	void SaveScene(const std::string& scene);
-	void SaveFile(const std::string& scene,const std::string& groupName);
+	void LoadFile(const std::string &scene,const std::string &groupName);
+	void SaveScene(const std::string &scene);
+	void SaveFile(const std::string &scene,const std::string &groupName);
 
 private:
 	GlobalVariables() = default;
 	~GlobalVariables() = default;
-	GlobalVariables(const GlobalVariables&) = delete;
-	GlobalVariables* operator=(GlobalVariables&) = delete;
+	GlobalVariables(const GlobalVariables &) = delete;
+	GlobalVariables *operator=(GlobalVariables &) = delete;
 private:
 	void ImGuiMenu();
 private:
-	struct Item
-	{
+	struct Item{
 		std::variant<int32_t,float,Float2,Float3,Float4,bool> value;
-		std::variant<int32_t*,float*,Float2*,Float3*,Float4*,bool*> valuePtr;
+		std::variant<int32_t *,float *,Float2 *,Float3*,Float4*,bool *> valuePtr;
 	};
 
 	using Group = std::map<std::string,Item>;
-	using Scene = std::map<std::string,Group>;
+	using Scene =  std::map<std::string,Group>;
 
 	std::map<std::string,Scene> data_;
 
 #ifdef _DEBUG
-	std::string currentScene_ = "";
+	std::string currentScene_ = "ALL";
 	int currentSceneNum_ = 0;
 
 	std::string currentGroupName_ = "";
 	int currentGroupNum_ = 0;
-	Group* currentGroup_ = nullptr;
+	Group *currentGroup_ = nullptr;
 #endif // _DEBUG
 
 public:
 	template<typename T>
-	void setValue(const std::string& scene,const std::string& groupName,const std::string& itemName,T& value)
-	{
-		Group& group = data_[scene][groupName];
+	void setValue(const std::string &scene,const std::string &groupName,const std::string &itemName,T &value){
+		Group &group = data_[scene][groupName];
 		Item newItem = {value,&value};
 		group[itemName] = newItem;
 	}
 
 	template<typename T>
-	bool addValue(const std::string& scene,const std::string& groupName,const std::string& itemName,T& value)
-	{
-		auto& group = data_[scene][groupName];
+	bool addValue(const std::string &scene,const std::string &groupName,const std::string &itemName,T &value){
+		auto &group = data_[scene][groupName];
 		auto itemItr = group.find(itemName);
-		if(itemItr != group.end())
-		{
-// 型が一致する場合のみ処理
-			if(auto ptr = std::get_if<T>(&itemItr->second.value))
-			{
+		if(itemItr != group.end()){
+		// 型が一致する場合のみ処理
+			if(auto ptr = std::get_if<T>(&itemItr->second.value)){
 				value = *ptr;
 				itemItr->second.valuePtr = &value;  // ポインタを保存
 				return false;
-			} else
-			{
+			} else{
 				throw std::runtime_error("Type mismatch for existing item");
 			}
 		}
@@ -90,9 +80,8 @@ public:
 		return true;
 	}
 	template<typename T>
-	T getValue(const std::string& scene,const std::string& groupName,const std::string& itemName) const
-	{
-// Sceneの存在を確認
+	T getValue(const std::string &scene,const std::string &groupName,const std::string &itemName) const{
+		// Sceneの存在を確認
 		auto sceneItr = data_.find(scene);
 		assert(sceneItr != data_.end());
 		// groupNameの存在を確認
@@ -104,11 +93,9 @@ public:
 		assert(itemItr != groupItr->second.end());
 
 		// 指定された型で値を取得
-		try
-		{
+		try{
 			return std::get<T>(itemItr->second.value);
-		} catch(const std::bad_variant_access&)
-		{
+		} catch(const std::bad_variant_access &){
 			throw std::runtime_error("Incorrect type requested");
 		}
 	}

@@ -49,6 +49,8 @@ void TitleScene::Initialize()
 	object_ = std::make_unique<Object3D>();
 	object_->model_ = &model_;
 	object_->transform_.rotate = { 0.0f, 3.14f, 0.0f };
+
+	
 }
 
 void TitleScene::Finalize()
@@ -121,7 +123,7 @@ void TitleScene::Draw()
 
 
 #ifdef _DEBUG
-	GlobalVariables::getInstance()->DebugUpdate();
+	GlobalVariables::getInstance()->Update();
 #endif // _DEBUG
 
 	ImGui::Begin("window");
