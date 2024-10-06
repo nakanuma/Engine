@@ -110,6 +110,8 @@ void GamePlayScene::Draw()
 	ImGui::Text("DirectionalLight");
 	ImGui::DragFloat3("directionalLight.direction", &object_->directionalLightCB_.data_->direction.x, 0.01f);
 	object_->directionalLightCB_.data_->direction = Float3::Normalize(object_->directionalLightCB_.data_->direction);
+	ImGui::Text("PointLight");
+	ImGui::DragFloat3("pointLight.position", &object_->pointLightCB_.data_->position.x, 0.01f);
 	// カメラ
 	ImGui::Text("camera");
 	ImGui::DragFloat3("camera.translation", &camera->transform.translate.x, 0.01f);

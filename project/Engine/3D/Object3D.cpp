@@ -22,6 +22,14 @@ Object3D::Object3D()
 	directionalLightCB_.data_->direction = { 0.0f, -1.0f, 0.0f };
 	/*directionalLightCB_.data_->intensity = 1.0f;*/   // 平行光源有効
 	directionalLightCB_.data_->intensity = 0.0f;   // 平行光源無効
+
+	// ポイントライトのデフォルト値を書き込む
+	pointLightCB_.data_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	pointLightCB_.data_->position = { 0.0f, 2.0f, 0.0f };
+	pointLightCB_.data_->intensity = 1.0f;    // ポイントライト有効
+	/*pointLightCB_.data_->intensity = 0.0f; */   // ポイントライト無効
+	pointLightCB_.data_->radius = 5.0f;
+	pointLightCB_.data_->decay = 1.0f;
 }
 
 void Object3D::UpdateMatrix()
@@ -46,6 +54,8 @@ void Object3D::Draw()
 
 	// 平行光源の定数バッファをセット
 	dxBase->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightCB_.resource_->GetGPUVirtualAddress());
+	// ポイントライトの定数バッファをセット
+	dxBase->GetCommandList()->SetGraphicsRootConstantBufferView(6, pointLightCB_.resource_->GetGPUVirtualAddress());
 
 	// commandListにVBVを設定
 	dxBase->GetCommandList()->IASetVertexBuffers(0, 1, &model_->vertexBufferView);
@@ -69,6 +79,8 @@ void Object3D::Draw(const int TextureHandle)
 
 	// 平行光源の定数バッファをセット
 	dxBase->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightCB_.resource_->GetGPUVirtualAddress());
+	// ポイントライトの定数バッファをセット
+	dxBase->GetCommandList()->SetGraphicsRootConstantBufferView(6, pointLightCB_.resource_->GetGPUVirtualAddress());
 
 	// commandListにVBVを設定
 	dxBase->GetCommandList()->IASetVertexBuffers(0, 1, &model_->vertexBufferView);
@@ -88,6 +100,8 @@ void Object3D::Draw(ModelManager::SkinCluster skinCluster)
 
 	// 平行光源の定数バッファをセット
 	dxBase->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightCB_.resource_->GetGPUVirtualAddress());
+	// ポイントライトの定数バッファをセット
+	dxBase->GetCommandList()->SetGraphicsRootConstantBufferView(6, pointLightCB_.resource_->GetGPUVirtualAddress());
 
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
 		model_->vertexBufferView, // VertexDataのVBV

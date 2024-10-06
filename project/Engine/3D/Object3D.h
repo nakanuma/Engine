@@ -28,6 +28,15 @@ public:
 		float intensity; // 輝度
 	};
 
+	struct PointLight {
+		Float4 color; // ライトの色
+		Float3 position; // ライトの位置
+		float intensity; // 輝度
+		float radius; // ライトの届く最大距離
+		float decay; // 減衰率
+		float padding[2];
+	};
+
 	struct ParticleForGPU {
 		Matrix WVP;
 		Matrix World;
@@ -62,5 +71,8 @@ public:
 
 	// 平行光源の定数バッファ
 	ConstBuffer<DirectionalLight> directionalLightCB_;
+	// ポイントライトの定数バッファ
+	ConstBuffer<PointLight> pointLightCB_;
+
 };
 

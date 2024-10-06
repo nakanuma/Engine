@@ -382,6 +382,12 @@
     <FxCompile Include="resources\Shaders\SobelFilter.PS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="resources\Shaders\Sprite.VS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\Shaders\Sprite.PS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -399,6 +405,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="resources\Shaders\SobelFilter.hlsli">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="resources\Shaders\Sprite.hlsli">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
