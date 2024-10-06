@@ -44,7 +44,7 @@ private:
 	std::unique_ptr<Object3D> object_;
 
 	/// マップチップ
-	std::unique_ptr<MapChip> mapChip_;
+	std::unique_ptr<MapChipField> mapChip_;
 	
 	// モデルデータ(マップチップ)
 	ModelManager::ModelData modelBlock_;
