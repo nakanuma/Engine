@@ -4,6 +4,8 @@
 #include "SRVManager.h"
 #include "SpriteCommon.h"
 
+#include "GlobalVariables.h"
+
 void GamePlayScene::Initialize()
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
@@ -41,6 +43,9 @@ void GamePlayScene::Initialize()
 	object_ = std::make_unique<Object3D>();
 	object_->model_ = &model_;
 	object_->transform_.rotate = {0.0f, 3.14f, 0.0f};
+
+	int dummy = 0;
+	GlobalVariables::getInstance()->addValue("Game","Dummy","dummy",dummy);
 }
 
 void GamePlayScene::Finalize()
@@ -88,6 +93,11 @@ void GamePlayScene::Draw()
 	/// ↑ ここまでスプライトの描画コマンド
 	/// 
 	
+
+#ifdef _DEBUG
+	GlobalVariables::getInstance()->Update();
+#endif // _DEBUG
+
 	ImGui::Begin("window");
 
 	ImGui::DragFloat3("translation", &object_->transform_.translate.x, 0.01f);
