@@ -14,7 +14,7 @@
 #include <json.hpp>
 
 using json = nlohmann::json;
-const std::string kDirectoryPath = "./resource/GlobalVariables/";
+const std::string kDirectoryPath = "./resources/GlobalVariables/";
 
 GlobalVariables* GlobalVariables::getInstance()
 {
@@ -22,9 +22,9 @@ GlobalVariables* GlobalVariables::getInstance()
 	return &instance;
 }
 
-void GlobalVariables::Update()
-{
 #ifdef _DEBUG
+void GlobalVariables::DebugUpdate()
+{
 	if(ImGui::Begin("Global Variables",nullptr,ImGuiWindowFlags_MenuBar))
 	{
 
@@ -105,8 +105,8 @@ void GlobalVariables::Update()
 		}
 	}
 	ImGui::End();
-#endif // _DEBUG
 }
+#endif // _DEBUG
 
 void GlobalVariables::CreateScene(const std::string& scene)
 {

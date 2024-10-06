@@ -71,7 +71,6 @@ protected:
 	// シーンファクトリー
 	AbstractSceneFactory* sceneFactory_ = nullptr;
 
-	GlobalVariables* variables_ = nullptr;
 
 private:
 	bool endRequest_;

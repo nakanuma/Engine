@@ -19,7 +19,10 @@ class GlobalVariables
 public:
 	static GlobalVariables* getInstance();
 
-	void Update();
+#ifdef _DEBUG
+	void DebugUpdate();
+#endif // _DEBUG
+
 
 	void CreateScene(const std::string& scene);
 

@@ -4,6 +4,8 @@
 #include "SRVManager.h"
 #include "SpriteCommon.h"
 
+#include "GlobalVariables.h"
+
 void GamePlayScene::Initialize()
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
@@ -88,6 +90,11 @@ void GamePlayScene::Draw()
 	/// ↑ ここまでスプライトの描画コマンド
 	/// 
 	
+
+#ifdef _DEBUG
+	GlobalVariables::getInstance()->DebugUpdate();
+#endif // _DEBUG
+
 	ImGui::Begin("window");
 
 	ImGui::DragFloat3("translation", &object_->transform_.translate.x, 0.01f);
