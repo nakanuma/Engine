@@ -35,14 +35,14 @@ private:
 	/// ↓ ゲームシーン用
 	///
 
-	// モデルデータ
-	ModelManager::ModelData model_;
+	// 球モデルデータ
+	ModelManager::ModelData modelSphere_;
 	// 3Dオブジェクト
-	std::unique_ptr<Object3D> object_;
+	std::unique_ptr<Object3D> objectSphere_;
 
-	// 地形モデルデータ
-	ModelManager::ModelData modelTerrain_;
-	// 地形オブジェクト
-	std::unique_ptr<Object3D> objectTerrain_;
+	// 箱モデルデータ
+	ModelManager::ModelData modelCube_;
+	// 3Dオブジェクト
+	std::unique_ptr<Object3D> objectCube_;
 };
 

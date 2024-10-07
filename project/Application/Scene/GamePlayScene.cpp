@@ -9,7 +9,7 @@ void GamePlayScene::Initialize()
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// カメラのインスタンスを生成
-	camera = std::make_unique<Camera>(Float3{0.0f, 5.5f, -20.0f}, Float3{0.25f, 0.0f, 0.0f}, 0.45f);
+	camera = std::make_unique<Camera>(Float3{0.0f, 15.0f, -40.0f}, Float3{0.3f, 0.0f, 0.0f}, 0.45f);
 	Camera::Set(camera.get()); // 現在のカメラをセット
 
 	// SpriteCommonの生成と初期化
@@ -31,24 +31,26 @@ void GamePlayScene::Initialize()
 	///	
 	
 	// Texture読み込み
-	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/monsterball.png", dxBase->GetDevice());
-	uint32_t grassGH = TextureManager::Load("resources/Images/grass.png", dxBase->GetDevice());
+	uint32_t whiteGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
 
 	// モデルの読み込みとテクスチャの設定
-	model_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
-	model_.material.textureHandle = uvCheckerGH;
+	modelSphere_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
+	modelSphere_.material.textureHandle = whiteGH;
 
 	// オブジェクトの生成とモデル設定
-	object_ = std::make_unique<Object3D>();
-	object_->model_ = &model_;
+	objectSphere_ = std::make_unique<Object3D>();
+	objectSphere_->model_ = &modelSphere_;
+	objectSphere_->transform_.translate = {0.0f, 4.0f, 0.0f};
 
-	
-	// 地形モデル読み込みとオブジェクト生成
-	modelTerrain_ = ModelManager::LoadModelFile("resources/Models", "terrain.obj", dxBase->GetDevice());
-	modelTerrain_.material.textureHandle = grassGH;
+	// 箱（地面）モデルとオブジェクトの生成
+	modelCube_ = ModelManager::LoadModelFile("resources/Models", "cube.obj", dxBase->GetDevice());
+	modelCube_.material.textureHandle = whiteGH;
 
-	objectTerrain_ = std::make_unique<Object3D>();
-	objectTerrain_->model_ = &modelTerrain_;
+	objectCube_ = std::make_unique<Object3D>();
+	objectCube_->model_ = &modelCube_;
+	objectCube_->transform_.scale = {10.0f, 1.0f, 10.0f};
+	objectCube_->spotLightCB_.data_->intensity = 0.0f;
+
 }
 
 void GamePlayScene::Finalize()
@@ -56,9 +58,9 @@ void GamePlayScene::Finalize()
 }
 
 void GamePlayScene::Update() { 
-	object_->UpdateMatrix(); 
+	objectSphere_->UpdateMatrix(); 
 
-	objectTerrain_->UpdateMatrix();
+	objectCube_->UpdateMatrix();
 }
 
 void GamePlayScene::Draw()
@@ -81,9 +83,9 @@ void GamePlayScene::Draw()
 	/// 
 
 	// オブジェクトの描画
-	object_->Draw();
+	objectSphere_->Draw();
 
-	objectTerrain_->Draw();
+	objectCube_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -101,18 +103,18 @@ void GamePlayScene::Draw()
 	/// 
 	
 	ImGui::Begin("window");
-	// ライティング確認用モンスターボール
-	ImGui::Text("monsterBall");
-	ImGui::DragFloat3("monsterBall.translation", &object_->transform_.translate.x, 0.01f);
-	ImGui::DragFloat3("monsterBall.rotation", &object_->transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("monsterBall.scale", &object_->transform_.scale.x, 0.01f);
-	// モンスターボールのライト
-	ImGui::Text("Light");
-
+	// ライティング確認用スフィア
+	ImGui::Text("Sphere");
+	ImGui::DragFloat3("Sphere.translation", &objectSphere_->transform_.translate.x, 0.01f);
+	ImGui::DragFloat3("Sphere.rotation", &objectSphere_->transform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("Sphere.scale", &objectSphere_->transform_.scale.x, 0.01f);
+	// スフィアのスポットライト
+	ImGui::Text("SpotLight");
+	ImGui::DragFloat3("Sphere.SpotLight.position", &objectSphere_->spotLightCB_.data_->position.x, 0.01f);
 	// カメラ
-	ImGui::Text("camera");
-	ImGui::DragFloat3("camera.translation", &camera->transform.translate.x, 0.01f);
-	ImGui::DragFloat3("camera.rotation", &camera->transform.rotate.x, 0.01f);
+	ImGui::Text("Camera");
+	ImGui::DragFloat3("Camera.translation", &camera->transform.translate.x, 0.01f);
+	ImGui::DragFloat3("Camera.rotation", &camera->transform.rotate.x, 0.01f);
 
 	ImGui::End();
 
