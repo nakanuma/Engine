@@ -15,6 +15,7 @@
     <ClCompile Include="Application\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="Application\Player\Player.cpp" />
     <ClCompile Include="Application\Player\PlayerState.cpp" />
+    <ClCompile Include="Application\MapChip.cpp" />
     <ClCompile Include="Engine\Math\Float2.cpp" />
     <ClCompile Include="Engine\Math\Float3.cpp" />
     <ClCompile Include="Engine\Scene\BaseScene.cpp" />
@@ -64,6 +65,7 @@
     <ClInclude Include="Application\Player\Player.h" />
     <ClInclude Include="Application\Player\PlayerState.h" />
     <ClInclude Include="Engine\Math\Int2.h" />
+    <ClInclude Include="Application\MapChip.h" />
     <ClInclude Include="Engine\Scene\AbstractSceneFactory.h" />
     <ClInclude Include="Engine\Scene\BaseScene.h" />
     <ClInclude Include="Engine\DirectX\ConstBuffer.h" />
