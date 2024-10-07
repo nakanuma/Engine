@@ -107,11 +107,8 @@ void GamePlayScene::Draw()
 	ImGui::DragFloat3("monsterBall.rotation", &object_->transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("monsterBall.scale", &object_->transform_.scale.x, 0.01f);
 	// モンスターボールのライト
-	ImGui::Text("DirectionalLight");
-	ImGui::DragFloat3("directionalLight.direction", &object_->directionalLightCB_.data_->direction.x, 0.01f);
-	object_->directionalLightCB_.data_->direction = Float3::Normalize(object_->directionalLightCB_.data_->direction);
-	ImGui::Text("PointLight");
-	ImGui::DragFloat3("pointLight.position", &object_->pointLightCB_.data_->position.x, 0.01f);
+	ImGui::Text("Light");
+
 	// カメラ
 	ImGui::Text("camera");
 	ImGui::DragFloat3("camera.translation", &camera->transform.translate.x, 0.01f);

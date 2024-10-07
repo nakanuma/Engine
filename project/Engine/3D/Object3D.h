@@ -37,6 +37,18 @@ public:
 		float padding[2];
 	};
 
+	struct SpotLight {
+		Float4 color;     // ライトの色
+		Float3 position;  // ライトの位置
+		float intensity;  // 輝度
+		Float3 direction; // スポットライトの方向
+		float distance;   // ライトの届く最大距離
+		float decay;      // 減衰率
+		float cosAngle;   // スポットライトの余弦
+		float cosFalloffStart; // Falloff開始の角度
+		float padding[1];
+	};
+
 	struct ParticleForGPU {
 		Matrix WVP;
 		Matrix World;
@@ -73,6 +85,8 @@ public:
 	ConstBuffer<DirectionalLight> directionalLightCB_;
 	// ポイントライトの定数バッファ
 	ConstBuffer<PointLight> pointLightCB_;
+	// スポットライトの定数バッファ
+	ConstBuffer<SpotLight> spotLightCB_;
 
 };
 
