@@ -8,6 +8,7 @@
 #include "Object3D.h"
 #include "SoundManager.h"
 #include "Input.h"
+#include "LightManager.h"
 
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
@@ -30,6 +31,7 @@ private:
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
 	Input* input = nullptr;
+	LightManager* lightManager = nullptr;
 
 	///
 	/// ↓ ゲームシーン用

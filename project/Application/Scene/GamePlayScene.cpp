@@ -26,6 +26,10 @@ void GamePlayScene::Initialize()
 	// Inputの初期化
 	input = Input::GetInstance();
 
+	// LightManagerの初期化
+	lightManager = LightManager::GetInstance();
+	lightManager->Initialize();
+
 	///
 	///	↓ ゲームシーン用 
 	///	
@@ -49,7 +53,6 @@ void GamePlayScene::Initialize()
 	objectCube_ = std::make_unique<Object3D>();
 	objectCube_->model_ = &modelCube_;
 	objectCube_->transform_.scale = {10.0f, 1.0f, 10.0f};
-	objectCube_->spotLightCB_.data_->intensity = 0.0f;
 
 }
 
@@ -77,6 +80,8 @@ void GamePlayScene::Draw()
 	ImguiWrapper::NewFrame();
 	// カメラの定数バッファを設定
 	Camera::TransferConstantBuffer();
+	// ライトの定数バッファを設定
+	lightManager->TransferContantBuffer();
 
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド
@@ -108,13 +113,15 @@ void GamePlayScene::Draw()
 	ImGui::DragFloat3("Sphere.translation", &objectSphere_->transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("Sphere.rotation", &objectSphere_->transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("Sphere.scale", &objectSphere_->transform_.scale.x, 0.01f);
-	// スフィアのスポットライト
-	ImGui::Text("SpotLight");
-	ImGui::DragFloat3("Sphere.SpotLight.position", &objectSphere_->spotLightCB_.data_->position.x, 0.01f);
+	
 	// カメラ
 	ImGui::Text("Camera");
 	ImGui::DragFloat3("Camera.translation", &camera->transform.translate.x, 0.01f);
 	ImGui::DragFloat3("Camera.rotation", &camera->transform.rotate.x, 0.01f);
+
+	// ライト
+	ImGui::Text("Light");
+	ImGui::DragFloat3("SpotLight.position", &lightManager->spotLightCB_.data_->position.x, 0.01f);
 
 	ImGui::End();
 
