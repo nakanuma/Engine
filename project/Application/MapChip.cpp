@@ -1,7 +1,8 @@
 #include "MapChip.h"
 
 
-namespace {
+namespace
+{
 
 	std::map<std::string, MapChipType> mapChipTable = {
 	{"0", MapChipType::kBlank},
@@ -9,17 +10,90 @@ namespace {
 	};
 }
 
-void MapChipField::ResetMapChipData() {
+void MapChipField::Initialize(ModelManager::ModelData model)
+{
+
+	model_ = model;
+
+	// マップの初期化
+	mapWorld_.resize(kNumBlockVirtical);
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		mapWorld_[i].resize(kNumBlockHorizontal);
+	}
+
+	// ブロックの生成
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i)
+	{
+		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) 
+		{
+			if (GetMapChipTypeByIndex(j, i) == MapChipType::kBlock)
+			{
+				// MapObjectの生成
+				auto mapObject = std::make_unique<MapObject>();
+				mapObject->worldTransformBlocks_ = std::make_unique<Object3D>();
+				mapObject->worldTransformBlocks_->model_ = &model_;
+				mapObject->worldTransformBlocks_->transform_.translate = GetMapChipPositionByIndex(j, i);
+				mapObject->collAABB_.max = Add(mapObject->worldTransformBlocks_->transform_.translate, rad_);
+				mapObject->collAABB_.min = Subtract(mapObject->worldTransformBlocks_->transform_.translate, rad_);
+
+				// マップワールドに格納
+				mapWorld_[i][j] = std::move(mapObject);
+			}
+		}
+	}
+
+}
+
+void MapChipField::Update()
+{
+	
+	// ブロックの更新
+	int i = 0;
+	for (auto& worldTransformBlockLine : mapWorld_) 
+	{
+		int j = 0;
+		for (auto& worldTransformBlock : worldTransformBlockLine)
+		{
+			if (!worldTransformBlock)
+				continue;
+			// AABBのmaxとminを設定
+			worldTransformBlock->collAABB_.max = Add(worldTransformBlock->worldTransformBlocks_->transform_.translate, rad_);
+			worldTransformBlock->collAABB_.min = Subtract(worldTransformBlock->worldTransformBlocks_->transform_.translate, rad_);
+			
+			worldTransformBlock->worldTransformBlocks_->UpdateMatrix();
+			j++;
+		}
+		i++;
+	}
+	
+}
+
+void MapChipField::Draw()
+{
+	// ブロック描画
+	for (auto& worldTransformBlockLine : mapWorld_) {
+		for (auto& worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
+			worldTransformBlock->worldTransformBlocks_ ->Draw();
+		}
+	}
+}
+
+void MapChipField::ResetMapChipData() 
+{
 
 	// マップチップデータをリセット
 	mapChipData_.data.clear();
 	mapChipData_.data.resize(kNumBlockVirtical);
-	for (std::vector<MapChipType>& mapChipDataLine : mapChipData_.data) {
+	for (std::vector<MapChipType>& mapChipDataLine : mapChipData_.data) 
+	{
 		mapChipDataLine.resize(kNumBlockHorizontal);
 	}
 }
 //読み込み
-void MapChipField::LoadMapChipCsv(const std::string& filePath) {
+void MapChipField::LoadMapChipCsv(const std::string& filePath) 
+{
 
 	// マップチップデータをリセット
 	ResetMapChipData();
@@ -38,7 +112,8 @@ void MapChipField::LoadMapChipCsv(const std::string& filePath) {
 
 
 	// CSVからマップチップデータを読み込む
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) 
+	{
 
 		std::string line;
 		getline(mapChipCsv, line);
@@ -46,12 +121,14 @@ void MapChipField::LoadMapChipCsv(const std::string& filePath) {
 		// 1行分の文字列をストリームに変換して解析しやすくする
 		std::istringstream line_stream(line);
 
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
+		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) 
+		{
 
 			std::string word;
 			getline(line_stream, word, ',');
 
-			if (mapChipTable.contains(word)) {
+			if (mapChipTable.contains(word)) 
+			{
 				mapChipData_.data[i][j] = mapChipTable[word];
 			}
 		}
@@ -61,13 +138,16 @@ void MapChipField::LoadMapChipCsv(const std::string& filePath) {
 }
 
 //マップチップ種別の取得
-MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex) {
+MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex)
+{
 
 
-	if (xIndex < 0 || kNumBlockHorizontal - 1 < xIndex) {
+	if (xIndex < 0 || kNumBlockHorizontal - 1 < xIndex)
+	{
 		return MapChipType::kBlank;
 	}
-	if (zIndex < 0 || kNumBlockVirtical - 1 < zIndex) {
+	if (zIndex < 0 || kNumBlockVirtical - 1 < zIndex)
+	{
 		return MapChipType::kBlank;
 	}
 
@@ -76,14 +156,16 @@ MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex
 
 //マップチップ座標の取得
 //縦横の指定してその位置のマップチップワールド座標を取得する
-Float3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex) {
+Float3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex)
+{
 
-	return Float3(kBlockWidth * xIndex,0 ,kBlockHeight * (kNumBlockVirtical - 1 - yIndex));
+	return Float3(kBlockWidth * xIndex, 0, kBlockHeight * (kNumBlockVirtical - 1 - yIndex));
 
 }
 
 //マップチップ番号を計算
-MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Float3& position) {
+MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Float3& position) 
+{
 	MapChipField::IndexSet indexSet = {};
 	indexSet.xIndex = uint32_t((position.x + kBlockWidth / 2) / kBlockWidth);
 	indexSet.zIndex = uint32_t(kNumBlockVirtical - 1 - (int(position.z + kBlockHeight / 2.0f) / kBlockHeight));
@@ -91,19 +173,75 @@ MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Float3& 
 	return indexSet;
 }
 
-//ブロックの範囲取得関数
-MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t zIndex) {
-	// マップチップ座標の取得
-	Float3 center = GetMapChipPositionByIndex(xIndex, zIndex);
+bool MapChipField::IsMapAABB(AABB& charcter, IndexSet& index) { return IsCollision(charcter, mapWorld_[index.xIndex][index.zIndex]->collAABB_); }
 
-	//各頂点
-	Rect rect;
-	rect.left = center.x - kBlockWidth / 2.0f;
-	rect.right = center.x + kBlockWidth / 2.0f;
-	rect.top = center.z - kBlockHeight / 2.0f;
-	rect.bottom = center.z + kBlockHeight / 2.0f;
+bool MapChipField::IsMapAABB(AABB& charcter) 
+{
+
+	for (auto& worldTransformBlockLine : mapWorld_) 
+	{
+		for (auto& worldTransformBlock : worldTransformBlockLine) 
+		{
+			if (!worldTransformBlock)
+				continue;
+			if (IsCollision(charcter, worldTransformBlock->collAABB_))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void MapChipField::IsMapY(float& posY, float radY, IndexSet& index) 
+{
+
+	if (mapWorld_[index.xIndex][index.zIndex]->worldTransformBlocks_->transform_.translate.y >= posY)
+	{
+		posY = mapWorld_[index.xIndex][index.zIndex]->worldTransformBlocks_->transform_.translate.y + radY + rad_.y;
+	}
+}
 
 
-	return rect;
+void MapChipField::IsMapY(AABB& charcter, float& posY, float radY) 
+{
+
+	for (auto& worldTransformBlockLine : mapWorld_)
+	{
+		for (auto& worldTransformBlock : worldTransformBlockLine) 
+		{
+			if (!worldTransformBlock)
+				continue;
+			if (IsCollision(charcter, worldTransformBlock->collAABB_)) 
+			{
+				if (worldTransformBlock->worldTransformBlocks_->transform_.translate.y >= posY) 
+				{
+					posY = worldTransformBlock->worldTransformBlocks_->transform_.translate.y + radY + rad_.y;
+				}
+			}
+		}
+	}
 
 }
+
+void MapChipField::IsMapY2(AABB& charcter, float& posY, float radY) {
+
+
+	for (auto& worldTransformBlockLine : mapWorld_) 
+	{
+		for (auto& worldTransformBlock : worldTransformBlockLine) 
+		{
+			if (!worldTransformBlock)
+				continue;
+			if (IsCollision(charcter, worldTransformBlock->collAABB_)) 
+			{
+
+
+				posY = worldTransformBlock->worldTransformBlocks_->transform_.translate.y + radY + rad_.y;
+
+			}
+		}
+	}
+}
+

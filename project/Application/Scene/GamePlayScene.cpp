@@ -43,7 +43,7 @@ void GamePlayScene::Initialize()
 	object_->transform_.rotate = { 0.0f, 3.14f, 0.0f };
 
 
-	
+
 
 	// Texture読み込み
 	uint32_t uvCheckerGHBlock = TextureManager::Load("resources/Images/uvChecker.png", dxBase->GetDevice());
@@ -52,8 +52,9 @@ void GamePlayScene::Initialize()
 	modelBlock_ = ModelManager::LoadModelFile("resources/Models", "block.obj", dxBase->GetDevice());
 	modelBlock_.material.textureHandle = uvCheckerGHBlock;
 
-	// マップチップの設定
-	GenerateBloks();
+	mapChip_ = std::make_unique<MapChipField>();
+	mapChip_->LoadMapChipCsv("resources/blocks.csv");
+	mapChip_->Initialize(modelBlock_);
 
 	// カメラ位置
 	camera->transform.rotate = { 1.14f,0,0 };
@@ -66,13 +67,9 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update() {
 
-	
 
-	for (const std::vector<std::unique_ptr<Object3D>>& worldTransformBlockLine : objectBlocks_) {
-		for (const std::unique_ptr<Object3D>& worldTransformBlock : worldTransformBlockLine) {
-			worldTransformBlock->UpdateMatrix();
-		}
-	}
+	mapChip_->Update();
+
 	object_->UpdateMatrix();
 }
 
@@ -98,13 +95,9 @@ void GamePlayScene::Draw()
 	// オブジェクトの描画
 	object_->Draw();
 
+	// マップチップ
+	mapChip_->Draw();
 
-	// ブロック描画
-	for (const std::vector<std::unique_ptr<Object3D>>& worldTransformBlockLine : objectBlocks_) {
-		for (const std::unique_ptr<Object3D>& worldTransformBlock : worldTransformBlockLine) {
-			worldTransformBlock->Draw();
-		}
-	}
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -128,14 +121,9 @@ void GamePlayScene::Draw()
 	ImGui::DragFloat3("translation", &object_->transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("rotation", &object_->transform_.rotate.x, 0.01f);
 
-	for (const std::vector<std::unique_ptr<Object3D>>& worldTransformBlockLine : objectBlocks_) {
-		for (const std::unique_ptr<Object3D>& worldTransformBlock : worldTransformBlockLine) {
-			ImGui::DragFloat3("translationBlock1", &worldTransformBlock->transform_.translate.x, 0.01f);
-			
-		}
-	}
 
-	
+
+
 
 	ImGui::End();
 
