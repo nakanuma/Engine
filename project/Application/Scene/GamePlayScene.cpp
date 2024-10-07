@@ -52,8 +52,12 @@ void GamePlayScene::Initialize()
 	modelBlock_ = ModelManager::LoadModelFile("resources/Models", "block.obj", dxBase->GetDevice());
 	modelBlock_.material.textureHandle = uvCheckerGHBlock;
 
+	// マップチップ
 	mapChip_ = std::make_unique<MapChipField>();
+	
+	// まずCSVファイルで読み込む
 	mapChip_->LoadMapChipCsv("resources/blocks.csv");
+	// そのあとに初期化
 	mapChip_->Initialize(modelBlock_);
 
 	// カメラ位置
