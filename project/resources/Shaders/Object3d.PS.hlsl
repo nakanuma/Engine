@@ -42,8 +42,17 @@ struct SpotLight
     float32_t decay; // 減衰率
     float32_t cosAngle; // スポットライトの余弦
     float32_t cosFalloffStart; // Falloff開始の角度
+    uint32_t isActive;
 };
-ConstantBuffer<SpotLight> gSpotLight : register(b4);
+
+static const int kMaxLight = 64;
+
+struct SpotLights
+{
+    SpotLight spotLights[kMaxLight];
+};
+
+ConstantBuffer<SpotLights> gSpotLight : register(b4);
 
 Texture2D<float32_t4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
@@ -69,13 +78,8 @@ PixelShaderOutput main(VertexShaderOutput input) {
     
     
     
-    float32_t3 spotLightDirectionOnSurface = normalize(input.worldPosition - gSpotLight.position);
+ 
     
-    float32_t distance_spot = length(gSpotLight.position - input.worldPosition);
-    float32_t attenuatuinFactor = pow(saturate(-distance / gSpotLight.distance + 1.0f), gSpotLight.decay);
-    
-    float32_t cosAngle = dot(spotLightDirectionOnSurface, gSpotLight.direction);
-    float32_t falloffFactor = saturate((cosAngle - gSpotLight.cosAngle) / (gSpotLight.cosFalloffStart - gSpotLight.cosAngle));
     
     //float32_t3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal)); // 入射光の反射ベクトル
     
@@ -133,25 +137,45 @@ PixelShaderOutput main(VertexShaderOutput input) {
         /// SpotLight
         ///
         
-         // 拡散反射
-        float NdotL_spot = dot(normalize(input.normal), -spotLightDirectionOnSurface);
-        float cos_spot = pow(NdotL_spot * 0.5f + 0.5, 2.0f);
-        float32_t3 diffuseSpotLight =
-        gMaterial.color.rgb * textureColor.rgb * gSpotLight.color.rgb * cos_spot * gSpotLight.intensity * attenuatuinFactor * falloffFactor;
+        float32_t3 diffuseSpotLight = {0.0f, 0.0f, 0.0f};
         
+         // 拡散反射
+        for (uint32_t i = 0; i < kMaxLight; i++)
+        {
+            if (gSpotLight.spotLights[i].isActive == false)
+            {
+                continue;
+            }
+            
+            float32_t3 spotLightDirectionOnSurface = normalize(input.worldPosition - gSpotLight.spotLights[i].position);
+    
+            float32_t distance_spot = length(gSpotLight.spotLights[i].position - input.worldPosition);
+            float32_t attenuatuinFactor = pow(saturate(-distance / gSpotLight.spotLights[i].distance + 1.0f), gSpotLight.spotLights[i].decay);
+    
+            float32_t cosAngle = dot(spotLightDirectionOnSurface, gSpotLight.spotLights[i].direction);
+            float32_t falloffFactor = saturate((cosAngle - gSpotLight.spotLights[i].cosAngle) / (gSpotLight.spotLights[i].cosFalloffStart - gSpotLight.spotLights[i].cosAngle));
+            
+            float NdotL_spot = dot(normalize(input.normal), -spotLightDirectionOnSurface);
+            float cos_spot = pow(NdotL_spot * 0.5f + 0.5, 2.0f);
+            diffuseSpotLight +=
+            gSpotLight.spotLights[i].color.rgb * cos_spot * gSpotLight.spotLights[i].intensity * attenuatuinFactor * falloffFactor;
+        }
+        
+        diffuseSpotLight *= gMaterial.color.rgb * textureColor.rgb;
+            
         // 鏡面反射
-        float32_t3 halfVector_spot = normalize(-spotLightDirectionOnSurface + toEye);
-        float NdotH_spot = dot(normalize(input.normal), halfVector_spot);
-        float specularPow_spot = pow(saturate(NdotH_spot), gMaterial.shininess);
-        float32_t3 specularSpotLight =
-        gSpotLight.color.rgb * gSpotLight.intensity * specularPow_spot * float32_t3(1.0f, 1.0f, 1.0f) * attenuatuinFactor * falloffFactor;
+        //float32_t3 halfVector_spot = normalize(-spotLightDirectionOnSurface + toEye);
+        //float NdotH_spot = dot(normalize(input.normal), halfVector_spot);
+        //float specularPow_spot = pow(saturate(NdotH_spot), gMaterial.shininess);
+        //float32_t3 specularSpotLight =
+        //gSpotLight.color.rgb * gSpotLight.intensity * specularPow_spot * float32_t3(1.0f, 1.0f, 1.0f) * attenuatuinFactor * falloffFactor;
         
         // ライティングテスト用
         // 拡散反射+鏡面反射
         output.color.rgb = 
         diffuseDirectionalLight + specularDirectionalLight + // DirectionalLight
         diffusePointLight + specularPointLight + // PointLight
-        diffuseSpotLight + specularSpotLight // SpotLight
+        diffuseSpotLight // SpotLight
         ;
         
         // 基本的にはこっちを適用

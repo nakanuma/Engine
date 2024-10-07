@@ -25,16 +25,23 @@ void LightManager::Initialize()
 	pointLightCB_.data_->radius = 5.0f;
 	pointLightCB_.data_->decay = 1.0f;
 
-	// スポットライトのデフォルト値を書き込む
-	spotLightCB_.data_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	spotLightCB_.data_->position = { 2.0f, 1.25f, 0.0f };
-	spotLightCB_.data_->distance = 7.0f;
-	spotLightCB_.data_->direction = { -1.0f, -1.0f, 0.0f };
-	spotLightCB_.data_->intensity = 4.0f; // スポットライト有効
-	/*spotLightCB_.data_->intensity = 0.0f;*/ // スポットライト無効
-	spotLightCB_.data_->decay = 2.0f;
-	spotLightCB_.data_->cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
-	spotLightCB_.data_->cosFalloffStart = std::cos(std::numbers::pi_v<float> / 4.0f);
+	for (size_t i = 0; i < kMaxLight; i++) {
+		// スポットライトのデフォルト値を書き込む
+		spotLightsCB_.data_->spotLights[i].color = {1.0f, 1.0f, 1.0f, 1.0f};
+		spotLightsCB_.data_->spotLights[i].position = { 2.0f, 1.25f, 0.0f };
+		spotLightsCB_.data_->spotLights[i].distance = 7.0f;
+		spotLightsCB_.data_->spotLights[i].direction = { -1.0f, -1.0f, 0.0f };
+		spotLightsCB_.data_->spotLights[i].intensity = 4.0f; // スポットライト有効
+		/*spotLightCB_.data_->intensity = 0.0f;*/ // スポットライト無効
+		spotLightsCB_.data_->spotLights[i].decay = 2.0f;
+		spotLightsCB_.data_->spotLights[i].cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
+		spotLightsCB_.data_->spotLights[i].cosFalloffStart = std::cos(std::numbers::pi_v<float> / 4.0f);
+		spotLightsCB_.data_->spotLights[i].isActive = false;
+	}
+
+	// 0番目のスポットライトだけ有効にする
+	spotLightsCB_.data_->spotLights[0].isActive = true;
+
 }
 
 void LightManager::TransferContantBuffer()
@@ -46,5 +53,5 @@ void LightManager::TransferContantBuffer()
 	// ポイントライトの定数バッファをセット
 	dxBase->GetCommandList()->SetGraphicsRootConstantBufferView(6, pointLightCB_.resource_->GetGPUVirtualAddress());
 	// スポットライトの定数バッファをセット
-	dxBase->GetCommandList()->SetGraphicsRootConstantBufferView(7, spotLightCB_.resource_->GetGPUVirtualAddress());
+	dxBase->GetCommandList()->SetGraphicsRootConstantBufferView(7, spotLightsCB_.resource_->GetGPUVirtualAddress());
 }

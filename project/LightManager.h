@@ -36,7 +36,13 @@ public:
 		float decay;      // 減衰率
 		float cosAngle;   // スポットライトの余弦
 		float cosFalloffStart; // Falloff開始の角度
-		float padding[1];
+		uint32_t isActive;
+	};
+
+	static const int kMaxLight = 64;
+
+	struct SpotLights {
+		SpotLight spotLights[kMaxLight];
 	};
 
 public:
@@ -45,6 +51,6 @@ public:
 	// ポイントライトの定数バッファ
 	ConstBuffer<PointLight> pointLightCB_;
 	// スポットライトの定数バッファ
-	ConstBuffer<SpotLight> spotLightCB_;
+	ConstBuffer<SpotLights> spotLightsCB_;
 };
 

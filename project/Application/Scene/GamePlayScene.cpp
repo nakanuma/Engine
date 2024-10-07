@@ -121,7 +121,7 @@ void GamePlayScene::Draw()
 
 	// ライト
 	ImGui::Text("Light");
-	ImGui::DragFloat3("SpotLight.position", &lightManager->spotLightCB_.data_->position.x, 0.01f);
+	ImGui::DragFloat3("SpotLight.position", &lightManager->spotLightsCB_.data_->spotLights[0].position.x, 0.01f);
 
 	ImGui::End();
 
