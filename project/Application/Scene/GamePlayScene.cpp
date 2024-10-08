@@ -135,10 +135,6 @@ void GamePlayScene::Draw()
 	ImGui::DragFloat3("translation", &object_->transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("rotation", &object_->transform_.rotate.x, 0.01f);
 
-
-
-
-
 	ImGui::End();
 
 	// ImGuiの内部コマンドを生成する

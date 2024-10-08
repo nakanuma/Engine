@@ -45,7 +45,7 @@ class MovingPlayerState
 {
 public:
 	MovingPlayerState(Player* player,Float2 moveVal);
-	~MovingPlayerState()override {}
+	~MovingPlayerState()override;
 
 	void Initialize()override;
 	void Update()override;

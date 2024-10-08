@@ -64,11 +64,19 @@ MovingPlayerState::MovingPlayerState(Player* player,Float2 moveVal):IPlayerState
 {
 	Float3 playerWorldPos = player_->GetWorldPosition();
 	// 現在の Address を 計算
-	fromAddress_ = Float2(playerWorldPos.x / blockSize,
-						  playerWorldPos.z / blockSize
+	fromAddress_ = Float2(
+		playerWorldPos.x / blockSize,
+		playerWorldPos.z / blockSize
 	);
 	// 移動後の Address を 計算
 	forAddress_ = fromAddress_ + moveVal;
+}
+
+MovingPlayerState::~MovingPlayerState()
+{
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	variables->DestroyItem("Game","Player_MovingState","fullTime");
+	variables->DestroyItem("Game","Player_MovingState","jumpHeight");
 }
 
 void MovingPlayerState::Initialize()
