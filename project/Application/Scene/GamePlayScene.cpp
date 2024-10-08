@@ -109,6 +109,19 @@ void GamePlayScene::Draw()
 	ImGui::DragFloat3("translation", &object_->transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("rotation", &object_->transform_.rotate.x, 0.01f);
 
+	int32_t mouseX, mouseY;
+	mouseX = input->GetMousePosition().x;
+	mouseY = input->GetMousePosition().y;
+
+	ImGui::Text("%d, %d", mouseX, mouseY);
+	if (input->IsTriggerMouse(0)) {
+		ImGui::Text("left");
+	} else if (input->IsTriggerMouse(1)) {
+		ImGui::Text("right");
+	} else if (input->IsTriggerMouse(2)) {
+		ImGui::Text("middle");
+	}
+
 	ImGui::End();
 
 	// ImGuiの内部コマンドを生成する
