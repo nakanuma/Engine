@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="Engine\Math\Float2.cpp" />
     <ClCompile Include="Engine\Math\Float3.cpp" />
     <ClCompile Include="Engine\Scene\BaseScene.cpp" />
@@ -56,6 +57,7 @@
     <ClCompile Include="Engine\DirectX\RTVManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
     <ClInclude Include="Engine\Scene\AbstractSceneFactory.h" />
     <ClInclude Include="Engine\Scene\BaseScene.h" />
     <ClInclude Include="Engine\DirectX\ConstBuffer.h" />
@@ -242,7 +244,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;$(ProjectDir)application\GlobalVariables;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -274,7 +276,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;$(ProjectDir)application\GlobalVariables;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
