@@ -44,9 +44,6 @@ void GamePlayScene::Initialize()
 	object_->model_ = &model_;
 	object_->transform_.rotate = { 0.0f, 3.14f, 0.0f };
 
-
-
-
 	// Texture読み込み
 	uint32_t uvCheckerGHBlock = TextureManager::Load("resources/Images/uvChecker.png", dxBase->GetDevice());
 
@@ -68,7 +65,7 @@ void GamePlayScene::Initialize()
 	object_->transform_.rotate = {0.0f, 3.14f, 0.0f};
 
 	player_ = std::make_unique<Player>();
-	player_->Initialize();
+	player_->Initialize(uvCheckerGH);
 }
 
 void GamePlayScene::Finalize()

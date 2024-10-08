@@ -12,7 +12,7 @@ public:
 	Player() = default;
 	~Player() = default;
 
-	void Initialize();
+	void Initialize(uint32_t uvCheckerGH);
 	void Update();
 	void Draw();
 private:
