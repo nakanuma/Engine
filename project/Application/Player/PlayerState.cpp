@@ -9,12 +9,6 @@
 
 const float blockSize = 1.0f;
 
-template <typename T>
-T Lerp(const float& t,const T& start,const T& end)
-{
-	return static_cast<T>(((1.0f - t) * static_cast<float>(start)) + (t * static_cast<float>(end)));
-}
-
 Float2 Lerp(float t,const Float2& startPos,const Float2& endPos)
 {
 	Float2 lerp;
@@ -30,22 +24,6 @@ Float3 Lerp(float t,const Float3& startPos,const Float3& endPos)
 	lerp.y = Lerp<float>(t,startPos.y,endPos.y);
 	lerp.z = Lerp<float>(t,startPos.z,endPos.z);
 	return lerp;
-}
-float customEasing(float t)
-{
-	if(t < 0.4f)
-	{
-// 0から0.3の間で0から1まで上昇
-		return t / 0.3f;
-	} else if(t < 0.6f)
-	{
-// 0.3から0.6の間は1を維持
-		return 1.0f;
-	} else
-	{
-  // 0.6から1の間で1から0まで下降
-		return 1.0f - ((t - 0.6f) / 0.4f);
-	}
 }
 
 float LerpShortAngle(float before,float after,float t)
@@ -67,96 +45,45 @@ float LerpShortAngle(float before,float after,float t)
 
 	return before + rotate * t;
 }
+NeutralPlayerState::~NeutralPlayerState()
+{
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	variables->DestroyItem("Game","Player_NeutralState","speed_");
+}
 //=====================================================
 /// Neutral 
 void NeutralPlayerState::Initialize()
 {
-	GlobalVariables::getInstance()->addValue("Game","Player_Neutral","handOffset",defaultHandOffset_);
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	variables->addValue("Game","Player_NeutralState","speed_",speed_);
+
 }
 
 void NeutralPlayerState::Update()
 {
-	Float2 moveVal{};
-	for(int32_t i = 0; i < 2; i++)
-	{
-		moveVal += {
-			static_cast<float>(input_->PushKey(moveKeys.right[i]) - input_->PushKey(moveKeys.left[i])),
-			static_cast<float>(input_->PushKey(moveKeys.up[i])    - input_->PushKey(moveKeys.down[i]))
-		};
-	}
-
-	if(moveVal.x != 0.0f || moveVal.y != 0.0f)
-	{
-		player_->TransitionState(new MovingPlayerState(player_,moveVal));
-		return;
-	}
-
 	if(input_->PushKey(moveKeys.attack))
 	{
 		player_->TransitionState(new ChargePlayerState(player_));
 		return;
 	}
 
-}
-//=====================================================
-
-//=====================================================
-/// Moving 
-MovingPlayerState::MovingPlayerState(Player* player,Float2 moveVal):IPlayerState(player)
-{
-	Float3 playerWorldPos = player_->GetWorldPosition();
-	// 現在の Address を 計算
-	fromAddress_ = Float2(
-		playerWorldPos.x / blockSize,
-		playerWorldPos.z / blockSize
-	);
-	// 移動後の Address を 計算
-	forAddress_ = fromAddress_ + moveVal;
-
-	// beforeRotate_ = player_->GetBodyRotate().y;
-	// afterRotate_ = std::atan2(moveVal.x,moveVal.y);
-
-	const Float3& currentRotate = player_->GetBodyRotate();
-	player_->SetBodyRotate({currentRotate.x,std::atan2(moveVal.x,moveVal.y),currentRotate.z});
-}
-
-MovingPlayerState::~MovingPlayerState()
-{
-	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->DestroyItem("Game","Player_MovingState","maxTime");
-	variables->DestroyItem("Game","Player_MovingState","jumpHeight");
-}
-
-void MovingPlayerState::Initialize()
-{
-	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->addValue("Game","Player_MovingState","maxTime",maxTime_);
-	variables->addValue("Game","Player_MovingState","jumpHeight",jumpHeight_);
-	currentTime_ = 0.0f;
-}
-
-void MovingPlayerState::Update()
-{
-	currentTime_ += DeltaTime::getInstance()->getDeltaTime();
-	if(currentTime_ >= maxTime_)
+	Float2 moveVal{};
+	for(int32_t i = 0; i < 2; i++)
 	{
-		player_->SetBodyTranslate(Float3(forAddress_.x,0.0f,forAddress_.y));
+		moveVal += {
+			static_cast<float>(input_->PushKey(moveKeys.right[i]) - input_->PushKey(moveKeys.left[i])),
+				static_cast<float>(input_->PushKey(moveKeys.up[i]) - input_->PushKey(moveKeys.down[i]))
+		};
+	}
 
-		const Float3& currentRotate = player_->GetBodyRotate();
-		// player_->SetBodyRotate({currentRotate.x,afterRotate_,currentRotate.z});
-
-		player_->TransitionState(new NeutralPlayerState(player_));
+	if(moveVal.x == 0.0f && moveVal.y == 0.0f)
+	{
 		return;
 	}
 
-	float t = currentTime_ / maxTime_;
-	Float2 currentXZ = Lerp(t,fromAddress_,forAddress_);
-	float currentY = Lerp<float>(customEasing(t),0.0f,jumpHeight_);
-
-	player_->SetBodyTranslate(Float3(currentXZ.x,currentY,currentXZ.y));
-
-	//const Float3& currentRotate = player_->GetBodyRotate();
-	//player_->SetBodyRotate({currentRotate.x,LerpShortAngle(beforeRotate_,afterRotate_,t),currentRotate.z});
+	Float3 bodyTranslate = player_->GetBodyTranslate() + (Float3(moveVal.x,0.0f,moveVal.y) * speed_) * DeltaTime::getInstance()->getDeltaTime();
+	player_->SetBodyTranslate(bodyTranslate);
+	player_->SetBodyRotate({0.0f,atan2(moveVal.x,moveVal.y),0.0f});
 }
 //=====================================================
 

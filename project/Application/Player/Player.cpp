@@ -7,6 +7,10 @@
 #include "externals/imgui/imgui.h"
 #endif // _DEBUG
 
+Player::~Player()
+{
+
+}
 
 void Player::Initialize(uint32_t uvCheckerGH)
 {
@@ -30,17 +34,24 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	// handObject_.parent = &body;
 
 ///===========================================================================================
+/// GlobalVariables
+///===========================================================================================
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	variables->addValue("Game","Player_Default","defaultHandOffset",defaultHandOffset_);
+
+///===========================================================================================
 /// State
 ///===========================================================================================
 	TransitionState(new NeutralPlayerState(this));
-
-	handObject_->transform_.translate;
 }
 
 void Player::Update()
 {
 	currentState_->Update();
 	bodyObject_->UpdateMatrix();
+
+	handObject_->transform_.translate = defaultHandOffset_ + bodyObject_->transform_.translate;
+	handObject_->UpdateMatrix();
 }
 
 void Player::Draw()
@@ -48,6 +59,8 @@ void Player::Draw()
 	ImGui::DragFloat3("Rotate",&bodyObject_->transform_.rotate.x,0.1f);
 	ImGui::DragFloat3("Translate",&bodyObject_->transform_.translate.x,0.1f);
 	bodyObject_->Draw();
+
+	handObject_->Draw();
 }
 
 void Player::TransitionState(IPlayerState* state)

@@ -5,6 +5,15 @@
 #include "Float2.h"
 #include "Float3.h"
 
+
+// TODO
+// 別のフォルダーに 移す
+template <typename T>
+T Lerp(const float& t,const T& start,const T& end)
+{
+	return static_cast<T>(((1.0f - t) * static_cast<float>(start)) + (t * static_cast<float>(end)));
+}
+
 struct MoveKeys
 {
 	BYTE up[2] = {DIK_UP,DIK_W};
@@ -41,37 +50,12 @@ class NeutralPlayerState
 {
 public:
 	NeutralPlayerState(Player* player):IPlayerState(player) {}
-	~NeutralPlayerState()override {}
+	~NeutralPlayerState()override;
 
 	void Initialize()override;
 	void Update()    override;
 private:
-	Float3 defaultHandOffset_;
-};
-
-///======================================================
-/// 移動状態
-///======================================================
-class MovingPlayerState
-	:public IPlayerState
-{
-public:
-	MovingPlayerState(Player* player,Float2 moveVal);
-	~MovingPlayerState()override;
-
-	void Initialize()override;
-	void Update()override;
-private:
-	Float2 fromAddress_; // 移動前 の アドレス
-	Float2 forAddress_;  // 移動後 の アドレス
-
-	 // float beforeRotate_;
-	 // float afterRotate_;
-
-	float maxTime_;
-	float currentTime_;
-
-	float jumpHeight_;
+	float speed_;
 };
 
 ///======================================================
@@ -112,7 +96,7 @@ public:
 	~AttackPlayerState()override;
 
 	void Initialize()override;
-	void Update()override;
+	void Update()    override;
 private:
 	float chargePercent_;
 

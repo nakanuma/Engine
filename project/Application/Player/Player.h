@@ -10,7 +10,7 @@ class Player
 {
 public:
 	Player() = default;
-	~Player() = default;
+	~Player();
 
 	void Initialize(uint32_t uvCheckerGH);
 	void Update();
@@ -24,6 +24,9 @@ private:
 	ModelManager::ModelData handModelData_;
 	std::unique_ptr<Object3D> handObject_;
 
+	Float3 defaultHandOffset_;
+	// float handTrackingSensitivity_;
+	// Float3 currentHandOffset_;
 public:
 	void TransitionState(IPlayerState* state);
 
