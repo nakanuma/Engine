@@ -11,7 +11,7 @@ void GamePlayScene::Initialize()
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// カメラのインスタンスを生成
-	camera = std::make_unique<Camera>(Float3{ 0.0f, 0.0f, -10.0f }, Float3{ 0.0f, 0.0f, 0.0f }, 0.45f);
+	camera = std::make_unique<Camera>(Float3{0.0f, 15.0f, -40.0f}, Float3{0.3f, 0.0f, 0.0f}, 0.45f);
 	Camera::Set(camera.get()); // 現在のカメラをセット
 
 	// SpriteCommonの生成と初期化
@@ -27,6 +27,10 @@ void GamePlayScene::Initialize()
 
 	// Inputの初期化
 	input = Input::GetInstance();
+
+	// LightManagerの初期化
+	lightManager = LightManager::GetInstance();
+	lightManager->Initialize();
 
 	///
 	///	↓ ゲームシーン用 
@@ -95,6 +99,8 @@ void GamePlayScene::Draw()
 	ImguiWrapper::NewFrame();
 	// カメラの定数バッファを設定
 	Camera::TransferConstantBuffer();
+	// ライトの定数バッファを設定
+	lightManager->TransferContantBuffer();
 
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド

@@ -35,6 +35,7 @@
     <ClCompile Include="Engine\Input\Input.cpp" />
     <ClCompile Include="Engine\Game\Framework.cpp" />
     <ClCompile Include="Application\Scene\GamePlayScene.cpp" />
+    <ClCompile Include="Engine\3D\LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Math\Matrix.cpp" />
     <ClCompile Include="Engine\Math\Matrix3x3.cpp" />
@@ -113,6 +114,7 @@
     <ClInclude Include="Engine\Util\StructuredBuffer.h" />
     <ClInclude Include="Application\Scene\TitleScene.h" />
     <ClInclude Include="Engine\DirectX\RTVManager.h" />
+    <ClInclude Include="Engine\3D\LightManager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\Shaders\Particle.PS.hlsl">
@@ -169,6 +171,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="resources\Shaders\Sprite.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="resources\Shaders\Sprite.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -183,6 +197,7 @@
     <None Include="resources\Shaders\Object3d.hlsli" />
     <None Include="resources\Shaders\Toon.hlsli" />
     <None Include="resources\Shaders\SobelFilter.hlsli" />
+    <None Include="resources\Shaders\Sprite.hlsli" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

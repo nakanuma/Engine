@@ -13,18 +13,13 @@ public:
 		int32_t enableLighting;
 		float padding[3];
 		Matrix uvTransform;
+		float shininess;
 	};
 
 	struct TransformationMatrix {
 		Matrix WVP;
 		Matrix World;
 		Matrix WorldInverseTranspose;
-	};
-
-	struct DirectionalLight {
-		Float4 color; // ライトの色
-		Float3 direction; // ライトの向き
-		float intensity; // 輝度
 	};
 
 	struct ParticleForGPU {
@@ -37,6 +32,9 @@ public:
 
 	// マトリックス情報の更新
 	void UpdateMatrix();
+
+	// 親オブジェクトを設定
+	void SetParent(Object3D* parent) { parent_ = parent; }
 
 	// 描画（モデル内のテクスチャを参照 / テクスチャを指定して描画）
 	void Draw();
@@ -59,7 +57,8 @@ public:
 	// トランスフォーム情報
 	Transform transform_;
 
-	// 平行光源の定数バッファ
-	ConstBuffer<DirectionalLight> directionalLightCB_;
+private:
+	// 親オブジェクトへのポインタ
+	Object3D* parent_ = nullptr;
 };
 
