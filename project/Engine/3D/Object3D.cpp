@@ -23,6 +23,12 @@ Object3D::Object3D()
 void Object3D::UpdateMatrix()
 {
 	Matrix worldMatrix = transform_.MakeAffineMatrix();
+	// 親が存在する場合、親の行列を考慮する
+	if (parent_) {
+		Matrix parentWorldMatrix = parent_->transform_.MakeAffineMatrix(); // 親のワールド行列
+		worldMatrix = worldMatrix * parentWorldMatrix; // 子の行列に親の行列を掛ける
+	}
+
 	Matrix viewMatrix = Camera::GetCurrent()->MakeViewMatrix();
 	Matrix projectionMatrix = Camera::GetCurrent()->MakePerspectiveFovMatrix();
 	Matrix worldViewProjectionMatrix = worldMatrix * viewMatrix * projectionMatrix;
