@@ -46,6 +46,11 @@ void GamePlayScene::Initialize()
 	objectSphere_->model_ = &modelSphere_;
 	objectSphere_->transform_.translate = {0.0f, 4.0f, 0.0f};
 
+	objectSphere2_ = std::make_unique<Object3D>();
+	objectSphere2_->model_ = &modelSphere_;
+	objectSphere2_->transform_.translate = {-4.0f, 4.0f, 4.0f};
+
+
 	// 箱（地面）モデルとオブジェクトの生成
 	modelCube_ = ModelManager::LoadModelFile("resources/Models", "cube.obj", dxBase->GetDevice());
 	modelCube_.material.textureHandle = whiteGH;
@@ -62,6 +67,11 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update() { 
 	objectSphere_->UpdateMatrix(); 
+	// sphereとlight[0]の位置を同期
+	lightManager->spotLightsCB_.data_->spotLights[0].position = objectSphere_->transform_.translate;
+
+	objectSphere2_->UpdateMatrix();
+	lightManager->spotLightsCB_.data_->spotLights[1].position = objectSphere2_->transform_.translate;
 
 	objectCube_->UpdateMatrix();
 }
@@ -88,9 +98,12 @@ void GamePlayScene::Draw()
 	/// 
 
 	// オブジェクトの描画
-	objectSphere_->Draw();
+	objectSphere_->Draw(); // 球体（プレイヤー想定）
 
-	objectCube_->Draw();
+	objectSphere2_->Draw();
+
+
+	objectCube_->Draw(); // 床
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -109,19 +122,27 @@ void GamePlayScene::Draw()
 	
 	ImGui::Begin("window");
 	// ライティング確認用スフィア
-	ImGui::Text("Sphere");
-	ImGui::DragFloat3("Sphere.translation", &objectSphere_->transform_.translate.x, 0.01f);
-	ImGui::DragFloat3("Sphere.rotation", &objectSphere_->transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("Sphere.scale", &objectSphere_->transform_.scale.x, 0.01f);
+	ImGui::Text("Sphere1");
+	ImGui::DragFloat3("Sphere1.translation", &objectSphere_->transform_.translate.x, 0.01f);
+	ImGui::Text("Sphere2");
+	ImGui::DragFloat3("Sphere2.translation", &objectSphere2_->transform_.translate.x, 0.01f);
 	
 	// カメラ
 	ImGui::Text("Camera");
 	ImGui::DragFloat3("Camera.translation", &camera->transform.translate.x, 0.01f);
 	ImGui::DragFloat3("Camera.rotation", &camera->transform.rotate.x, 0.01f);
 
+	ImGui::End();
+
+
+	ImGui::Begin("Light");
 	// ライト
-	ImGui::Text("Light");
 	ImGui::DragFloat3("SpotLight.position", &lightManager->spotLightsCB_.data_->spotLights[0].position.x, 0.01f);
+	ImGui::DragFloat3("SpotLight.direction", &lightManager->spotLightsCB_.data_->spotLights[0].direction.x, 0.01f);
+	ImGui::DragFloat("SpotLight.distance", &lightManager->spotLightsCB_.data_->spotLights[0].distance, 0.01f);
+	ImGui::DragFloat("SpotLight.decay", &lightManager->spotLightsCB_.data_->spotLights[0].decay, 0.01f);
+	ImGui::DragFloat("SpotLight.cosAngle", &lightManager->spotLightsCB_.data_->spotLights[0].cosAngle, 0.01f);
+	ImGui::DragFloat("SpotLight.cosFalloffStart", &lightManager->spotLightsCB_.data_->spotLights[0].cosFalloffStart, 0.01f);
 
 	ImGui::End();
 

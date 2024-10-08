@@ -14,7 +14,7 @@ void LightManager::Initialize()
 	// 平行光源のデフォルト値を書き込む
 	directionalLightCB_.data_->color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLightCB_.data_->direction = { 0.0f, -1.0f, 0.0f };
-	directionalLightCB_.data_->intensity = 0.1f;   // 平行光源有効
+	directionalLightCB_.data_->intensity = 1.0f;   // 平行光源有効
 	/*directionalLightCB_.data_->intensity = 0.0f;*/   // 平行光源無効
 
 	// ポイントライトのデフォルト値を書き込む
@@ -28,20 +28,20 @@ void LightManager::Initialize()
 	for (size_t i = 0; i < kMaxLight; i++) {
 		// スポットライトのデフォルト値を書き込む
 		spotLightsCB_.data_->spotLights[i].color = {1.0f, 1.0f, 1.0f, 1.0f};
-		spotLightsCB_.data_->spotLights[i].position = { 2.0f, 1.25f, 0.0f };
-		spotLightsCB_.data_->spotLights[i].distance = 7.0f;
-		spotLightsCB_.data_->spotLights[i].direction = { -1.0f, -1.0f, 0.0f };
-		spotLightsCB_.data_->spotLights[i].intensity = 4.0f; // スポットライト有効
-		/*spotLightCB_.data_->intensity = 0.0f;*/ // スポットライト無効
+		spotLightsCB_.data_->spotLights[i].position = { 0.0f, 2.0f, 0.0f }; // 初期座標
+		spotLightsCB_.data_->spotLights[i].distance = 50.0f; // 大きめに設定
+		spotLightsCB_.data_->spotLights[i].direction = { 0.0f, -1.0f, 0.0f }; // 真下を向ける
+		spotLightsCB_.data_->spotLights[i].intensity = 4.0f;
 		spotLightsCB_.data_->spotLights[i].decay = 2.0f;
-		spotLightsCB_.data_->spotLights[i].cosAngle = std::cos(std::numbers::pi_v<float> / 3.0f);
-		spotLightsCB_.data_->spotLights[i].cosFalloffStart = std::cos(std::numbers::pi_v<float> / 4.0f);
+		spotLightsCB_.data_->spotLights[i].cosAngle = std::cos(std::numbers::pi_v<float> / 9.0f);
+		spotLightsCB_.data_->spotLights[i].cosFalloffStart = 1.26f;
 		spotLightsCB_.data_->spotLights[i].isActive = false;
 	}
 
 	// 0番目のスポットライトだけ有効にする
 	spotLightsCB_.data_->spotLights[0].isActive = true;
 
+	spotLightsCB_.data_->spotLights[1].isActive = true;
 }
 
 void LightManager::TransferContantBuffer()

@@ -41,6 +41,7 @@ private:
 	ModelManager::ModelData modelSphere_;
 	// 3Dオブジェクト
 	std::unique_ptr<Object3D> objectSphere_;
+	std::unique_ptr<Object3D> objectSphere2_;
 
 	// 箱モデルデータ
 	ModelManager::ModelData modelCube_;

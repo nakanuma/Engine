@@ -109,12 +109,12 @@ PixelShaderOutput main(VertexShaderOutput input) {
         gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
         
         // 鏡面反射
-        float32_t3 halfVector = normalize(-gDirectionalLight.direction + toEye);
-        float NdotH = dot(normalize(input.normal), halfVector);
-        float specularPow = pow(saturate(NdotH), gMaterial.shininess); // 反射強度
+        //float32_t3 halfVector = normalize(-gDirectionalLight.direction + toEye);
+        //float NdotH = dot(normalize(input.normal), halfVector);
+        //float specularPow = pow(saturate(NdotH), gMaterial.shininess); // 反射強度
         
-        float32_t3 specularDirectionalLight =
-        gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
+        //float32_t3 specularDirectionalLight =
+        //gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
         
         ///
         /// PointLight
@@ -158,7 +158,7 @@ PixelShaderOutput main(VertexShaderOutput input) {
             float NdotL_spot = dot(normalize(input.normal), -spotLightDirectionOnSurface);
             float cos_spot = pow(NdotL_spot * 0.5f + 0.5, 2.0f);
             diffuseSpotLight +=
-            gSpotLight.spotLights[i].color.rgb * cos_spot * gSpotLight.spotLights[i].intensity * attenuatuinFactor * falloffFactor;
+            -gSpotLight.spotLights[i].color.rgb * cos_spot * gSpotLight.spotLights[i].intensity * attenuatuinFactor * falloffFactor;
         }
         
         diffuseSpotLight *= gMaterial.color.rgb * textureColor.rgb;
@@ -173,7 +173,7 @@ PixelShaderOutput main(VertexShaderOutput input) {
         // ライティングテスト用
         // 拡散反射+鏡面反射
         output.color.rgb = 
-        diffuseDirectionalLight + specularDirectionalLight + // DirectionalLight
+        diffuseDirectionalLight + // DirectionalLight
         diffusePointLight + specularPointLight + // PointLight
         diffuseSpotLight // SpotLight
         ;
