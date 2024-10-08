@@ -10,6 +10,8 @@
 #include "Input.h"
 #include "Application/MapChip.h"
 
+#include "Application/Player/Player.h"
+
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
 {
@@ -51,5 +53,7 @@ private:
 	// 複数並べるために配列にする(マップチップ)
 	std::vector<std::vector<std::unique_ptr<Object3D>>> objectBlocks_;
 
+
+	std::unique_ptr<Player> player_;
 };
 

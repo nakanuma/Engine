@@ -3,4 +3,8 @@
   BC6HBC7.cpp
   BCDirectCompute.cpp
   コードを生成中...
+<<<<<<< HEAD
+  DirectXTex_Desktop_2022_Win10.vcxproj -> D:\k023g0121\Engine\project\externals\DirectXTex\Bin\Desktop_2022_Win10\x64\Debug\DirectXTex.lib
+=======
   DirectXTex_Desktop_2022_Win10.vcxproj -> C:\Users\k023g\source\repos\TD2\project\externals\DirectXTex\Bin\Desktop_2022_Win10\x64\Debug\DirectXTex.lib
+>>>>>>> TDF_Game

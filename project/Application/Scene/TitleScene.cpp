@@ -6,6 +6,8 @@
 #include "SceneManager.h"
 //#include "GamePlayScene.h"
 
+#include "GlobalVariables.h"
+
 void TitleScene::Initialize()
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
@@ -47,6 +49,8 @@ void TitleScene::Initialize()
 	object_ = std::make_unique<Object3D>();
 	object_->model_ = &model_;
 	object_->transform_.rotate = { 0.0f, 3.14f, 0.0f };
+
+	
 }
 
 void TitleScene::Finalize()
@@ -116,6 +120,11 @@ void TitleScene::Draw()
 	///
 	/// ↑ ここまでスプライトの描画コマンド
 	/// 
+
+
+#ifdef _DEBUG
+	GlobalVariables::getInstance()->Update();
+#endif // _DEBUG
 
 	ImGui::Begin("window");
 

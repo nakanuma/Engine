@@ -5,6 +5,6 @@ struct Float2
 	float x;
 	float y;
 
-
+	Float2   operator+(const Float2& other);
 	Float2& operator+=(const Float2& other);
 };

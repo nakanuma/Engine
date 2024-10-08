@@ -26,6 +26,8 @@ public:
 	}
 };
 
+class RTVManager;
+
 class DirectXBase
 {
 public:
@@ -151,11 +153,14 @@ public:
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* GetCommandList();
 
+	IDXGISwapChain4* GetSwapChain();
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc();
+	DescriptorHeap* GetRTVHeap();
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc();
 	ID3D12PipelineState* GetPipelineState();
 	ID3D12PipelineState* GetPipelineStateOutline();
 	ID3D12PipelineState* GetPipelineStateNoCulling();
+	DescriptorHeap* GetDSVHeap();
 
 	// BlendMode変更用PSOのgetter
 	ID3D12PipelineState* GetPipelineStateBlendModeNone() { return graphicsPipelineStateBlendModeNone_.Get(); };
@@ -169,6 +174,10 @@ public:
 	// Particle用PSOを取得
 	ID3D12PipelineState* GetPipelineStateParticle() { return graphicsPipelineStateParticle_.Get(); };
 
+	// ポストエフェクト用PSOを取得
+	ID3D12PipelineState* GetPipelineStateSobelFilter() { return graphicsPipelineStateSobelFilter_.Get(); }
+
+	friend RTVManager;
 private:
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	Microsoft::WRL::ComPtr<IDXGIAdapter4> useAdapter_;
@@ -208,12 +217,20 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineStateBlendModeSubtract_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineStateBlendModeMultiply_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineStateBlendModeScreen_;
+	// ポストエフェクト用PSO
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineStateSobelFilter_;
 
 	D3D12_RASTERIZER_DESC rasterizerDesc_;
+	// 通常
 	IDxcBlob* vertexShaderBlob_;
 	IDxcBlob* pixelShaderBlob_;
+	// パーティクル用
 	IDxcBlob* vertexShaderBlobParticle_;
 	IDxcBlob* pixelShaderBlobParticle_;
+	// ソベルフィルター用
+	IDxcBlob* vertexShaderBlobSobel_;
+	IDxcBlob* pixelShaderBlobSobel_;
+
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineStateOutline_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineStateNoCulling_;

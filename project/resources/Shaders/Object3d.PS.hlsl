@@ -29,20 +29,20 @@ PixelShaderOutput main(VertexShaderOutput input) {
     float4 transformedUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
     
-    // texture‚Ìa’l‚ª0.5ˆÈ‰º‚Ì‚Æ‚«‚ÉPixel‚ðŠü‹p
+    // textureï¿½ï¿½aï¿½lï¿½ï¿½0.5ï¿½È‰ï¿½ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½Pixelï¿½ï¿½ï¿½ï¿½p
     if (textureColor.a <= 0.5){
         discard;
     }
-    // texture‚Ìa’l‚ª0‚Ì‚Æ‚«‚ÉPiel‚ðŠü‹p
+    // textureï¿½ï¿½aï¿½lï¿½ï¿½0ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½Pielï¿½ï¿½ï¿½ï¿½p
     if (textureColor.a == 0.0){
         discard;
     }
-    // output.colo‚Ìa’l‚ª0‚Ì‚Æ‚«‚ÉPixel‚ðŠü‹p
+    // output.coloï¿½ï¿½aï¿½lï¿½ï¿½0ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½Pixelï¿½ï¿½ï¿½ï¿½p
     if (output.color.a == 0.0){
         discard;
     }
     
-    if (gMaterial.enableLighting != 0) { // Lighting‚·‚éê‡
+    if (gMaterial.enableLighting != 0) { // Lightingï¿½ï¿½ï¿½ï¿½ê‡
         // half lambert
         float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
         float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);

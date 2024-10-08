@@ -5,6 +5,7 @@
 #include "Logger.h"
 #include "DescriptorHeap.h"
 #include <array>
+#include "Float4.h"
 #include "SRVManager.h"
 #include <unordered_map>
 
@@ -30,6 +31,13 @@ public:
 
 	static const DirectX::TexMetadata& GetMetaData(uint32_t textureHandle);
 
+	static int CreateEmptyTexture(uint32_t width, uint32_t height, Float4 clearColor = {0.1f, 0.25f, 0.5f, 1.0f});
+
+	static ID3D12Resource* GetResource(int textureHandle);
+
+	// すでに存在するResourceにSRVを生成する
+	static uint32_t CreateSRV(ID3D12Resource* targetResource, DXGI_FORMAT format);
+
 	// メタデータの取得
 	const DirectX::TexMetadata& GetMetaData(const std::string& filePath) { return textureDatas[filePath].metadata; }
 	// SRVインデックスの取得
@@ -45,7 +53,8 @@ private:
 	// TextureデータをCPUで読む
 	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 	// DirectX12のTextureResourceを作る
-	static Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
+	static Microsoft::WRL::ComPtr<ID3D12Resource>
+	    CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata, bool isRenderTarget = false, Float4 clearColor = {0.1f, 0.25f, 0.5f, 1.0f});
 	// TextureResourceにデータを転送する
 	static void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
