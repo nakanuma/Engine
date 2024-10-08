@@ -2,7 +2,11 @@
 #include "PlayerState.h"
 
 #include "DirectXBase.h"
+#include "GlobalVariables.h"
+#ifdef _DEBUG
 #include "externals/imgui/imgui.h"
+#endif // _DEBUG
+
 
 void Player::Initialize(uint32_t uvCheckerGH)
 {
@@ -12,7 +16,7 @@ void Player::Initialize(uint32_t uvCheckerGH)
 ///===========================================================================================
 	bodyModelData_ = ModelManager::LoadModelFile("./resources/Models","monkey.obj",dxBase->GetDevice());
 	bodyModelData_.material.textureHandle = uvCheckerGH;
-	bodyObject_ = std::make_unique<Object3D>();	
+	bodyObject_ = std::make_unique<Object3D>();
 	bodyObject_->model_ = &bodyModelData_;
 
 ///===========================================================================================
@@ -29,6 +33,8 @@ void Player::Initialize(uint32_t uvCheckerGH)
 /// State
 ///===========================================================================================
 	TransitionState(new NeutralPlayerState(this));
+
+	handObject_->transform_.translate;
 }
 
 void Player::Update()

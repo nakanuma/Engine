@@ -23,6 +23,7 @@ private:
 
 	ModelManager::ModelData handModelData_;
 	std::unique_ptr<Object3D> handObject_;
+
 public:
 	void TransitionState(IPlayerState* state);
 

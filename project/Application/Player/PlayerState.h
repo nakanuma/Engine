@@ -7,11 +7,11 @@
 
 struct MoveKeys
 {
-	BYTE up    [2]  = {DIK_UP    , DIK_W};
-	BYTE down  [2]  = {DIK_DOWN  , DIK_S};
-	BYTE left  [2]  = {DIK_LEFT  , DIK_A};
-	BYTE right [2]  = {DIK_RIGHT , DIK_D};
-	BYTE attack     =  DIK_SPACE;
+	BYTE up[2] = {DIK_UP,DIK_W};
+	BYTE down[2] = {DIK_DOWN,DIK_S};
+	BYTE left[2] = {DIK_LEFT,DIK_A};
+	BYTE right[2] = {DIK_RIGHT,DIK_D};
+	BYTE attack = DIK_SPACE;
 };
 const MoveKeys moveKeys{};
 
@@ -44,8 +44,9 @@ public:
 	~NeutralPlayerState()override {}
 
 	void Initialize()override;
-	void Update()override;
+	void Update()    override;
 private:
+	Float3 defaultHandOffset_;
 };
 
 ///======================================================
@@ -67,7 +68,7 @@ private:
 	 // float beforeRotate_;
 	 // float afterRotate_;
 
-	float fullTime_;
+	float maxTime_;
 	float currentTime_;
 
 	float jumpHeight_;
@@ -86,10 +87,14 @@ public:
 	void Initialize()override;
 	void Update()override;
 private:
-	float fullTime_;
+	float maxTime_;
+	// 最低限の 硬直 時間
+	float minTime_;
+
 	float currentTime_;
 
 	Float3 movedHandOffset_;
+	const Float3& beforeHandOffset_;
 };
 
 ///======================================================
@@ -99,14 +104,23 @@ class AttackPlayerState
 	:public IPlayerState
 {
 public:
-	AttackPlayerState(Player* player):IPlayerState(player) {}
+	AttackPlayerState(Player* player,const Float3& beforeHand,float chargePercent):IPlayerState(player)
+	{
+		beforeHandOffset_ = beforeHand;
+		chargePercent_ = chargePercent;
+	}
 	~AttackPlayerState()override;
 
 	void Initialize()override;
 	void Update()override;
 private:
-	float fullTime_;
+	float chargePercent_;
+
+	float maxTime_;
 	float currentTime_;
+
+	Float3 beforeHandOffset_;
+	Float3 movedHandOffset_;
 };
 
 ///======================================================
@@ -125,7 +139,7 @@ private:
 	Float2 fromAddress_; // 移動前 の アドレス
 	Float2 forAddress_;  // 移動後 の アドレス
 
-	float fullTime_;
+	float maxTime_;
 	float currentTime_;
 
 	float jumpHeight_;

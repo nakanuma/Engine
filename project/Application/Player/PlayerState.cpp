@@ -12,7 +12,7 @@ const float blockSize = 1.0f;
 template <typename T>
 T Lerp(const float& t,const T& start,const T& end)
 {
-	return static_cast<T>(((1.0 - t) * static_cast<float>(start)) + (t * static_cast<float>(end)));
+	return static_cast<T>(((1.0f - t) * static_cast<float>(start)) + (t * static_cast<float>(end)));
 }
 
 Float2 Lerp(float t,const Float2& startPos,const Float2& endPos)
@@ -23,7 +23,14 @@ Float2 Lerp(float t,const Float2& startPos,const Float2& endPos)
 
 	return lerp;
 }
-
+Float3 Lerp(float t,const Float3& startPos,const Float3& endPos)
+{
+	Float3 lerp;
+	lerp.x = Lerp<float>(t,startPos.x,endPos.x);
+	lerp.y = Lerp<float>(t,startPos.y,endPos.y);
+	lerp.z = Lerp<float>(t,startPos.z,endPos.z);
+	return lerp;
+}
 float customEasing(float t)
 {
 	if(t < 0.4f)
@@ -60,29 +67,36 @@ float LerpShortAngle(float before,float after,float t)
 
 	return before + rotate * t;
 }
-
 //=====================================================
 /// Neutral 
 void NeutralPlayerState::Initialize()
 {
+	GlobalVariables::getInstance()->addValue("Game","Player_Neutral","handOffset",defaultHandOffset_);
 }
 
 void NeutralPlayerState::Update()
 {
-	Float2 moveVal {};
+	Float2 moveVal{};
 	for(int32_t i = 0; i < 2; i++)
 	{
 		moveVal += {
 			static_cast<float>(input_->PushKey(moveKeys.right[i]) - input_->PushKey(moveKeys.left[i])),
-			static_cast<float>(input_->PushKey(moveKeys.up[i]) - input_->PushKey(moveKeys.down[i]))
+			static_cast<float>(input_->PushKey(moveKeys.up[i])    - input_->PushKey(moveKeys.down[i]))
 		};
 	}
-	
+
 	if(moveVal.x != 0.0f || moveVal.y != 0.0f)
 	{
 		player_->TransitionState(new MovingPlayerState(player_,moveVal));
 		return;
 	}
+
+	if(input_->PushKey(moveKeys.attack))
+	{
+		player_->TransitionState(new ChargePlayerState(player_));
+		return;
+	}
+
 }
 //=====================================================
 
@@ -109,14 +123,14 @@ MovingPlayerState::MovingPlayerState(Player* player,Float2 moveVal):IPlayerState
 MovingPlayerState::~MovingPlayerState()
 {
 	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->DestroyItem("Game","Player_MovingState","fullTime");
+	variables->DestroyItem("Game","Player_MovingState","maxTime");
 	variables->DestroyItem("Game","Player_MovingState","jumpHeight");
 }
 
 void MovingPlayerState::Initialize()
 {
 	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->addValue("Game","Player_MovingState","fullTime",fullTime_);
+	variables->addValue("Game","Player_MovingState","maxTime",maxTime_);
 	variables->addValue("Game","Player_MovingState","jumpHeight",jumpHeight_);
 	currentTime_ = 0.0f;
 }
@@ -124,7 +138,7 @@ void MovingPlayerState::Initialize()
 void MovingPlayerState::Update()
 {
 	currentTime_ += DeltaTime::getInstance()->getDeltaTime();
-	if(currentTime_ >= fullTime_)
+	if(currentTime_ >= maxTime_)
 	{
 		player_->SetBodyTranslate(Float3(forAddress_.x,0.0f,forAddress_.y));
 
@@ -135,43 +149,75 @@ void MovingPlayerState::Update()
 		return;
 	}
 
-	float t = currentTime_ / fullTime_;
+	float t = currentTime_ / maxTime_;
 	Float2 currentXZ = Lerp(t,fromAddress_,forAddress_);
 	float currentY = Lerp<float>(customEasing(t),0.0f,jumpHeight_);
 
 	player_->SetBodyTranslate(Float3(currentXZ.x,currentY,currentXZ.y));
-	
+
 	//const Float3& currentRotate = player_->GetBodyRotate();
 	//player_->SetBodyRotate({currentRotate.x,LerpShortAngle(beforeRotate_,afterRotate_,t),currentRotate.z});
 }
 //=====================================================
 
-
 //=====================================================
 /// Charge 
-ChargePlayerState::ChargePlayerState(Player* player):IPlayerState(player)
+ChargePlayerState::ChargePlayerState(Player* player)
+	:IPlayerState(player),beforeHandOffset_(player->GetHandTranslate())
 {
-
 
 }
 ChargePlayerState::~ChargePlayerState()
 {
 	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->DestroyItem("Game","Player_ChargeState","fullTime");
+	variables->DestroyItem("Game","Player_ChargeState","maxTime");
+	variables->DestroyItem("Game","Player_ChargeState","minTime");
 	variables->DestroyItem("Game","Player_ChargeState","movedHandOffset_");
 }
 
 void ChargePlayerState::Initialize()
 {
 	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->addValue("Game","Player_ChargeState","fullTime",fullTime_);
+	variables->addValue("Game","Player_ChargeState","maxTime",maxTime_);
+	variables->addValue("Game","Player_ChargeState","minTime",minTime_);
 	variables->addValue("Game","Player_ChargeState","movedHandOffset_",movedHandOffset_);
+	currentTime_ = 0.0f;
 }
 
 void ChargePlayerState::Update()
 {
+	float t = currentTime_ / maxTime_;
+
+	if(currentTime_ >= minTime_)
+	{
+		if(!input_->PushKey(moveKeys.attack))
+		{
+			//player_->TransitionState(new AttackPlayerState(player_,t));
+			player_->TransitionState(new NeutralPlayerState(player_));
+			return;
+		}
+	}
+
+	player_->SetHandTranslate(Lerp(t,beforeHandOffset_,movedHandOffset_));
+}
+//=====================================================
+
+AttackPlayerState::~AttackPlayerState()
+{
 }
 
+//=====================================================
+/// Attack
+void AttackPlayerState::Initialize()
+{
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	variables->addValue("Game","Player_ChargeState","maxTime",maxTime_);
+	variables->addValue("Game","Player_ChargeState","movedHandOffset_",movedHandOffset_);
+}
+
+void AttackPlayerState::Update()
+{
+}
 //=====================================================
 
 //=====================================================
@@ -185,3 +231,4 @@ void KnockBackPlayerState::Update()
 }
 
 //=====================================================
+
