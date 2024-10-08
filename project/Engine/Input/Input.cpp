@@ -22,7 +22,6 @@ void Input::Initialize(Window* window)
 	assert(SUCCEEDED(result));
 
 	// キーボードデバイスの生成
-	/*IDirectInputDevice8* keyboard = nullptr;*/
 	result = directInput_->CreateDevice(GUID_SysKeyboard, &keyboard_, NULL);
 	assert(SUCCEEDED(result));
 
@@ -32,6 +31,20 @@ void Input::Initialize(Window* window)
 
 	// 排他制御レベルのセット
 	result = keyboard_->SetCooperativeLevel(
+		window->GetHandle(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+	assert(SUCCEEDED(result));
+
+
+	// マウスデバイスの生成
+	result = directInput_->CreateDevice(GUID_SysMouse, &mouse_, NULL);
+	assert(SUCCEEDED(result));
+
+	// 入力データ形式のセット
+	result = mouse_->SetDataFormat(&c_dfDIMouse);
+	assert(SUCCEEDED(result));
+
+	// 排他制御レベルのセット
+	result = mouse_->SetCooperativeLevel(
 		window->GetHandle(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	assert(SUCCEEDED(result));
 }
@@ -47,6 +60,23 @@ void Input::Update()
 	result = keyboard_->Acquire();
 	// 全キーの入力状態を取得する
 	result = keyboard_->GetDeviceState(sizeof(key_), key_);
+
+
+	// マウス情報の取得開始
+	result = mouse_->Acquire();
+
+	// マウスの状態を更新
+	DIMOUSESTATE mouseState;
+	mouse_->GetDeviceState(sizeof(DIMOUSESTATE), &mouseState);
+
+	// マウス位置の更新
+	GetCursorPos(&mousePosition_);
+	ScreenToClient(window->GetHandle(), &mousePosition_);
+
+	// 前回のマウスボタン状態を保存
+	memcpy(mouseButtonsPre_, mouseButtons_, sizeof(mouseButtonsPre_));
+	// マウスボタンの更新
+	memcpy(mouseButtons_, mouseState.rgbButtons, sizeof(mouseButtons_));
 }
 
 bool Input::PushKey(BYTE keyNumber)
@@ -77,4 +107,27 @@ bool Input::ReleaseKey(BYTE keyNumber)
 	}
 	// そうでなければfalseを返す
 	return false;
+}
+
+bool Input::IsPressMouse(int32_t mouseNumber) const { 
+	// ボタン番号の範囲チェック
+	if (mouseNumber < 0 || mouseNumber > 3) {
+		return false;
+	}
+
+	return (mouseButtons_[mouseNumber] & 0x80) != 0;
+}
+
+bool Input::IsTriggerMouse(int32_t mouseNumber) const { 
+	// ボタン番号の範囲チェック
+	if (mouseNumber < 0 || mouseNumber > 3) {
+		return false;
+	}
+
+	// 前フレームで押されていないかつ、現在押されている場合のみtrueを返す
+	return !(mouseButtonsPre_[mouseNumber] & 0x80) && (mouseButtons_[mouseNumber] & 0x80);
+}
+
+const POINT& Input::GetMousePosition() const { 
+	return mousePosition_; 
 }
