@@ -9,6 +9,9 @@ Camera::Camera(Float3 argTranslate, Float3 argRotate, float argFov)
 	transform.rotate = argRotate;
 	transform.scale = { 1.0f, 1.0f, 1.0 };
 	fov = argFov;
+
+	// CBにカメラのポジションをセット
+	cameraCB_.data_->position = argTranslate;
 }
 
 void Camera::TransferConstantBuffer()

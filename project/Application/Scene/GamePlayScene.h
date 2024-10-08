@@ -9,6 +9,7 @@
 #include "SoundManager.h"
 #include "Input.h"
 #include "Application/MapChip.h"
+#include "LightManager.h"
 
 #include "Application/Player/Player.h"
 
@@ -35,6 +36,7 @@ private:
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
 	Input* input = nullptr;
+	LightManager* lightManager = nullptr;
 
 	///
 	/// ↓ ゲームシーン用
