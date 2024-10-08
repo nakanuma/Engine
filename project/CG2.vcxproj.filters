@@ -210,7 +210,7 @@
     <ClCompile Include="Engine\DirectX\RTVManager.cpp">
       <Filter>Engine\DirectX\Util</Filter>
     </ClCompile>
-    <ClCompile Include="LightManager.cpp">
+    <ClCompile Include="Engine\3D\LightManager.cpp">
       <Filter>Engine\Object3D</Filter>
     </ClCompile>
   </ItemGroup>
@@ -356,7 +356,7 @@
     <ClInclude Include="Engine\DirectX\RTVManager.h">
       <Filter>Engine\DirectX\Util</Filter>
     </ClInclude>
-    <ClInclude Include="LightManager.h">
+    <ClInclude Include="Engine\3D\LightManager.h">
       <Filter>Engine\Object3D</Filter>
     </ClInclude>
   </ItemGroup>
