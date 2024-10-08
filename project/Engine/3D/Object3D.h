@@ -33,6 +33,9 @@ public:
 	// マトリックス情報の更新
 	void UpdateMatrix();
 
+	// 親オブジェクトを設定
+	void SetParent(Object3D* parent) { parent_ = parent; }
+
 	// 描画（モデル内のテクスチャを参照 / テクスチャを指定して描画）
 	void Draw();
 
@@ -53,5 +56,9 @@ public:
 
 	// トランスフォーム情報
 	Transform transform_;
+
+private:
+	// 親オブジェクトへのポインタ
+	Object3D* parent_ = nullptr;
 };
 
