@@ -13,18 +13,13 @@ public:
 		int32_t enableLighting;
 		float padding[3];
 		Matrix uvTransform;
+		float shininess;
 	};
 
 	struct TransformationMatrix {
 		Matrix WVP;
 		Matrix World;
 		Matrix WorldInverseTranspose;
-	};
-
-	struct DirectionalLight {
-		Float4 color; // ライトの色
-		Float3 direction; // ライトの向き
-		float intensity; // 輝度
 	};
 
 	struct ParticleForGPU {
@@ -58,8 +53,5 @@ public:
 
 	// トランスフォーム情報
 	Transform transform_;
-
-	// 平行光源の定数バッファ
-	ConstBuffer<DirectionalLight> directionalLightCB_;
 };
 
