@@ -45,10 +45,12 @@ void GamePlayScene::Initialize()
 	objectSphere_ = std::make_unique<Object3D>();
 	objectSphere_->model_ = &modelSphere_;
 	objectSphere_->transform_.translate = {0.0f, 4.0f, 0.0f};
+	lightManager->spotLightsCB_.data_->spotLights[0].isActive = true; // spotLights[0]と同期させるため有効に
 
 	objectSphere2_ = std::make_unique<Object3D>();
 	objectSphere2_->model_ = &modelSphere_;
 	objectSphere2_->transform_.translate = {-4.0f, 4.0f, 4.0f};
+	lightManager->spotLightsCB_.data_->spotLights[1].isActive = true; // spotLights[1]と同期させるため有効に
 
 
 	// 箱（地面）モデルとオブジェクトの生成
@@ -67,10 +69,11 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update() { 
 	objectSphere_->UpdateMatrix(); 
-	// sphereとlight[0]の位置を同期
+	// sphereとlight[0]の座標を同期
 	lightManager->spotLightsCB_.data_->spotLights[0].position = objectSphere_->transform_.translate;
 
 	objectSphere2_->UpdateMatrix();
+	// sphere2とlight[1]の座標を同期
 	lightManager->spotLightsCB_.data_->spotLights[1].position = objectSphere2_->transform_.translate;
 
 	objectCube_->UpdateMatrix();

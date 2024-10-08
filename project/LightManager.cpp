@@ -39,9 +39,9 @@ void LightManager::Initialize()
 	}
 
 	// 0番目のスポットライトだけ有効にする
-	spotLightsCB_.data_->spotLights[0].isActive = true;
+	/*spotLightsCB_.data_->spotLights[0].isActive = true;
 
-	spotLightsCB_.data_->spotLights[1].isActive = true;
+	spotLightsCB_.data_->spotLights[1].isActive = true;*/
 }
 
 void LightManager::TransferContantBuffer()
