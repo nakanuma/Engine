@@ -14,7 +14,7 @@
 #include <json.hpp>
 
 using json = nlohmann::json;
-const std::string kDirectoryPath = "./Resources/GlobalVariables/";
+const std::string kDirectoryPath = "./resources/GlobalVariables/";
 
 GlobalVariables* GlobalVariables::getInstance(){
 	static GlobalVariables instance;
