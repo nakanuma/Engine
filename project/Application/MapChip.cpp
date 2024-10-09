@@ -1,98 +1,112 @@
 #include "MapChip.h"
 
+#include <algorithm>
+
+#include "DeltaTime/DeltaTime.h"
 
 namespace
 {
-
-	std::map<std::string, MapChipType> mapChipTable = {
-	{"0", MapChipType::kBlank},
-	{"1", MapChipType::kBlock},
+	std::map<std::string,MapChipType> mapChipTable = {
+		{"0",MapChipType::kBlank},
+		{"1",MapChipType::kBlock},
 	};
 }
 
+const float kGravity = 9.8f;
+
 void MapChipField::Initialize(ModelManager::ModelData model)
 {
-
 	model_ = model;
 
 	// マップの初期化
 	mapWorld_.resize(kNumBlockVirtical);
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+	for(uint32_t i = 0; i < kNumBlockVirtical; ++i)
+	{
 		mapWorld_[i].resize(kNumBlockHorizontal);
 	}
 
 	// ブロックの生成
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i)
+	for(uint32_t i = 0; i < kNumBlockVirtical; ++i)
 	{
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) 
+		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			if (GetMapChipTypeByIndex(j, i) == MapChipType::kBlock)
+			if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
 			{
 				// MapObjectの生成
-				auto mapObject = std::make_unique<MapObject>();
-				mapObject->worldTransformBlocks_ = std::make_unique<Object3D>();
-				mapObject->worldTransformBlocks_->model_ = &model_;
-				mapObject->worldTransformBlocks_->transform_.translate = GetMapChipPositionByIndex(j, i);
-				mapObject->collAABB_.max = Add(mapObject->worldTransformBlocks_->transform_.translate, rad_);
-				mapObject->collAABB_.min = Subtract(mapObject->worldTransformBlocks_->transform_.translate, rad_);
+				auto mapObject = std::make_unique<MapObject>(this,IndexSet(i,j));
+				mapObject->Init();
 
 				// マップワールドに格納
 				mapWorld_[i][j] = std::move(mapObject);
 			}
 		}
 	}
-
 }
 
 void MapChipField::Update()
 {
-	
+	// 波
+	for(auto& worldTransformBlockLine : mapWorld_)
+	{
+		for(auto& worldTransformBlock : worldTransformBlockLine)
+		{
+			if(!worldTransformBlock)
+			{
+				continue;
+			}
+// 波の Update があったら
+			if(!worldTransformBlock->currentWaveUpdate_)
+			{
+				continue;
+			}
+			worldTransformBlock->currentWaveUpdate_();
+		}
+	}
+
 	// ブロックの更新
 	int i = 0;
-	for (auto& worldTransformBlockLine : mapWorld_) 
+	for(auto& worldTransformBlockLine : mapWorld_)
 	{
 		int j = 0;
-		for (auto& worldTransformBlock : worldTransformBlockLine)
+		for(auto& worldTransformBlock : worldTransformBlockLine)
 		{
-			if (!worldTransformBlock)
+			if(!worldTransformBlock)
+			{
 				continue;
-			// AABBのmaxとminを設定
-			worldTransformBlock->collAABB_.max = Add(worldTransformBlock->worldTransformBlocks_->transform_.translate, rad_);
-			worldTransformBlock->collAABB_.min = Subtract(worldTransformBlock->worldTransformBlocks_->transform_.translate, rad_);
-			
-			worldTransformBlock->worldTransformBlocks_->UpdateMatrix();
+			}
+			worldTransformBlock->Update();
 			j++;
 		}
 		i++;
 	}
-	
 }
 
 void MapChipField::Draw()
 {
 	// ブロック描画
-	for (auto& worldTransformBlockLine : mapWorld_) {
-		for (auto& worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock)
+	for(auto& worldTransformBlockLine : mapWorld_)
+	{
+		for(auto& worldTransformBlock : worldTransformBlockLine)
+		{
+			if(!worldTransformBlock)
 				continue;
-			worldTransformBlock->worldTransformBlocks_ ->Draw();
+			worldTransformBlock->Draw();
 		}
 	}
 }
 
-void MapChipField::ResetMapChipData() 
+void MapChipField::ResetMapChipData()
 {
-
 	// マップチップデータをリセット
 	mapChipData_.data.clear();
 	mapChipData_.data.resize(kNumBlockVirtical);
-	for (std::vector<MapChipType>& mapChipDataLine : mapChipData_.data) 
+	for(std::vector<MapChipType>& mapChipDataLine : mapChipData_.data)
 	{
 		mapChipDataLine.resize(kNumBlockHorizontal);
 	}
 }
 //読み込み
-void MapChipField::LoadMapChipCsv(const std::string& filePath) 
+void MapChipField::LoadMapChipCsv(const std::string& filePath)
 {
 
 	// マップチップデータをリセット
@@ -110,43 +124,37 @@ void MapChipField::LoadMapChipCsv(const std::string& filePath)
 	//ファイルを閉じる
 	file.close();
 
-
 	// CSVからマップチップデータを読み込む
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) 
+	for(uint32_t i = 0; i < kNumBlockVirtical; ++i)
 	{
-
 		std::string line;
-		getline(mapChipCsv, line);
+		getline(mapChipCsv,line);
 
 		// 1行分の文字列をストリームに変換して解析しやすくする
 		std::istringstream line_stream(line);
 
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) 
+		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
 
 			std::string word;
-			getline(line_stream, word, ',');
+			getline(line_stream,word,',');
 
-			if (mapChipTable.contains(word)) 
+			if(mapChipTable.contains(word))
 			{
 				mapChipData_.data[i][j] = mapChipTable[word];
 			}
 		}
-
 	}
-
 }
 
 //マップチップ種別の取得
-MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex)
+MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex,uint32_t zIndex)
 {
-
-
-	if (xIndex < 0 || kNumBlockHorizontal - 1 < xIndex)
+	if(xIndex < 0 || kNumBlockHorizontal - 1 < xIndex)
 	{
 		return MapChipType::kBlank;
 	}
-	if (zIndex < 0 || kNumBlockVirtical - 1 < zIndex)
+	if(zIndex < 0 || kNumBlockVirtical - 1 < zIndex)
 	{
 		return MapChipType::kBlank;
 	}
@@ -156,15 +164,13 @@ MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex
 
 //マップチップ座標の取得
 //縦横の指定してその位置のマップチップワールド座標を取得する
-Float3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex)
+Float3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex,uint32_t yIndex)
 {
-
-	return Float3(kBlockWidth * xIndex, 0, kBlockHeight * (kNumBlockVirtical - 1 - yIndex));
-
+	return Float3(kBlockWidth * xIndex,0,kBlockHeight * (kNumBlockVirtical - 1 - yIndex));
 }
 
 //マップチップ番号を計算
-MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Float3& position) 
+MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Float3& position)
 {
 	MapChipField::IndexSet indexSet = {};
 	indexSet.xIndex = uint32_t((position.x + kBlockWidth / 2) / kBlockWidth);
@@ -173,75 +179,200 @@ MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Float3& 
 	return indexSet;
 }
 
-bool MapChipField::IsMapAABB(AABB& charcter, IndexSet& index) { return IsCollision(charcter, mapWorld_[index.xIndex][index.zIndex]->collAABB_); }
+bool MapChipField::IsMapAABB(AABB& charcter,IndexSet& index) { return IsCollision(charcter,mapWorld_[index.xIndex][index.zIndex]->GetCollider()); }
 
-bool MapChipField::IsMapAABB(AABB& charcter) 
+bool MapChipField::IsMapAABB(AABB& charcter)
 {
-
-	for (auto& worldTransformBlockLine : mapWorld_) 
+	for(auto& worldTransformBlockLine : mapWorld_)
 	{
-		for (auto& worldTransformBlock : worldTransformBlockLine) 
+		for(auto& worldTransformBlock : worldTransformBlockLine)
 		{
-			if (!worldTransformBlock)
+			if(!worldTransformBlock)
 				continue;
-			if (IsCollision(charcter, worldTransformBlock->collAABB_))
+			if(IsCollision(charcter,worldTransformBlock->GetCollider()))
 			{
 				return true;
 			}
 		}
 	}
-
 	return false;
 }
 
-void MapChipField::IsMapY(float& posY, float radY, IndexSet& index) 
+void MapChipField::IsMapY(float& posY,float radY,IndexSet& index)
 {
-
-	if (mapWorld_[index.xIndex][index.zIndex]->worldTransformBlocks_->transform_.translate.y >= posY)
+	if(mapWorld_[index.xIndex][index.zIndex]->GetTranslate().y >= posY)
 	{
-		posY = mapWorld_[index.xIndex][index.zIndex]->worldTransformBlocks_->transform_.translate.y + radY + rad_.y;
+		posY = mapWorld_[index.xIndex][index.zIndex]->GetTranslate().y + radY + rad_.y;
 	}
 }
 
 
-void MapChipField::IsMapY(AABB& charcter, float& posY, float radY) 
+void MapChipField::IsMapY(AABB& charcter,float& posY,float radY)
 {
-
-	for (auto& worldTransformBlockLine : mapWorld_)
+	for(auto& worldTransformBlockLine : mapWorld_)
 	{
-		for (auto& worldTransformBlock : worldTransformBlockLine) 
+		for(auto& worldTransformBlock : worldTransformBlockLine)
 		{
-			if (!worldTransformBlock)
+			if(!worldTransformBlock)
 				continue;
-			if (IsCollision(charcter, worldTransformBlock->collAABB_)) 
+			if(IsCollision(charcter,worldTransformBlock->GetCollider()))
 			{
-				if (worldTransformBlock->worldTransformBlocks_->transform_.translate.y >= posY) 
+				if(worldTransformBlock->GetTranslate().y >= posY)
 				{
-					posY = worldTransformBlock->worldTransformBlocks_->transform_.translate.y + radY + rad_.y;
+					posY = worldTransformBlock->GetTranslate().y + radY + rad_.y;
 				}
 			}
 		}
 	}
-
 }
 
-void MapChipField::IsMapY2(AABB& charcter, float& posY, float radY) {
-
-
-	for (auto& worldTransformBlockLine : mapWorld_) 
+void MapChipField::IsMapY2(AABB& charcter,float& posY,float radY)
+{
+	for(auto& worldTransformBlockLine : mapWorld_)
 	{
-		for (auto& worldTransformBlock : worldTransformBlockLine) 
+		for(auto& worldTransformBlock : worldTransformBlockLine)
 		{
-			if (!worldTransformBlock)
+			if(!worldTransformBlock)
 				continue;
-			if (IsCollision(charcter, worldTransformBlock->collAABB_)) 
+			if(IsCollision(charcter,worldTransformBlock->GetCollider()))
 			{
-
-
-				posY = worldTransformBlock->worldTransformBlocks_->transform_.translate.y + radY + rad_.y;
-
+				posY = worldTransformBlock->GetTranslate().y + radY + rad_.y;
 			}
 		}
 	}
 }
 
+void MapChipField::MapObject::Init()
+{
+	worldTransformBlocks_ = std::make_unique<Object3D>();
+	worldTransformBlocks_->model_ = &host_->model_;
+	worldTransformBlocks_->transform_.translate = host_->GetMapChipPositionByIndex(address_.xIndex,address_.zIndex);
+	collAABB_.max = Add(GetTranslate(),host_->rad_);
+	collAABB_.min = Subtract(GetTranslate(),host_->rad_);
+}
+
+void MapChipField::MapObject::Update()
+{
+	// AABBのmaxとminを設定
+	collAABB_.max = Add(worldTransformBlocks_->transform_.translate,host_->rad_);
+	collAABB_.min = Subtract(worldTransformBlocks_->transform_.translate,host_->rad_);
+
+	worldTransformBlocks_->UpdateMatrix();
+}
+
+void MapChipField::MapObject::Draw()
+{
+	worldTransformBlocks_->Draw();
+}
+
+void MapChipField::MapObject::StartWaveOrigin(float amplitude)
+{
+	for(int row = -1; row < 2; row++)
+	{
+		int newRow = address_.xIndex + row;
+		// 行が範囲外なら早期にスキップ
+		if(newRow < 0 || newRow >= host_->mapWorld_.size())
+		{
+			continue;
+		}
+		for(int col = -1; col < 2; col++)
+		{
+			// 自分自身をスキップ
+			if(row == 0 && col == 0)
+			{
+				continue;
+			}
+
+			// 範囲チェック: i + row, j + col がマップの範囲内であることを確認
+			int newCol = address_.zIndex + col;
+
+			// 列が範囲外なら早期にスキップ
+			if(newCol < 0 || newCol >= host_->mapWorld_[newRow].size())
+			{
+				continue;
+			}
+
+			host_->mapWorld_[newRow][newCol]->StartWave(
+				{col,row},
+				amplitude * 0.87f
+			);
+		};
+	}
+}
+
+void MapChipField::MapObject::StartWave(Int2 waveDirection,float amplitude)
+{
+	currentAmplitude_ = amplitude;
+
+	if(currentAmplitude_ <= 1.0f && waveDirection == Int2(0,0))
+	{
+		currentAmplitude_ = 0.0f;
+		return;
+	}
+
+	// 与える 振幅
+	int row = address_.zIndex;
+	int col = address_.xIndex + waveDirection.x;
+
+	// 範囲チェック (行と列がそれぞれ有効な範囲に収まっているか)
+	if(row >= 0 && row < host_->mapWorld_.size() &&
+	   col >= 0 && col < host_->mapWorld_[row].size())
+	{
+		if(host_->mapWorld_[row][col]->currentWaveUpdate_ == nullptr)
+		{
+			host_->mapWorld_[row][col]->currentWaveUpdate_ = [this,row,col,waveDirection,amplitude]()
+			{
+				host_->mapWorld_[row][col]->StartWave({waveDirection.x,0},amplitude * 0.89f);
+			};
+		}
+	}
+
+	row = address_.zIndex + waveDirection.y;
+	col = address_.xIndex;
+
+	// 範囲チェック
+	if(row >= 0 && row < host_->mapWorld_.size() &&
+	   col >= 0 && col < host_->mapWorld_[row].size())
+	{
+		if(host_->mapWorld_[row][col]->currentWaveUpdate_ == nullptr)
+		{
+			host_->mapWorld_[row][col]->currentWaveUpdate_ = [this,row,col,waveDirection,amplitude]()
+			{
+				host_->mapWorld_[row][col]->StartWave({0,waveDirection.y},amplitude * 0.89f);
+			};
+		}
+	}
+
+	row = address_.zIndex + waveDirection.y;
+	col = address_.xIndex + waveDirection.x;
+
+	// 範囲チェック
+	if(row >= 0 && row < host_->mapWorld_.size() &&
+	   col >= 0 && col < host_->mapWorld_[row].size())
+	{
+		if(host_->mapWorld_[row][col]->currentWaveUpdate_ == nullptr)
+		{
+			host_->mapWorld_[row][col]->currentWaveUpdate_ = [this,row,col,waveDirection,amplitude]()
+			{
+				host_->mapWorld_[row][col]->StartWave({waveDirection.x,waveDirection.y},amplitude * 0.89f);
+			};
+		}
+	}
+
+	currentWaveUpdate_ = std::bind(&MapChipField::MapObject::Wave,this);
+}
+
+void MapChipField::MapObject::Wave()
+{
+	currentAmplitude_ -= kGravity * DeltaTime::getInstance()->getDeltaTime();
+
+	worldTransformBlocks_->transform_.translate.y += currentAmplitude_;
+
+	if(GetTranslate().y <= 0.01f)
+	{
+		currentAmplitude_ = 0.0f;
+		currentWaveUpdate_ = nullptr;
+		worldTransformBlocks_->transform_.translate.y = 0.0f;
+		return;
+	}
+}
