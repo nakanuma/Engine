@@ -283,7 +283,6 @@ void MapChipField::MapObject::StartWaveOrigin(float amplitude)
 				continue;
 			}
 
-			// 範囲チェック: i + row, j + col がマップの範囲内であることを確認
 			int newCol = address_.zIndex + col;
 
 			// 列が範囲外なら早期にスキップ
