@@ -59,7 +59,6 @@ private:
 	// 複数並べるために配列にする(マップチップ)
 	std::vector<std::vector<std::unique_ptr<Object3D>>> objectBlocks_;
 
-
 	std::unique_ptr<Player> player_;
 
 	// 衝突マネージャ
