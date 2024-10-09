@@ -12,6 +12,7 @@
 #include "LightManager.h"
 
 #include "Application/Player/Player.h"
+#include "Application/Collider/CollisionManager.h"
 
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
@@ -30,6 +31,9 @@ public:
 	void Draw() override;
 
 	void GenerateBloks();
+
+	/// 衝突判定と応答
+	void CheckAllCollisions();
 
 private:
 	std::unique_ptr<Camera> camera = nullptr;
@@ -57,5 +61,8 @@ private:
 
 
 	std::unique_ptr<Player> player_;
+
+	// 衝突マネージャ
+	std::unique_ptr<CollisionManager> collisionManager_;
 };
 

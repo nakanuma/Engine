@@ -79,3 +79,18 @@ static bool IsCollision(const AABB& aabb1, const AABB& aabb2) {
 
     return false;
 }
+
+static float Length(const Float3& v) {
+    float result;
+
+    result = sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+
+    return result;
+};
+static float Length(const float& v) {
+    float result;
+
+    result = sqrtf((v * v));
+
+    return result;
+};

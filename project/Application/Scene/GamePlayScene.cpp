@@ -173,3 +173,14 @@ void GamePlayScene::GenerateBloks()
 		}
 	}
 }
+
+void GamePlayScene::CheckAllCollisions()
+{
+	// 衝突マネージャのリセット
+	collisionManager_->Reset();
+	// コライダーをリストに登録
+	//collisionManager_->AddCollider();
+
+	// 衝突判定
+	collisionManager_->CheckAllCollisions();
+}
