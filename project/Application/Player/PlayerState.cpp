@@ -82,10 +82,10 @@ void NeutralPlayerState::Update()
 				static_cast<float>(input_->PushKey(moveKeys.up[i]) - input_->PushKey(moveKeys.down[i]))
 		};
 	}
-
+	moveVal = Float2::Normalize(moveVal);
 	Float3 bodyTranslate = player_->GetBodyTranslate() + (Float3(moveVal.x,0.0f,moveVal.y) * speed_) * DeltaTime::getInstance()->getDeltaTime();
 	player_->SetBodyTranslate(bodyTranslate);
-	if(moveVal.x != 0.0f && moveVal.y != 0.0f)
+	if(moveVal.x != 0.0f || moveVal.y != 0.0f)
 	{
 		player_->SetBodyRotate({0.0f,atan2(moveVal.x,moveVal.y),0.0f});
 	}
@@ -112,6 +112,7 @@ ChargePlayerState::~ChargePlayerState()
 
 void ChargePlayerState::Initialize()
 {
+
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->addValue("Game","Player_ChargeState","maxTime",maxTime_);
 	variables->addValue("Game","Player_ChargeState","minTime",minTime_);
@@ -148,14 +149,18 @@ void ChargePlayerState::Update()
 	{
 		moveVal += {
 			static_cast<float>(input_->PushKey(moveKeys.right[i]) - input_->PushKey(moveKeys.left[i])),
-				static_cast<float>(input_->PushKey(moveKeys.up[i]) - input_->PushKey(moveKeys.down[i]))
+			static_cast<float>(input_->PushKey(moveKeys.up[i]) - input_->PushKey(moveKeys.down[i]))
 		};
 	}
+	moveVal = Float2::Normalize(moveVal);
 
 	Float3 playerRotate = player_->GetBodyRotate();
-	playerRotate.y = atan2(moveVal.x,moveVal.y);
-	player_->SetBodyRotate(playerRotate);
-
+	if(moveVal.x != 0.0f || moveVal.y != 0.0f)
+	{
+		playerRotate.y = atan2(moveVal.x,moveVal.y);
+		player_->SetBodyRotate(playerRotate);
+	}
+	
 	Float3 currentHandOffset = TransformMatrix(Lerp(t,beforeHandOffset_,movedHandOffset_),Matrix::RotationY(playerRotate.y));
 	// 手の位置更新
 	player_->SetHandTranslate(player_->GetBodyTranslate() + currentHandOffset);
