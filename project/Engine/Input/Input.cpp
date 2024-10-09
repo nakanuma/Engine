@@ -40,7 +40,7 @@ void Input::Initialize(Window* window)
 	assert(SUCCEEDED(result));
 
 	// 入力データ形式のセット
-	result = mouse_->SetDataFormat(&c_dfDIMouse);
+	result = mouse_->SetDataFormat(&c_dfDIMouse2);
 	assert(SUCCEEDED(result));
 
 	// 排他制御レベルのセット
@@ -65,18 +65,15 @@ void Input::Update()
 	// マウス情報の取得開始
 	result = mouse_->Acquire();
 
+	 // 前回のマウス状態を保存
+	mouseStatePre_ = mouseState_;
+
 	// マウスの状態を更新
-	DIMOUSESTATE mouseState;
-	mouse_->GetDeviceState(sizeof(DIMOUSESTATE), &mouseState);
+	mouse_->GetDeviceState(sizeof(DIMOUSESTATE2), &mouseState_);
 
 	// マウス位置の更新
 	GetCursorPos(&mousePosition_);
 	ScreenToClient(window->GetHandle(), &mousePosition_);
-
-	// 前回のマウスボタン状態を保存
-	memcpy(mouseButtonsPre_, mouseButtons_, sizeof(mouseButtonsPre_));
-	// マウスボタンの更新
-	memcpy(mouseButtons_, mouseState.rgbButtons, sizeof(mouseButtons_));
 }
 
 bool Input::PushKey(BYTE keyNumber)
@@ -115,7 +112,7 @@ bool Input::IsPressMouse(int32_t mouseNumber) const {
 		return false;
 	}
 
-	return (mouseButtons_[mouseNumber] & 0x80) != 0;
+	return (mouseState_.rgbButtons[mouseNumber] & 0x80) != 0;
 }
 
 bool Input::IsTriggerMouse(int32_t mouseNumber) const { 
@@ -125,7 +122,11 @@ bool Input::IsTriggerMouse(int32_t mouseNumber) const {
 	}
 
 	// 前フレームで押されていないかつ、現在押されている場合のみtrueを返す
-	return !(mouseButtonsPre_[mouseNumber] & 0x80) && (mouseButtons_[mouseNumber] & 0x80);
+	return !(mouseStatePre_.rgbButtons[mouseNumber] & 0x80) && (mouseState_.rgbButtons[mouseNumber] & 0x80);
+}
+
+int32_t Input::GetWheel() const { 
+	return mouseState_.lZ; 
 }
 
 const POINT& Input::GetMousePosition() const { 
