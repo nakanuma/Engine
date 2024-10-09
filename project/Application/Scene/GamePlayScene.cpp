@@ -70,6 +70,11 @@ void GamePlayScene::Initialize()
 
 	player_ = std::make_unique<Player>();
 	player_->Initialize(uvCheckerGH);
+
+
+	// 衝突マネージャの生成
+	collisionManager_ = std::make_unique<CollisionManager>();
+	collisionManager_->Initialize();
 }
 
 void GamePlayScene::Finalize()
@@ -83,6 +88,11 @@ void GamePlayScene::Update() {
 	mapChip_->Update();
 
 	object_->UpdateMatrix();
+
+	CheckAllCollisions();
+
+	// デバック表示用にワールドトランスフォームを更新
+	collisionManager_->UpdateWorldTransform();
 }
 
 void GamePlayScene::Draw()
@@ -113,6 +123,7 @@ void GamePlayScene::Draw()
 	// マップチップ
 	mapChip_->Draw();
 
+	collisionManager_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
