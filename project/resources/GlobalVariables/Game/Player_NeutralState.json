@@ -1,5 +1,10 @@
 {
     "Player_NeutralState": {
+        "defaultHandOffset": [
+            0.0,
+            3.299999952316284,
+            0.0
+        ],
         "speed_": 2.9000000953674316
     }
 }

@@ -1,0 +1,11 @@
+{
+    "Player_ChargeState": {
+        "maxTime": 1.5,
+        "minTime": 0.5,
+        "movedHandOffset_": [
+            0.0,
+            8.600000381469727,
+            3.0
+        ]
+    }
+}

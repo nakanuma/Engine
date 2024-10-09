@@ -36,8 +36,7 @@ void Player::Initialize(uint32_t uvCheckerGH)
 ///===========================================================================================
 /// GlobalVariables
 ///===========================================================================================
-	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->addValue("Game","Player_Default","defaultHandOffset",defaultHandOffset_);
+	
 
 ///===========================================================================================
 /// State
@@ -49,8 +48,6 @@ void Player::Update()
 {
 	currentState_->Update();
 	bodyObject_->UpdateMatrix();
-
-	handObject_->transform_.translate = defaultHandOffset_ + bodyObject_->transform_.translate;
 	handObject_->UpdateMatrix();
 }
 

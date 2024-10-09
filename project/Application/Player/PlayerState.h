@@ -55,6 +55,7 @@ public:
 	void Initialize()override;
 	void Update()    override;
 private:
+	Float3 defaultHandOffset_;
 	float speed_;
 };
 
@@ -65,7 +66,7 @@ class ChargePlayerState
 	:public IPlayerState
 {
 public:
-	ChargePlayerState(Player* player);
+	ChargePlayerState(Player* player,const Float3& beforeHandOffset);
 	~ChargePlayerState()override;
 
 	void Initialize()override;
@@ -78,7 +79,7 @@ private:
 	float currentTime_;
 
 	Float3 movedHandOffset_;
-	const Float3& beforeHandOffset_;
+	Float3 beforeHandOffset_;
 };
 
 ///======================================================
@@ -88,9 +89,8 @@ class AttackPlayerState
 	:public IPlayerState
 {
 public:
-	AttackPlayerState(Player* player,const Float3& beforeHand,float chargePercent):IPlayerState(player)
+	AttackPlayerState(Player* player,float chargePercent):IPlayerState(player)
 	{
-		beforeHandOffset_ = beforeHand;
 		chargePercent_ = chargePercent;
 	}
 	~AttackPlayerState()override;
@@ -102,9 +102,13 @@ private:
 
 	float maxTime_;
 	float currentTime_;
+	
+	float maxSpeed_;
+	float accel_;
 
-	Float3 beforeHandOffset_;
-	Float3 movedHandOffset_;
+	// chargePercent で 決まった Max Speed
+	float chargedMaxSpeed_;
+	float speed_;
 };
 
 ///======================================================
