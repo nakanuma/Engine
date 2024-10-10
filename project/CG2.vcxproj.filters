@@ -63,8 +63,6 @@
     <ClCompile Include="Application\Scene\TitleScene.cpp" />
     <ClCompile Include="Engine\DirectX\RTVManager.cpp" />
     <ClCompile Include="Application\Collider\Collider.cpp" />
-    <ClCompile Include="Application\Collider\CollisionManager.cpp" />
-    <ClCompile Include="Application\Collider\ContactRecord.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />
@@ -122,9 +120,7 @@
     <ClInclude Include="Engine\DirectX\RTVManager.h" />
     <ClInclude Include="Engine\3D\LightManager.h" />
     <ClInclude Include="Application\Collider\Collider.h" />
-    <ClInclude Include="Application\Collider\CollisionManager.h" />
     <ClInclude Include="Application\Collider\CollisionTypeIdDef.h" />
-    <ClInclude Include="Application\Collider\ContactRecord.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Particle.hlsli" />

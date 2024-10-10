@@ -1,33 +1,41 @@
 #include "Collider.h"
 
-void Collider::Initialize() {
-
+void Collider::Init(const Float3& pos, float radius, std::function<void(Collider*)> onCollisionFunc) {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// Texture読み込み
-	uint32_t uvCheckerGHBlock = TextureManager::Load("resources/Images/uvChecker.png", dxBase->GetDevice());
+	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/uvChecker.png", dxBase->GetDevice());
 
-	// モデルの読み込みとテクスチャの設定(マップチップ)
-	modelCollosion_ = ModelManager::LoadModelFile("resources/Models", "block.obj", dxBase->GetDevice());
-	modelCollosion_.material.textureHandle = uvCheckerGHBlock;
+	// モデルの読み込みとテクスチャの設定
+	model_ = ModelManager::LoadModelFile("resources/Models", "block.obj", dxBase->GetDevice());
+	model_.material.textureHandle = uvCheckerGH;
+	
+	
 
-	object.model_ = &modelCollosion_;
-	count++;
+	object.model_ = &model_;
+	object.transform_.translate = pos;
+	object.transform_.scale = { radius / 2.0f, radius / 2.0f, radius / 2.0f };
+	object.UpdateMatrix();
+
+	radius_ = radius;
+
+	onCollision_ = onCollisionFunc;
+
+
 }
 
-void Collider::UpdateWorldTransform() {
-
-	aabb_.max = Add(object.transform_.translate, aabbRadius_);
-	aabb_.min = Subtract(object.transform_.translate, aabbRadius_);
-
-	// ワールド座標をワールドトランスフォームに適応
-	object.transform_.translate = GetCenterPosition();
-
+void Collider::Update() {
 	object.UpdateMatrix();
+
+	if (invincibleTime_ <= 0.0f) {
+		return;
+	}
+	invincibleTime_ -= 1.0f / 60.0f;
 }
 
 void Collider::Draw() {
-	object.Draw();
-}
 
-void Collider::SetTypeID(uint32_t typeID) { typeID_ = typeID; };
+	object.Draw();
+
+	//model->Draw(transform_, viewProj); 
+}
