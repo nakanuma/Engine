@@ -14,6 +14,7 @@
     <FxCompile Include="resources\Shaders\Sprite.VS.hlsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="Application\DeltaTime\DeltaTime.cpp" />
     <ClCompile Include="Application\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="Application\Player\Player.cpp" />
@@ -62,6 +63,10 @@
     <ClCompile Include="Engine\Texture\SRVManager.cpp" />
     <ClCompile Include="Application\Scene\TitleScene.cpp" />
     <ClCompile Include="Engine\DirectX\RTVManager.cpp" />
+    <ClCompile Include="Engine\3D\DebugCamera.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
     <ClCompile Include="Application\Collider\Collider.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
     <ClCompile Include="Application\Collider\ContactRecord.cpp" />
@@ -123,6 +128,7 @@
     <ClInclude Include="Application\Scene\TitleScene.h" />
     <ClInclude Include="Engine\DirectX\RTVManager.h" />
     <ClInclude Include="Engine\3D\LightManager.h" />
+    <ClInclude Include="Engine\3D\DebugCamera.h" />
     <ClInclude Include="Application\Collider\Collider.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
     <ClInclude Include="Application\Collider\CollisionTypeIdDef.h" />
