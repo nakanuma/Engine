@@ -37,5 +37,4 @@ void Collider::Draw() {
 
 	object.Draw();
 
-	//model->Draw(transform_, viewProj); 
 }
