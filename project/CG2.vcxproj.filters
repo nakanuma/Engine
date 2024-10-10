@@ -65,6 +65,8 @@
     <ClCompile Include="Application\Collider\Collider.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
     <ClCompile Include="Application\Collider\ContactRecord.cpp" />
+    <ClCompile Include="Application\Enemy\Enemy.cpp" />
+    <ClCompile Include="Application\myRandom\MyRandom.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />
@@ -125,6 +127,8 @@
     <ClInclude Include="Application\Collider\CollisionManager.h" />
     <ClInclude Include="Application\Collider\CollisionTypeIdDef.h" />
     <ClInclude Include="Application\Collider\ContactRecord.h" />
+    <ClInclude Include="Application\Enemy\Enemy.h" />
+    <ClInclude Include="Application\myRandom\MyRandom.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Particle.hlsli" />

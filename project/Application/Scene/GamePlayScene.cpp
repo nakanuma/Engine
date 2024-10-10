@@ -48,12 +48,10 @@ void GamePlayScene::Initialize()
 	object_->model_ = &model_;
 	object_->transform_.rotate = {0.0f,3.14f,0.0f};
 
-	// Texture読み込み
-	uint32_t uvCheckerGHBlock = TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice());
-
+	
 	// モデルの読み込みとテクスチャの設定(マップチップ)
 	modelBlock_ = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
-	modelBlock_.material.textureHandle = uvCheckerGHBlock;
+	modelBlock_.material.textureHandle = uvCheckerGH;
 
 	// マップチップ
 	mapChip_ = std::make_unique<MapChipField>();
@@ -71,10 +69,15 @@ void GamePlayScene::Initialize()
 	player_ = std::make_unique<Player>();
 	player_->Initialize(uvCheckerGH);
 
+	// Texture読み込み
+	uint32_t monsterBallTexture = TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice());
+	enemyModel = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
+	enemyModel.material.textureHandle = monsterBallTexture;
 
 	// 衝突マネージャの生成
 	collisionManager_ = std::make_unique<CollisionManager>();
 	collisionManager_->Initialize();
+
 }
 
 void GamePlayScene::Finalize()
@@ -83,16 +86,27 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
+	if(input->TriggerKey(DIK_1))
+	{
+		mapChip_->SetAmplitude(5,5,3.0f);
+	} else if(input->TriggerKey(DIK_2))
+	{
+		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
+		enemy->Initialize(&enemyModel);
+		enemies_.emplace_back(std::move(enemy));
+	}
+
 	player_->Update();
+
+	for(auto& enemy : enemies_)
+	{
+		enemy->Update();
+	}
 
 	mapChip_->Update();
 
 	object_->UpdateMatrix();
-
-	if(input->TriggerKey(DIK_1))
-	{
-		mapChip_->SetAmplitude(5,5,3.0f);
-	}
+	
 	CheckAllCollisions();
 
 	// デバック表示用にワールドトランスフォームを更新
@@ -122,6 +136,12 @@ void GamePlayScene::Draw()
 
 	// オブジェクトの描画
 	object_->Draw();
+
+	for(auto& enemy : enemies_)
+	{
+		enemy->Draw();
+	}
+
 	player_->Draw();
 
 	// マップチップ
