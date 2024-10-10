@@ -8,11 +8,14 @@
 #include "Object3D.h"
 #include "SoundManager.h"
 #include "Input.h"
-#include "Application/MapChip.h"
 #include "LightManager.h"
 
+#include <list>
+
 #include "Application/Player/Player.h"
+#include "Application/MapChip.h"
 #include "Application/Collider/CollisionManager.h"
+#include "Application/Enemy/Enemy.h"
 
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
@@ -58,6 +61,9 @@ private:
 	ModelManager::ModelData modelBlock_;
 	// 複数並べるために配列にする(マップチップ)
 	std::vector<std::vector<std::unique_ptr<Object3D>>> objectBlocks_;
+
+	ModelManager::ModelData enemyModel;
+	std::list<std::unique_ptr<Enemy>> enemies_;
 
 	std::unique_ptr<Player> player_;
 
