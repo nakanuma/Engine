@@ -2,11 +2,8 @@
 #pragma once
 
 #include <functional>
-//#include "ViewProjection.h"
 #include "Object3D.h"
-
 #include "ModelManager.h"
-
 #include "Float3.h"
 #include <stdint.h>
 
@@ -40,6 +37,7 @@ public:
 	void setInvincibleTime(const float& time) { invincibleTime_ = time; }
 
 	Float3 getPosition() const { return object.transform_.translate; }
+
 	float getRadius() const { return radius_; }
 	void setTransformParent(Object3D* parent) {
 		object.SetParent(parent);
