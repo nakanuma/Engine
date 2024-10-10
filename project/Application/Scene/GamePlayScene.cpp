@@ -72,9 +72,7 @@ void GamePlayScene::Initialize()
 	player_->Initialize(uvCheckerGH);
 
 
-	// 衝突マネージャの生成
-	collisionManager_ = std::make_unique<CollisionManager>();
-	collisionManager_->Initialize();
+	
 }
 
 void GamePlayScene::Finalize()
@@ -89,10 +87,9 @@ void GamePlayScene::Update() {
 
 	object_->UpdateMatrix();
 
-	CheckAllCollisions();
+	//CheckAllCollisions();
 
-	// デバック表示用にワールドトランスフォームを更新
-	collisionManager_->UpdateWorldTransform();
+	
 }
 
 void GamePlayScene::Draw()
@@ -123,7 +120,7 @@ void GamePlayScene::Draw()
 	// マップチップ
 	mapChip_->Draw();
 
-	collisionManager_->Draw();
+	
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -187,11 +184,5 @@ void GamePlayScene::GenerateBloks()
 
 void GamePlayScene::CheckAllCollisions()
 {
-	// 衝突マネージャのリセット
-	collisionManager_->Reset();
-	// コライダーをリストに登録
-	//collisionManager_->AddCollider();
-
-	// 衝突判定
-	collisionManager_->CheckAllCollisions();
+	
 }
