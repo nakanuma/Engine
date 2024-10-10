@@ -10,8 +10,6 @@ void Collider::Init(const Float3& pos, float radius, std::function<void(Collider
 	model_ = ModelManager::LoadModelFile("resources/Models", "block.obj", dxBase->GetDevice());
 	model_.material.textureHandle = uvCheckerGH;
 	
-	
-
 	object.model_ = &model_;
 	object.transform_.translate = pos;
 	object.transform_.scale = { radius / 2.0f, radius / 2.0f, radius / 2.0f };
@@ -20,8 +18,6 @@ void Collider::Init(const Float3& pos, float radius, std::function<void(Collider
 	radius_ = radius;
 
 	onCollision_ = onCollisionFunc;
-
-
 }
 
 void Collider::Update() {
@@ -34,7 +30,5 @@ void Collider::Update() {
 }
 
 void Collider::Draw() {
-
 	object.Draw();
-
 }

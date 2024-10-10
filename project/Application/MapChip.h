@@ -5,9 +5,11 @@
 #include <queue>
 
 #include "Camera.h"
+#include "Collision/Collider.h"
 #include "Model/ModelManager.h"
 #include "MyMath.h"
 #include "Object3D.h"
+#include "Enemy/Enemy.h"
 
 #include "Int2.h"
 
@@ -30,8 +32,8 @@ public:
 	// マップ単位XZ
 	struct IndexSet
 	{
-		uint32_t xIndex;
-		uint32_t zIndex;
+		int32_t xIndex;
+		int32_t zIndex;
 	};
 
 	// マップチップ1つの
@@ -50,14 +52,17 @@ public:
 		std::queue<std::function<void()>> startWaveTaskQueue_;
 
 		void WaveSpawn();
+
 		bool isStop = false;
+		AABB collAABB_;
+		Float3 velocity_;
 	private:
 		void Wave();
 	private:
+		Float3 prePos_;
 		IndexSet address_;
 
 		std::unique_ptr<Object3D> worldTransformBlocks_;
-		AABB collAABB_;
 
 		MapChipField* host_;
 
@@ -113,6 +118,8 @@ public:
 	void IsMapY(AABB& charcter,float& posY,float radY);
 	// マップチップ全体のAABBと当たり判定をとり当たったAABBとY座標の固定処理(onGround_がtrue)のとき
 	void IsMapY2(AABB& charcter,float& posY,float radY);
+
+	void CheckCollision_Enemy(Enemy* enemy);
 private:
 
 	// モデルデータ
@@ -122,7 +129,7 @@ private:
 	static inline const float kBlockWidth = 1.0f;
 	static inline const float kBlockHeight = 1.0f;
 
-	// 1ブロックの個数
+	// ブロックの個数
 	static inline const uint32_t kNumBlockVirtical = 20;
 	static inline const uint32_t kNumBlockHorizontal = 20;
 

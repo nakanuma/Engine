@@ -52,7 +52,7 @@ void GamePlayScene::Initialize()
 	object_->model_ = &model_;
 	object_->transform_.rotate = {0.0f,3.14f,0.0f};
 
-	
+
 	// モデルの読み込みとテクスチャの設定(マップチップ)
 	modelBlock_ = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
 	modelBlock_.material.textureHandle = uvCheckerGH;
@@ -80,8 +80,6 @@ void GamePlayScene::Initialize()
 
 	// 衝突マネージャの生成
 	collisionManager_ = std::make_unique<CollisionManager>();
-	collisionManager_->Initialize();
-
 }
 
 void GamePlayScene::Finalize()
@@ -92,7 +90,7 @@ void GamePlayScene::Update()
 {
 	if(input->TriggerKey(DIK_1))
 	{
-		mapChip_->SetAmplitude(5,5,2.0f);
+		mapChip_->SetAmplitude(0,15,1.8f);
 	} else if(input->TriggerKey(DIK_2))
 	{
 		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
@@ -111,13 +109,11 @@ void GamePlayScene::Update()
 
 	object_->UpdateMatrix();
 
-	#ifdef _DEBUG // デバッグカメラ
+#ifdef _DEBUG // デバッグカメラ
 	DebugCameraUpdate(input);
-	#endif
-	
-	CheckAllCollisions();
+#endif
 
-	
+	CheckAllCollisions();
 }
 
 void GamePlayScene::Draw()
@@ -154,7 +150,7 @@ void GamePlayScene::Draw()
 	// マップチップ
 	mapChip_->Draw();
 
-	
+
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -183,11 +179,11 @@ void GamePlayScene::Draw()
 	ImGui::DragFloat3("translation",&object_->transform_.translate.x,0.01f);
 	ImGui::DragFloat3("rotation",&object_->transform_.rotate.x,0.01f);
 
-	#ifdef _DEBUG // デバッグカメラ
-	ImGui::Checkbox("useDebugCamera", &useDebugCamera);
-	#endif
+#ifdef _DEBUG // デバッグカメラ
+	ImGui::Checkbox("useDebugCamera",&useDebugCamera);
+#endif
 
-	ImGui::DragFloat3("camera.rotation", &camera->transform.rotate.x, 0.01f);
+	ImGui::DragFloat3("camera.rotation",&camera->transform.rotate.x,0.01f);
 
 	ImGui::End();
 
@@ -200,23 +196,27 @@ void GamePlayScene::Draw()
 }
 
 #ifdef _DEBUG // デバッグカメラ
-void GamePlayScene::DebugCameraUpdate(Input* input) {
-	// 前回のカメラモード状態を保持
+void GamePlayScene::DebugCameraUpdate(Input* input)
+{
+// 前回のカメラモード状態を保持
 	static bool prevUseDebugCamera = false;
 
 	// デバッグカメラが有効になった瞬間に通常カメラのTransformを保存
-	if (useDebugCamera && !prevUseDebugCamera) {
+	if(useDebugCamera && !prevUseDebugCamera)
+	{
 		savedCameraTransform = camera->transform;
 	}
 
 	// デバッグカメラが有効の場合
-	if (useDebugCamera) {
-		// デバッグカメラの更新
+	if(useDebugCamera)
+	{
+// デバッグカメラの更新
 		debugCamera->Update(input);
 		// 通常カメラにデバッグカメラのTransformを適用
 		camera->transform = debugCamera->transform_;
-	} else if (!useDebugCamera && prevUseDebugCamera) {
-		// 通常カメラのTransformを再現
+	} else if(!useDebugCamera && prevUseDebugCamera)
+	{
+// 通常カメラのTransformを再現
 		camera->transform = savedCameraTransform;
 	}
 
@@ -252,5 +252,8 @@ void GamePlayScene::GenerateBloks()
 
 void GamePlayScene::CheckAllCollisions()
 {
-	
+	for(auto& enemy : enemies_)
+	{
+		mapChip_->CheckCollision_Enemy(enemy.get());
+	}
 }

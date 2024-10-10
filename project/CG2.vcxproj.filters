@@ -64,14 +64,14 @@
     <ClCompile Include="Application\Scene\TitleScene.cpp" />
     <ClCompile Include="Engine\DirectX\RTVManager.cpp" />
     <ClCompile Include="Engine\3D\DebugCamera.cpp" />
+    <ClCompile Include="Application\Collision\CollisionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
-    <ClCompile Include="Application\Collider\Collider.cpp" />
-    <ClCompile Include="Application\Collider\CollisionManager.cpp" />
-    <ClCompile Include="Application\Collider\ContactRecord.cpp" />
+    <ClCompile Include="Application\Collision\Collider.cpp" />
     <ClCompile Include="Application\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\myRandom\MyRandom.cpp" />
+    <ClInclude Include="Application\Collision\CollisionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />
@@ -129,9 +129,8 @@
     <ClInclude Include="Engine\DirectX\RTVManager.h" />
     <ClInclude Include="Engine\3D\LightManager.h" />
     <ClInclude Include="Engine\3D\DebugCamera.h" />
-    <ClInclude Include="Application\Collider\Collider.h" />
-    <ClInclude Include="Application\Collider\CollisionTypeIdDef.h" />
-    <ClInclude Include="Application\Collider\ContactRecord.h" />
+    <ClInclude Include="Application\Collision\Collider.h" />
+    <ClInclude Include="Application\Collision\CollisionTypeIdDef.h" />
     <ClInclude Include="Application\Enemy\Enemy.h" />
     <ClInclude Include="Application\myRandom\MyRandom.h" />
   </ItemGroup>
