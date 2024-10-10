@@ -88,7 +88,7 @@ void GamePlayScene::Update()
 {
 	if(input->TriggerKey(DIK_1))
 	{
-		mapChip_->SetAmplitude(5,5,3.0f);
+		mapChip_->SetAmplitude(5,5,2.0f);
 	} else if(input->TriggerKey(DIK_2))
 	{
 		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();

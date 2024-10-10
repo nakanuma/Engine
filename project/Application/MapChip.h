@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <functional>
+#include <queue>
 
 #include "Camera.h"
 #include "Model/ModelManager.h"
@@ -46,8 +47,12 @@ public:
 
 		void StartWaveOrigin(float amplitude);
 		void StartWave(Int2 waveDirection,float amplitude);
+		std::queue<std::function<void()>> startWaveTaskQueue_;
+
+		void WaveSpawn();
+		bool isStop = false;
+	private:
 		void Wave();
-		std::function<void()> currentWaveUpdate_;
 	private:
 		IndexSet address_;
 

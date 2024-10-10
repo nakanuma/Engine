@@ -54,12 +54,7 @@ void MapChipField::Update()
 			{
 				continue;
 			}
-// 波の Update があったら
-			if(!worldTransformBlock->currentWaveUpdate_)
-			{
-				continue;
-			}
-			worldTransformBlock->currentWaveUpdate_();
+			worldTransformBlock->isStop = false;
 		}
 	}
 
@@ -74,6 +69,7 @@ void MapChipField::Update()
 			{
 				continue;
 			}
+			worldTransformBlock->WaveSpawn();
 			worldTransformBlock->Update();
 			j++;
 		}
@@ -253,6 +249,7 @@ void MapChipField::MapObject::Init()
 
 void MapChipField::MapObject::Update()
 {
+	Wave();
 	// AABBのmaxとminを設定
 	collAABB_.max = Add(worldTransformBlocks_->transform_.translate,host_->rad_);
 	collAABB_.min = Subtract(worldTransformBlocks_->transform_.translate,host_->rad_);
@@ -301,7 +298,7 @@ void MapChipField::MapObject::StartWaveOrigin(float amplitude)
 
 void MapChipField::MapObject::StartWave(Int2 waveDirection,float amplitude)
 {
-	currentAmplitude_ = amplitude;
+	currentAmplitude_ += amplitude;
 
 	if(currentAmplitude_ <= 1.0f && waveDirection == Int2(0,0))
 	{
@@ -309,60 +306,151 @@ void MapChipField::MapObject::StartWave(Int2 waveDirection,float amplitude)
 		return;
 	}
 
-	// 与える 振幅
-	int row = address_.zIndex;
-	int col = address_.xIndex + waveDirection.x;
+	// 与える振幅 (waveDirection.x方向)
+	int row = 0;
+	int col = 0;
 
-	// 範囲チェック (行と列がそれぞれ有効な範囲に収まっているか)
-	if(row >= 0 && row < host_->mapWorld_.size() &&
-	   col >= 0 && col < host_->mapWorld_[row].size())
+	float propagationAmplitude = amplitude * 0.89f;
+
+	if(propagationAmplitude <= 1.0f)
 	{
-		if(host_->mapWorld_[row][col]->currentWaveUpdate_ == nullptr)
-		{
-			host_->mapWorld_[row][col]->currentWaveUpdate_ = [this,row,col,waveDirection,amplitude]()
-			{
-				host_->mapWorld_[row][col]->StartWave({waveDirection.x,0},amplitude * 0.89f);
-			};
-		}
+		return;
 	}
 
-	row = address_.zIndex + waveDirection.y;
-	col = address_.xIndex;
-
-	// 範囲チェック
-	if(row >= 0 && row < host_->mapWorld_.size() &&
-	   col >= 0 && col < host_->mapWorld_[row].size())
+	if(waveDirection.x != 0)
 	{
-		if(host_->mapWorld_[row][col]->currentWaveUpdate_ == nullptr)
+		bool isStop = waveDirection.x < 0;
+		// 与える振幅 (waveDirection.x方向)
+		row = address_.zIndex + 1;
+		col = address_.xIndex + waveDirection.x;
+
+	   // 範囲チェック (行と列がそれぞれ有効な範囲に収まっているか)
+		if(row >= 0 && row < host_->mapWorld_.size() &&
+		   col >= 0 && col < host_->mapWorld_[row].size())
 		{
-			host_->mapWorld_[row][col]->currentWaveUpdate_ = [this,row,col,waveDirection,amplitude]()
+			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
 			{
-				host_->mapWorld_[row][col]->StartWave({0,waveDirection.y},amplitude * 0.89f);
-			};
+				host_->mapWorld_[row][col]->isStop |= isStop;
+				auto start = [this,row,col,waveDirection,propagationAmplitude]()
+				{
+					host_->mapWorld_[row][col]->StartWave({waveDirection.x,1},propagationAmplitude);
+				};
+				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
+			}
+		}
+
+
+	// 与える振幅 (waveDirection.y方向)
+		row = address_.zIndex + 0;
+
+		// 範囲チェック
+		if(row >= 0 && row < host_->mapWorld_.size() &&
+		   col >= 0 && col < host_->mapWorld_[row].size())
+		{
+			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
+			{
+				host_->mapWorld_[row][col]->isStop |= isStop;
+				auto start = [this,row,col,waveDirection,propagationAmplitude]()
+				{
+					host_->mapWorld_[row][col]->StartWave({waveDirection.x,0},propagationAmplitude);
+				};
+				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
+			}
+		}
+
+
+// 与える振幅 (waveDirection.x, waveDirection.y 両方方向、斜め)
+		row = address_.xIndex + -1;
+		isStop = false;
+		// 範囲チェック
+		if(row >= 0 && row < host_->mapWorld_.size() &&
+		   col >= 0 && col < host_->mapWorld_[row].size())
+		{
+			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
+			{
+				host_->mapWorld_[row][col]->isStop |= isStop;
+				auto start = [this,row,col,waveDirection,propagationAmplitude]()
+				{
+					host_->mapWorld_[row][col]->StartWave({waveDirection.x,-1},propagationAmplitude);
+				};
+				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
+			}
 		}
 	}
-
-	row = address_.zIndex + waveDirection.y;
-	col = address_.xIndex + waveDirection.x;
-
-	// 範囲チェック
-	if(row >= 0 && row < host_->mapWorld_.size() &&
-	   col >= 0 && col < host_->mapWorld_[row].size())
+	if(waveDirection.y != 0)
 	{
-		if(host_->mapWorld_[row][col]->currentWaveUpdate_ == nullptr)
+		bool isStop = waveDirection.y < 0;
+		row = address_.zIndex;
+		col = address_.xIndex + 1;
+
+	   // 範囲チェック (行と列がそれぞれ有効な範囲に収まっているか)
+		if(row >= 0 && row < host_->mapWorld_.size() &&
+		   col >= 0 && col < host_->mapWorld_[row].size())
 		{
-			host_->mapWorld_[row][col]->currentWaveUpdate_ = [this,row,col,waveDirection,amplitude]()
+			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
 			{
-				host_->mapWorld_[row][col]->StartWave({waveDirection.x,waveDirection.y},amplitude * 0.89f);
-			};
+				host_->mapWorld_[row][col]->isStop |= isStop;
+				auto start = [this,row,col,waveDirection,propagationAmplitude]()
+				{
+					host_->mapWorld_[row][col]->StartWave({1,waveDirection.y},propagationAmplitude);
+				};
+				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
+			}
+		}
+
+		col = address_.xIndex + 0;
+
+		// 範囲チェック
+		if(row >= 0 && row < host_->mapWorld_.size() &&
+		   col >= 0 && col < host_->mapWorld_[row].size())
+		{
+			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
+			{
+				host_->mapWorld_[row][col]->isStop |= isStop;
+				auto start = [this,row,col,waveDirection,propagationAmplitude]()
+				{
+					host_->mapWorld_[row][col]->StartWave({0,waveDirection.y},propagationAmplitude);
+				};
+				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
+			}
+		}
+
+   // 与える振幅 (waveDirection.x, waveDirection.y 両方方向、斜め)
+		col = address_.xIndex + -1;
+		isStop = true;
+		// 範囲チェック
+		if(row >= 0 && row < host_->mapWorld_.size() &&
+		   col >= 0 && col < host_->mapWorld_[row].size())
+		{
+			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
+			{
+				host_->mapWorld_[row][col]->isStop |= isStop;
+				auto start = [this,row,col,waveDirection,propagationAmplitude]()
+				{
+					host_->mapWorld_[row][col]->StartWave({-1,waveDirection.y},propagationAmplitude);
+				};
+				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
+			}
 		}
 	}
+}
 
-	currentWaveUpdate_ = std::bind(&MapChipField::MapObject::Wave,this);
+void MapChipField::MapObject::WaveSpawn()
+{
+	if(isStop)
+	{
+		return;
+	}
+	if(!startWaveTaskQueue_.empty())
+	{
+		startWaveTaskQueue_.back()();
+		startWaveTaskQueue_.pop();
+	}
 }
 
 void MapChipField::MapObject::Wave()
 {
+	
 	currentAmplitude_ -= kGravity * DeltaTime::getInstance()->getDeltaTime();
 
 	worldTransformBlocks_->transform_.translate.y += currentAmplitude_;
@@ -370,7 +458,6 @@ void MapChipField::MapObject::Wave()
 	if(GetTranslate().y <= 0.01f)
 	{
 		currentAmplitude_ = 0.0f;
-		currentWaveUpdate_ = nullptr;
 		worldTransformBlocks_->transform_.translate.y = 0.0f;
 		return;
 	}
