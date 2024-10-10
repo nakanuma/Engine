@@ -62,6 +62,12 @@ public: // メンバ関数
 	bool IsTriggerMouse(int32_t mouseNumber) const;
 
 	/// <summary>
+	/// マウス移動量を取得
+	/// </summary>
+	/// <returns></returns>
+	POINT GetMouseMove() const;
+
+	/// <summary>
 	/// ホイールスクロール量を取得する
 	/// </summary>
 	/// <returns>奥側に回したら+</returns>

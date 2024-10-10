@@ -125,6 +125,11 @@ bool Input::IsTriggerMouse(int32_t mouseNumber) const {
 	return !(mouseStatePre_.rgbButtons[mouseNumber] & 0x80) && (mouseState_.rgbButtons[mouseNumber] & 0x80);
 }
 
+POINT Input::GetMouseMove() const { 
+	POINT move = {mouseState_.lX, mouseState_.lY};
+	return move;
+}
+
 int32_t Input::GetWheel() const { 
 	return mouseState_.lZ; 
 }

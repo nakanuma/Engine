@@ -1,5 +1,6 @@
 #pragma once
 #include "MyMath.h"
+#include "Input.h"
 
 class DebugCamera {
 public:
@@ -11,12 +12,19 @@ public:
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update(Input* input);
 
-private:
+	/// <summary>
+	/// ビュー行列の取得
+	/// </summary>
+	/// <returns></returns>
+	Matrix GetViewMatrix() const { return viewMatrix_; }
+
+
 	// カメラの情報を保持
 	Transform transform_;
 
+private:
 	// ビュー行列
 	Matrix viewMatrix_;
 	// 射影行列
