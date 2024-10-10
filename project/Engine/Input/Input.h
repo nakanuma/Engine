@@ -62,6 +62,18 @@ public: // メンバ関数
 	bool IsTriggerMouse(int32_t mouseNumber) const;
 
 	/// <summary>
+	/// マウス移動量を取得
+	/// </summary>
+	/// <returns></returns>
+	POINT GetMouseMove() const;
+
+	/// <summary>
+	/// ホイールスクロール量を取得する
+	/// </summary>
+	/// <returns>奥側に回したら+</returns>
+	int32_t GetWheel() const;
+
+	/// <summary>
 	/// マウスの位置を取得する（ウィンドウ座標系）
 	/// </summary>
 	const POINT& GetMousePosition() const;
@@ -86,8 +98,8 @@ private: // メンバ変数
 	POINT mousePosition_;
 
 	// マウスのボタン状態
-	BYTE mouseButtons_[3] = {};
-	BYTE mouseButtonsPre_[3] = {};
+	DIMOUSESTATE2 mouseState_ = {};
+	DIMOUSESTATE2 mouseStatePre_ = {};
 
 	// WindowsAPI
 	Window* window = nullptr;
