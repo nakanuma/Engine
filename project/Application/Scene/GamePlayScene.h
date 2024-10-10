@@ -32,7 +32,7 @@ private:
 	bool useDebugCamera = false;    // デバッグカメラが有効か
 	Transform savedCameraTransform; // 通常カメラのTransformを保持
 
-	void DebugCameraUpdate();
+	void DebugCameraUpdate(Input* input);
 #endif
 
 private:

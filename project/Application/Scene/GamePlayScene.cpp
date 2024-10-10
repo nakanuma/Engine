@@ -65,7 +65,7 @@ void GamePlayScene::Update() {
 
 
 	#ifdef _DEBUG // デバッグカメラ
-	DebugCameraUpdate();
+	DebugCameraUpdate(input);
 	#endif
 }
 
@@ -135,7 +135,7 @@ void GamePlayScene::Draw()
 }
 
 #ifdef _DEBUG // デバッグカメラ
-void GamePlayScene::DebugCameraUpdate() {
+void GamePlayScene::DebugCameraUpdate(Input* input) {
 	// 前回のカメラモード状態を保持
 	static bool prevUseDebugCamera = false;
 
