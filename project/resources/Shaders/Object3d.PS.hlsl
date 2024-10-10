@@ -8,47 +8,42 @@ struct Material {
 };
 ConstantBuffer<Material> gMaterial : register(b0);
 
-struct DirectionalLight
-{
+struct DirectionalLight {
     float32_t4 color;
     float32_t3 direction;
     float intensity;
 };
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 
-struct Camera
-{
+struct Camera {
     float32_t3 worldPosition;
 };
 ConstantBuffer<Camera> gCamera : register(b2);
 
-struct PointLight
-{
+struct PointLight {
     float32_t4 color;
     float32_t3 position;
     float intensity;
     float radius;
-    float decay; 
+    float decay;
 };
 ConstantBuffer<PointLight> gPointLight : register(b3);
 
-struct SpotLight
-{
-    float32_t4 color; // ƒ‰ƒCƒg‚ÌF
-    float32_t3 position; // ƒ‰ƒCƒg‚ÌˆÊ’u
-    float32_t intensity; // ‹P“x
-    float32_t3 direction; // ƒXƒ|ƒbƒgƒ‰ƒCƒg‚Ì•ûŒü
-    float32_t distance; // ƒ‰ƒCƒg‚Ì“Í‚­Å‘å‹——£
-    float32_t decay; // Œ¸Š—¦
-    float32_t cosAngle; // ƒXƒ|ƒbƒgƒ‰ƒCƒg‚Ì—]Œ·
-    float32_t cosFalloffStart; // FalloffŠJn‚ÌŠp“x
+struct SpotLight {
+    float32_t4 color; // ï¿½ï¿½ï¿½Cï¿½gï¿½ÌF
+    float32_t3 position; // ï¿½ï¿½ï¿½Cï¿½gï¿½ÌˆÊ’u
+    float32_t intensity; // ï¿½Pï¿½x
+    float32_t3 direction; // ï¿½Xï¿½|ï¿½bï¿½gï¿½ï¿½ï¿½Cï¿½gï¿½Ì•ï¿½ï¿½ï¿½
+    float32_t distance; // ï¿½ï¿½ï¿½Cï¿½gï¿½Ì“Í‚ï¿½ï¿½Å‘å‹—ï¿½ï¿½
+    float32_t decay; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    float32_t cosAngle; // ï¿½Xï¿½|ï¿½bï¿½gï¿½ï¿½ï¿½Cï¿½gï¿½Ì—]ï¿½ï¿½
+    float32_t cosFalloffStart; // Falloffï¿½Jï¿½nï¿½ÌŠpï¿½x
     uint32_t isActive;
 };
 
 static const int kMaxLight = 64;
 
-struct SpotLights
-{
+struct SpotLights {
     SpotLight spotLights[kMaxLight];
 };
 
@@ -64,54 +59,54 @@ struct PixelShaderOutput {
 PixelShaderOutput main(VertexShaderOutput input) {
     PixelShaderOutput output;
     
-    float4 transformedUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
-    float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
+    float4 transformedUV = mul(float32_t4(input.texcoord,0.0f,1.0f),gMaterial.uvTransform);
+    float32_t4 textureColor = gTexture.Sample(gSampler,transformedUV.xy);
     
     
     
-    float32_t3 toEye = normalize(gCamera.worldPosition - input.worldPosition); // Camera‚Ö‚Ì•ûŒü‚ğZo
+    float32_t3 toEye = normalize(gCamera.worldPosition - input.worldPosition); // Cameraï¿½Ö‚Ì•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½o
     
-    float32_t3 pointLightDirection = normalize(input.worldPosition - gPointLight.position); // “üËŒõ‚ğŒvZ
+    float32_t3 pointLightDirection = normalize(input.worldPosition - gPointLight.position); // ï¿½ï¿½ï¿½ËŒï¿½ï¿½ï¿½ï¿½vï¿½Z
     
-    float32_t distance = length(gPointLight.position - input.worldPosition); // ƒ|ƒCƒ“ƒgƒ‰ƒCƒg‚Ö‚Ì‹——£
-    float32_t factor = pow(saturate(-distance / gPointLight.radius + 1.0f), gPointLight.decay); // w”‚É‚æ‚éƒRƒ“ƒgƒ[ƒ‹
+    float32_t distance = length(gPointLight.position - input.worldPosition); // ï¿½|ï¿½Cï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Cï¿½gï¿½Ö‚Ì‹ï¿½ï¿½ï¿½
+    float32_t factor = pow(saturate(-distance / gPointLight.radius + 1.0f),gPointLight.decay); // ï¿½wï¿½ï¿½ï¿½É‚ï¿½ï¿½Rï¿½ï¿½ï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½
     
     
     
  
     
     
-    //float32_t3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal)); // “üËŒõ‚Ì”½ËƒxƒNƒgƒ‹
+    //float32_t3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal)); // ï¿½ï¿½ï¿½ËŒï¿½ï¿½Ì”ï¿½ï¿½Ëƒxï¿½Nï¿½gï¿½ï¿½
     
-    // texture‚Ìa’l‚ª0.5ˆÈ‰º‚Ì‚Æ‚«‚ÉPixel‚ğŠü‹p
-    if (textureColor.a <= 0.5){
+    // textureï¿½ï¿½aï¿½lï¿½ï¿½0.5ï¿½È‰ï¿½ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½Pixelï¿½ï¿½ï¿½ï¿½ï¿½p
+    if (textureColor.a <= 0.5) {
         discard;
     }
-    // texture‚Ìa’l‚ª0‚Ì‚Æ‚«‚ÉPiel‚ğŠü‹p
-    if (textureColor.a == 0.0){
+    // textureï¿½ï¿½aï¿½lï¿½ï¿½0ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½Pielï¿½ï¿½ï¿½ï¿½ï¿½p
+    if (textureColor.a == 0.0) {
         discard;
     }
-    // output.colo‚Ìa’l‚ª0‚Ì‚Æ‚«‚ÉPixel‚ğŠü‹p
-    if (output.color.a == 0.0){
+    // output.coloï¿½ï¿½aï¿½lï¿½ï¿½0ï¿½Ì‚Æ‚ï¿½ï¿½ï¿½Pixelï¿½ï¿½ï¿½ï¿½ï¿½p
+    if (output.color.a == 0.0) {
         discard;
     }
     
-    if (gMaterial.enableLighting != 0) { // Lighting‚·‚éê‡  
+    if (gMaterial.enableLighting != 0) { // Lightingï¿½ï¿½ï¿½ï¿½ê‡  
         ///
         /// DirectionalLight
         ///
         
-        // ŠgU”½Ë
-        float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
-        float cos = pow(NdotL * 0.5f + 0.5f, 2.0f); // half lambert
+        // ï¿½gï¿½Uï¿½ï¿½ï¿½ï¿½
+        float NdotL = dot(normalize(input.normal),-gDirectionalLight.direction);
+        float cos = pow(NdotL * 0.5f + 0.5f,2.0f); // half lambert
         
         float32_t3 diffuseDirectionalLight =
         gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
         
-        // ‹¾–Ê”½Ë
+        // ï¿½ï¿½ï¿½Ê”ï¿½ï¿½ï¿½
         //float32_t3 halfVector = normalize(-gDirectionalLight.direction + toEye);
         //float NdotH = dot(normalize(input.normal), halfVector);
-        //float specularPow = pow(saturate(NdotH), gMaterial.shininess); // ”½Ë‹­“x
+        //float specularPow = pow(saturate(NdotH), gMaterial.shininess); // ï¿½ï¿½ï¿½Ë‹ï¿½ï¿½x
         
         //float32_t3 specularDirectionalLight =
         //gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float32_t3(1.0f, 1.0f, 1.0f);
@@ -120,69 +115,67 @@ PixelShaderOutput main(VertexShaderOutput input) {
         /// PointLight
         ///
         
-        // ŠgU”½Ë
-        float NdotL_point = dot(normalize(input.normal), -pointLightDirection);
-        float cos_point = pow(NdotL_point * 0.5f + 0.5, 2.0f);
+        // ï¿½gï¿½Uï¿½ï¿½ï¿½ï¿½
+        float NdotL_point = dot(normalize(input.normal),-pointLightDirection);
+        float cos_point = pow(NdotL_point * 0.5f + 0.5,2.0f);
         float32_t3 diffusePointLight =
         gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * cos_point * gPointLight.intensity * factor;
 
-        // ‹¾–Ê”½Ë
+        // ï¿½ï¿½ï¿½Ê”ï¿½ï¿½ï¿½
         float32_t3 halfVector_point = normalize(-pointLightDirection + toEye);
-        float NdotH_point = dot(normalize(input.normal), halfVector_point);
-        float specularPow_point = pow(saturate(NdotH_point), gMaterial.shininess);
+        float NdotH_point = dot(normalize(input.normal),halfVector_point);
+        float specularPow_point = pow(saturate(NdotH_point),gMaterial.shininess);
         float32_t3 specularPointLight =
-        gPointLight.color.rgb * gPointLight.intensity * specularPow_point * float32_t3(1.0f, 1.0f, 1.0f) * factor;
+        gPointLight.color.rgb * gPointLight.intensity * specularPow_point * float32_t3(1.0f,1.0f,1.0f) * factor;
         
         ///
         /// SpotLight
         ///
         
-        float32_t3 diffuseSpotLight = {0.0f, 0.0f, 0.0f};
+        float32_t3 diffuseSpotLight = { 0.0f,0.0f,0.0f };
         
-         // ŠgU”½Ë
-        for (uint32_t i = 0; i < kMaxLight; i++)
-        {
-            if (gSpotLight.spotLights[i].isActive == false)
-            {
+         // ï¿½gï¿½Uï¿½ï¿½ï¿½ï¿½
+        for (uint32_t i = 0 ; i < kMaxLight ; i++) {
+            if (gSpotLight.spotLights[i].isActive == false) {
                 continue;
             }
             
             float32_t3 spotLightDirectionOnSurface = normalize(input.worldPosition - gSpotLight.spotLights[i].position);
     
             float32_t distance_spot = length(gSpotLight.spotLights[i].position - input.worldPosition);
-            float32_t attenuatuinFactor = pow(saturate(-distance / gSpotLight.spotLights[i].distance + 1.0f), gSpotLight.spotLights[i].decay);
+            float32_t attenuatuinFactor = pow(saturate(-distance / gSpotLight.spotLights[i].distance + 1.0f),gSpotLight.spotLights[i].decay);
     
-            float32_t cosAngle = dot(spotLightDirectionOnSurface, gSpotLight.spotLights[i].direction);
-            float32_t falloffFactor = saturate((cosAngle - gSpotLight.spotLights[i].cosAngle) / (gSpotLight.spotLights[i].cosFalloffStart - gSpotLight.spotLights[i].cosAngle));
+            float32_t cosAngle = dot(spotLightDirectionOnSurface,gSpotLight.spotLights[i].direction);
+            float32_t falloffFactor = saturate(( cosAngle - gSpotLight.spotLights[i].cosAngle ) / ( gSpotLight.spotLights[i].cosFalloffStart - gSpotLight.spotLights[i].cosAngle ));
             
-            float NdotL_spot = dot(normalize(input.normal), -spotLightDirectionOnSurface);
-            float cos_spot = pow(NdotL_spot * 0.5f + 0.5, 2.0f);
+            float NdotL_spot = dot(normalize(input.normal),-spotLightDirectionOnSurface);
+            float cos_spot = pow(NdotL_spot * 0.5f + 0.5,2.0f);
             diffuseSpotLight +=
             -gSpotLight.spotLights[i].color.rgb * cos_spot * gSpotLight.spotLights[i].intensity * attenuatuinFactor * falloffFactor;
         }
         
         diffuseSpotLight *= gMaterial.color.rgb * textureColor.rgb;
             
-        // ‹¾–Ê”½Ë
+        // ï¿½ï¿½ï¿½Ê”ï¿½ï¿½ï¿½
         //float32_t3 halfVector_spot = normalize(-spotLightDirectionOnSurface + toEye);
         //float NdotH_spot = dot(normalize(input.normal), halfVector_spot);
         //float specularPow_spot = pow(saturate(NdotH_spot), gMaterial.shininess);
         //float32_t3 specularSpotLight =
         //gSpotLight.color.rgb * gSpotLight.intensity * specularPow_spot * float32_t3(1.0f, 1.0f, 1.0f) * attenuatuinFactor * falloffFactor;
         
-        // ƒ‰ƒCƒeƒBƒ“ƒOƒeƒXƒg—p
-        // ŠgU”½Ë+‹¾–Ê”½Ë
-        output.color.rgb = 
+        // ï¿½ï¿½ï¿½Cï¿½eï¿½Bï¿½ï¿½ï¿½Oï¿½eï¿½Xï¿½gï¿½p
+        // ï¿½gï¿½Uï¿½ï¿½ï¿½ï¿½+ï¿½ï¿½ï¿½Ê”ï¿½ï¿½ï¿½
+        output.color.rgb =
         diffuseDirectionalLight + // DirectionalLight
         diffusePointLight + specularPointLight + // PointLight
         diffuseSpotLight // SpotLight
         ;
         
-        // Šî–{“I‚É‚Í‚±‚Á‚¿‚ğ“K—p
-        //output.color.rgb = diffuseDirectionalLight; // DirectionalLight‚ÌŠgU”½Ë‚Ì‚İ
+        // ï¿½ï¿½{ï¿½Iï¿½É‚Í‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½p
+        //output.color.rgb = diffuseDirectionalLight; // DirectionalLightï¿½ÌŠgï¿½Uï¿½ï¿½ï¿½Ë‚Ì‚ï¿½
         
         
-        // ƒAƒ‹ƒtƒ@‚Í¡‚Ü‚Å’Ê‚è
+        // ï¿½Aï¿½ï¿½ï¿½tï¿½@ï¿½Íï¿½ï¿½Ü‚Å’Ê‚ï¿½
         output.color.a = gMaterial.color.a * textureColor.a;
     } else {
         output.color = gMaterial.color * textureColor;

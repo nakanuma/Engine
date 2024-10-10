@@ -47,3 +47,50 @@ static Float3 TransformMatrix(const Float3& vector, const Matrix& matrix) {
 
     return result;
 }
+
+static Float3 Add(const Float3& v1, const Float3& v2) {
+    Float3 result{};
+
+    result.x = v1.x + v2.x;
+    result.y = v1.y + v2.y;
+    result.z = v1.z + v2.z;
+
+    return result;
+};
+
+static Float3 Subtract(const Float3& v1, const Float3& v2) {
+    Float3 result{};
+
+    result.x = v1.x - v2.x;
+    result.y = v1.y - v2.y;
+    result.z = v1.z - v2.z;
+
+    return result;
+};
+
+
+static bool IsCollision(const AABB& aabb1, const AABB& aabb2) {
+    if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) &&
+        (aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) &&
+        (aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z)) {
+
+        return true;
+    }
+
+    return false;
+}
+
+static float Length(const Float3& v) {
+    float result;
+
+    result = sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+
+    return result;
+};
+static float Length(const float& v) {
+    float result;
+
+    result = sqrtf((v * v));
+
+    return result;
+};

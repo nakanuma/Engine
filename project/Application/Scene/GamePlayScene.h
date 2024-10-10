@@ -11,6 +11,13 @@
 #include "Input.h"
 #include "LightManager.h"
 
+#include <list>
+
+#include "Application/Player/Player.h"
+#include "Application/MapChip.h"
+#include "Application/Collider/CollisionManager.h"
+#include "Application/Enemy/Enemy.h"
+
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
 {
@@ -26,6 +33,11 @@ public:
 
 	// 描画
 	void Draw() override;
+
+	void GenerateBloks();
+
+	/// 衝突判定と応答
+	void CheckAllCollisions();
 
 private:
 #ifdef _DEBUG // デバッグカメラ用
@@ -51,5 +63,21 @@ private:
 	ModelManager::ModelData model_;
 	// 3Dオブジェクト
 	std::unique_ptr<Object3D> object_;
+
+	/// マップチップ
+	std::unique_ptr<MapChipField> mapChip_;
+	
+	// モデルデータ(マップチップ)
+	ModelManager::ModelData modelBlock_;
+	// 複数並べるために配列にする(マップチップ)
+	std::vector<std::vector<std::unique_ptr<Object3D>>> objectBlocks_;
+
+	ModelManager::ModelData enemyModel;
+	std::list<std::unique_ptr<Enemy>> enemies_;
+
+	std::unique_ptr<Player> player_;
+
+	// 衝突マネージャ
+	std::unique_ptr<CollisionManager> collisionManager_;
 };
 

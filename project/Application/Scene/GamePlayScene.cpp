@@ -11,7 +11,7 @@ void GamePlayScene::Initialize()
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// カメラのインスタンスを生成
-	camera = std::make_unique<Camera>(Float3{0.0f, 15.0f, -40.0f}, Float3{0.3f, 0.0f, 0.0f}, 0.45f);
+	camera = std::make_unique<Camera>(Float3{0.0f,15.0f,-40.0f},Float3{0.3f,0.0f,0.0f},0.45f);
 	Camera::Set(camera.get()); // 現在のカメラをセット
 
 	// デバッグカメラの生成と初期化
@@ -23,7 +23,7 @@ void GamePlayScene::Initialize()
 	spriteCommon->Initialize(DirectXBase::GetInstance());
 
 	// TextureManagerの初期化
-	TextureManager::Initialize(dxBase->GetDevice(), SRVManager::GetInstance());
+	TextureManager::Initialize(dxBase->GetDevice(),SRVManager::GetInstance());
 
 	// SoundManagerの初期化
 	soundManager = std::make_unique<SoundManager>();
@@ -39,34 +39,86 @@ void GamePlayScene::Initialize()
 	///
 	///	↓ ゲームシーン用 
 	///	
-	
+
 	// Texture読み込み
-	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/uvChecker.png", dxBase->GetDevice());
+	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice());
 
 	// モデルの読み込みとテクスチャの設定
-	model_ = ModelManager::LoadModelFile("resources/Models", "plane.obj", dxBase->GetDevice());
+	model_ = ModelManager::LoadModelFile("resources/Models","plane.obj",dxBase->GetDevice());
 	model_.material.textureHandle = uvCheckerGH;
 
 	// オブジェクトの生成とモデル設定
 	object_ = std::make_unique<Object3D>();
 	object_->model_ = &model_;
-	object_->transform_.rotate = {0.0f, 3.14f, 0.0f};
+	object_->transform_.rotate = {0.0f,3.14f,0.0f};
 
-	int dummy = 0;
-	GlobalVariables::getInstance()->addValue("Game","Dummy","dummy",dummy);
+	
+	// モデルの読み込みとテクスチャの設定(マップチップ)
+	modelBlock_ = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
+	modelBlock_.material.textureHandle = uvCheckerGH;
+
+	// マップチップ
+	mapChip_ = std::make_unique<MapChipField>();
+
+	// まずCSVファイルで読み込む
+	mapChip_->LoadMapChipCsv("resources/blocks.csv");
+	// そのあとに初期化
+	mapChip_->Initialize(modelBlock_);
+
+	// カメラ位置
+	camera->transform.rotate = {1.14f,0,0};
+	camera->transform.translate = {20,50.0f,0};
+	object_->transform_.rotate = {0.0f,3.14f,0.0f};
+
+	player_ = std::make_unique<Player>();
+	player_->Initialize(uvCheckerGH);
+
+	// Texture読み込み
+	uint32_t monsterBallTexture = TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice());
+	enemyModel = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
+	enemyModel.material.textureHandle = monsterBallTexture;
+
+	// 衝突マネージャの生成
+	collisionManager_ = std::make_unique<CollisionManager>();
+	collisionManager_->Initialize();
+
 }
 
 void GamePlayScene::Finalize()
 {
 }
 
-void GamePlayScene::Update() { 
-	object_->UpdateMatrix();
+void GamePlayScene::Update()
+{
+	if(input->TriggerKey(DIK_1))
+	{
+		mapChip_->SetAmplitude(5,5,2.0f);
+	} else if(input->TriggerKey(DIK_2))
+	{
+		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
+		enemy->Initialize(&enemyModel);
+		enemies_.emplace_back(std::move(enemy));
+	}
 
+	player_->Update();
+
+	for(auto& enemy : enemies_)
+	{
+		enemy->Update();
+	}
+
+	mapChip_->Update();
+
+	object_->UpdateMatrix();
 
 	#ifdef _DEBUG // デバッグカメラ
 	DebugCameraUpdate(input);
 	#endif
+	
+	CheckAllCollisions();
+
+	// デバック表示用にワールドトランスフォームを更新
+	collisionManager_->UpdateWorldTransform();
 }
 
 void GamePlayScene::Draw()
@@ -77,8 +129,8 @@ void GamePlayScene::Draw()
 	// 描画前処理
 	dxBase->PreDraw();
 	// 描画用のDescriptorHeapの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvManager->descriptorHeap.heap_.Get() };
-	dxBase->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
+	ID3D12DescriptorHeap* descriptorHeaps[] = {srvManager->descriptorHeap.heap_.Get()};
+	dxBase->GetCommandList()->SetDescriptorHeaps(1,descriptorHeaps);
 	// ImGuiのフレーム開始処理
 	ImguiWrapper::NewFrame();
 	// カメラの定数バッファを設定
@@ -92,6 +144,18 @@ void GamePlayScene::Draw()
 
 	// オブジェクトの描画
 	object_->Draw();
+
+	for(auto& enemy : enemies_)
+	{
+		enemy->Draw();
+	}
+
+	player_->Draw();
+
+	// マップチップ
+	mapChip_->Draw();
+
+	collisionManager_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -107,7 +171,7 @@ void GamePlayScene::Draw()
 	///
 	/// ↑ ここまでスプライトの描画コマンド
 	/// 
-	
+
 
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
@@ -115,8 +179,10 @@ void GamePlayScene::Draw()
 
 	ImGui::Begin("window");
 
-	ImGui::DragFloat3("translation", &object_->transform_.translate.x, 0.01f);
-	ImGui::DragFloat3("rotation", &object_->transform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
+	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
+	ImGui::DragFloat3("translation",&object_->transform_.translate.x,0.01f);
+	ImGui::DragFloat3("rotation",&object_->transform_.rotate.x,0.01f);
 
 	#ifdef _DEBUG // デバッグカメラ
 	ImGui::Checkbox("useDebugCamera", &useDebugCamera);
@@ -159,3 +225,39 @@ void GamePlayScene::DebugCameraUpdate(Input* input) {
 	prevUseDebugCamera = useDebugCamera;
 }
 #endif
+
+void GamePlayScene::GenerateBloks()
+{
+	// 要素数
+	uint32_t kNumBlockVirtical = mapChip_->GetNumBlockVertical();
+	uint32_t kNumBlockHorizontal = mapChip_->GetNumBlockHorizontal();
+
+	// ブロックの生成
+	objectBlocks_.resize(kNumBlockVirtical); // 垂直方向のサイズを設定
+	for(uint32_t i = 0; i < kNumBlockVirtical; ++i)
+	{
+		objectBlocks_[i].resize(kNumBlockHorizontal); // 水平方向のサイズを設定
+		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
+		{
+// ユニークポインタでObject3Dを初期化
+			objectBlocks_[i][j] = std::make_unique<Object3D>();
+
+			// モデルの設定
+			objectBlocks_[i][j]->model_ = &modelBlock_;
+
+			// 位置の設定
+			objectBlocks_[i][j]->transform_.translate = mapChip_->GetMapChipPositionByIndex(j,i);
+		}
+	}
+}
+
+void GamePlayScene::CheckAllCollisions()
+{
+	// 衝突マネージャのリセット
+	collisionManager_->Reset();
+	// コライダーをリストに登録
+	//collisionManager_->AddCollider();
+
+	// 衝突判定
+	collisionManager_->CheckAllCollisions();
+}

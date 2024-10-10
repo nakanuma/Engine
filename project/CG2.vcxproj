@@ -11,8 +11,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application\Collider\Collider.cpp" />
+    <ClCompile Include="Application\Collider\CollisionManager.cpp" />
+    <ClCompile Include="Application\Collider\ContactRecord.cpp" />
+    <ClCompile Include="Application\DeltaTime\DeltaTime.cpp" />
+    <ClCompile Include="Application\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="Engine\3D\DebugCamera.cpp" />
+    <ClCompile Include="Application\myRandom\MyRandom.cpp" />
+    <ClCompile Include="Application\Player\Player.cpp" />
+    <ClCompile Include="Application\Player\PlayerState.cpp" />
+    <ClCompile Include="Application\MapChip.cpp" />
     <ClCompile Include="Engine\Math\Float2.cpp" />
     <ClCompile Include="Engine\Math\Float3.cpp" />
     <ClCompile Include="Engine\Scene\BaseScene.cpp" />
@@ -58,8 +67,19 @@
     <ClCompile Include="Engine\DirectX\RTVManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\Collider\Collider.h" />
+    <ClInclude Include="Application\Collider\CollisionManager.h" />
+    <ClInclude Include="Application\Collider\CollisionTypeIdDef.h" />
+    <ClInclude Include="Application\Collider\ContactRecord.h" />
+    <ClInclude Include="Application\DeltaTime\DeltaTime.h" />
+    <ClInclude Include="Application\Enemy\Enemy.h" />
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
     <ClInclude Include="Engine\3D\DebugCamera.h" />
+    <ClInclude Include="Application\myRandom\MyRandom.h" />
+    <ClInclude Include="Application\Player\Player.h" />
+    <ClInclude Include="Application\Player\PlayerState.h" />
+    <ClInclude Include="Engine\Math\Int2.h" />
+    <ClInclude Include="Application\MapChip.h" />
     <ClInclude Include="Engine\Scene\AbstractSceneFactory.h" />
     <ClInclude Include="Engine\Scene\BaseScene.h" />
     <ClInclude Include="Engine\DirectX\ConstBuffer.h" />
@@ -246,7 +266,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;$(ProjectDir)application\GlobalVariables;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;$(ProjectDir)application\GlobalVariables;$(ProjectDir)application\DeltaTime;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -278,7 +298,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;$(ProjectDir)application\GlobalVariables;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;$(ProjectDir)application\GlobalVariables;$(ProjectDir)application\DeltaTime;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

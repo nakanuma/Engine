@@ -1,5 +1,7 @@
 #include "Framework.h"
 
+#include "GlobalVariables.h"
+
 void Framework::Initialize()
 {
 	// リークチェッカー
@@ -41,6 +43,9 @@ void Framework::Initialize()
 	soundManager->Initialize();
 
 	GlobalVariables::getInstance()->LoadAllFile();
+
+	deltaTime_ = DeltaTime::getInstance();
+	deltaTime_->Init();
 }
 
 void Framework::Finalize()
@@ -68,6 +73,8 @@ void Framework::Update()
 		RequestEnd();
 		return;
 	}
+
+	deltaTime_->Update();
 
 	// 入力の更新
 	Input::GetInstance()->Update();
