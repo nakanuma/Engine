@@ -130,7 +130,6 @@
     <ClInclude Include="Engine\3D\LightManager.h" />
     <ClInclude Include="Engine\3D\DebugCamera.h" />
     <ClInclude Include="Application\Collider\Collider.h" />
-    <ClInclude Include="Application\Collider\CollisionManager.h" />
     <ClInclude Include="Application\Collider\CollisionTypeIdDef.h" />
     <ClInclude Include="Application\Collider\ContactRecord.h" />
     <ClInclude Include="Application\Enemy\Enemy.h" />
