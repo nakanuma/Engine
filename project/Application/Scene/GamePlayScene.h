@@ -77,7 +77,6 @@ private:
 
 	std::unique_ptr<Player> player_;
 
-	// 衝突マネージャ
-	std::unique_ptr<CollisionManager> collisionManager_;
+	
 };
 

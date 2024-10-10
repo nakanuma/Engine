@@ -1,70 +1,52 @@
 #pragma once
-#include"Object3D.h"
-#include"CollisionTypeIdDef.h"
-#include"MyMath.h"
-#include"Float3.h"
+#pragma once
+
+#include <functional>
+#include "Object3D.h"
+#include "ModelManager.h"
+#include "Float3.h"
+#include <stdint.h>
 
 class Collider {
 public:
-
-	// 初期化
-	void Initialize();
-
-	// ワールドトランスフォームの初期化
-	void UpdateWorldTransform();
-	// 描画
+	Collider() = default;
+	void Init(const Float3& pos, float radius, std::function<void(Collider* a)> onCollisionFunc);
+	void Update();
 	void Draw();
-
-	// 半径取得
-	float GetRadius() { return radius_; }
-	// 半径設定
-	void SetRadius(float radius) { radius_ = radius; }
-
-	// AABB半径取得
-	Float3 GetAABBRadius() { return aabbRadius_; }
-	// AABB半径設定
-	void SetAABBRabius(Float3 aabbRad) { aabbRadius_ = aabbRad; }
-	// AABBの取得
-	AABB GetAABB() { return aabb_; }
-	// AABBの設定(確認用)です
-	void SetAABB(AABB aabb) { aabb_ = aabb; }
-
-	// 衝突時に呼ばれる関数
-	virtual void OnCollision([[maybe_unused]] Collider* other){};
-
-	virtual Float3 GetCenterPosition() const = 0;
-
-	virtual ~Collider() = default; 
-
-	// 種別IDの取得
-	uint32_t GetTypeID() const { return typeID_; };
-	// 種別IDの設定
-	void SetTypeID(uint32_t typeID);
-	// オブジェクトスケール
-	void SetScale(Float3 scale) { object.transform_.scale = scale; }
+	void OnCollision(Collider* collider) { onCollision_(collider); }
 
 private:
+	std::function<void(Collider* a)> onCollision_;
 
-	// 衝突モデル
-	ModelManager::ModelData modelCollosion_;
+	// 半径
+	float radius_;
 
-	// AABB用の半径
-	Float3 aabbRadius_ = {0.5f, 0.5f, 0.5f};
-
-	//AABB
-	AABB aabb_{};
-
-	// 球用衝突判定
-	float radius_ = 1.5f;
-	
-	//コライダーの数
-	int count = 0;
-
-	// オブジェクト3D
+	// オブジェクト
 	Object3D object;
 
-	// 種別ID
+	// 無敵時間
+	float invincibleTime_ = 0.0f;
+
 	uint32_t typeID_ = 0u;
+
+	// モデル
+	ModelManager::ModelData model_;
+
+public:
+	bool getIsInvincible() const { return invincibleTime_ > 0; }
+	void setInvincibleTime(const float& time) { invincibleTime_ = time; }
+
+	Float3 getPosition() const { return object.transform_.translate; }
+
+	float getRadius() const { return radius_; }
+	void setTransformParent(Object3D* parent) {
+		object.SetParent(parent);
+		object.UpdateMatrix();
+	}
+
+	uint32_t getTypeID() const { return typeID_; }
+	void setTypeID(uint32_t typeID) { typeID_ = typeID; }
+
 
 };
 
