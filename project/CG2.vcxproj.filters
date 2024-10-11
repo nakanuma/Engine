@@ -12,6 +12,8 @@
     <FxCompile Include="resources\Shaders\SobelFilter.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Sprite.PS.hlsl" />
     <FxCompile Include="resources\Shaders\Sprite.VS.hlsl" />
+    <FxCompile Include="resources\Shaders\Mapchip.VS.hlsl" />
+    <FxCompile Include="resources\Shaders\Mapchip.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application\GlobalVariables\GlobalVariables.cpp" />
@@ -124,7 +126,7 @@
     <ClInclude Include="Engine\Scene\SceneManager.h" />
     <ClInclude Include="Engine\Sound\SoundManager.h" />
     <ClInclude Include="Engine\Texture\SRVManager.h" />
-    <ClInclude Include="Engine\Util\StructuredBuffer.h" />
+    <ClInclude Include="Engine\DirectX\StructuredBuffer.h" />
     <ClInclude Include="Application\Scene\TitleScene.h" />
     <ClInclude Include="Engine\DirectX\RTVManager.h" />
     <ClInclude Include="Engine\3D\LightManager.h" />
@@ -142,6 +144,7 @@
     <None Include="resources\Shaders\Toon.hlsli" />
     <None Include="resources\Shaders\SobelFilter.hlsli" />
     <None Include="resources\Shaders\Sprite.hlsli" />
+    <None Include="resources\Shaders\Mapchip.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

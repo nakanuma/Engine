@@ -152,8 +152,13 @@ void GamePlayScene::Draw()
 
 	player_->Draw();
 
+#pragma region マップチップ描画用PSOに変更->マップチップ描画->通常PSOに戻す
+	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateMapchip());
 	// マップチップ
 	mapChip_->Draw();
+	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineState());
+#pragma endregion
+
 
 	collisionManager_->Draw();
 
