@@ -195,6 +195,8 @@ void GamePlayScene::Draw()
 
 	ImGui::DragFloat3("camera.rotation", &camera->transform.rotate.x, 0.01f);
 
+	ImGui::Text("fps : %.1f", ImGui::GetIO().Framerate);
+
 	ImGui::End();
 
 	// ImGuiの内部コマンドを生成する

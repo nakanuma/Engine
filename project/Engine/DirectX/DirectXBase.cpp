@@ -860,7 +860,7 @@ void DirectXBase::PostDraw()
 	commandQueue_->ExecuteCommandLists(1, commandLists);
 	
 	// FPS固定
-	UpdateFixFPS();
+	/*UpdateFixFPS();*/
 }
 
 ID3D12Device* DirectXBase::GetDevice()

@@ -3,9 +3,7 @@
 
 #include "DirectXBase.h"
 #include "GlobalVariables.h"
-#ifdef _DEBUG
 #include "externals/imgui/imgui.h"
-#endif // _DEBUG
 
 Player::~Player()
 {
