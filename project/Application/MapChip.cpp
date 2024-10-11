@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "Collision/Collider.h"
 #include "DeltaTime/DeltaTime.h"
 
 namespace
@@ -236,9 +237,9 @@ void MapChipField::IsMapY2(AABB& charcter,float& posY,float radY)
 	}
 }
 
-void MapChipField::CheckCollision_Enemy(Enemy* enemy)
+void MapChipField::CheckCollision_Collider(Collider* collider)
 {
-	Float3 colliderPos = enemy->GetCollider()->GetPosition();
+	Float3 colliderPos = collider->GetPosition();
 	IndexSet colliderIndex = GetMapChipIndexSetByPosition(colliderPos);
 
 	for(int32_t row = 1; row < 2; row++)
@@ -272,9 +273,9 @@ void MapChipField::CheckCollision_Enemy(Enemy* enemy)
 
 			float distance = Float3::Length(closestPoint - colliderPos);
 
-			if(distance <= enemy->GetCollider()->GetRadius())
+			if(distance <= collider->GetRadius())
 			{
-				enemy->OnCollisionMapChip({0,0},aabb.max.y,mapWorld_[currentIndex.zIndex][currentIndex.xIndex]->velocity_.y);
+				collider->OnCollisionMapChip(mapWorld_[currentIndex.zIndex][currentIndex.xIndex].get());
 			}
 		}
 	}
@@ -296,7 +297,7 @@ void MapChipField::MapObject::Update()
 
 	velocity_ = worldTransformBlocks_->transform_.translate - prePos_;
 
-	// AABBのmaxとminを設定
+	// AABBの max と min を 設定
 	collAABB_.max = Add(worldTransformBlocks_->transform_.translate,host_->rad_);
 	collAABB_.min = Subtract(worldTransformBlocks_->transform_.translate,host_->rad_);
 
@@ -496,10 +497,13 @@ void MapChipField::MapObject::WaveSpawn()
 
 void MapChipField::MapObject::Wave()
 {
-
+	if(currentAmplitude_ * currentAmplitude_ <= 0.0f)
+	{
+		return;
+	}
 	currentAmplitude_ -= kGravity * DeltaTime::getInstance()->getDeltaTime();
 
-	worldTransformBlocks_->transform_.translate.y += currentAmplitude_;
+	worldTransformBlocks_->transform_.translate.y += currentAmplitude_ ;
 
 	if(GetTranslate().y <= 0.01f)
 	{

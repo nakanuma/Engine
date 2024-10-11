@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include <functional>
 #include "Object3D.h"
@@ -7,16 +6,23 @@
 #include "Float3.h"
 #include <stdint.h>
 
+#include "Application/MapChip.h"
+
 class Collider
 {
 public:
 	Collider() = default;
-	void Init(const Float3& pos,float radius,[[maybe_unused]] std::function<void(Collider* a)> onCollisionFunc);
+	~Collider() = default;
+	void Init(const Float3& pos,float radius,
+			  std::function<void(Collider*)> onCollisionFunc,
+			  std::function<void(MapChipField::MapObject*)> onCollisionMapChip);
 	void Update();
 	void Draw();
 	void OnCollision(Collider* collider) { onCollision_(collider); }
+	void OnCollisionMapChip(MapChipField::MapObject* chip) { onCollisionMapChip_(chip); }
 private:
 	std::function<void(Collider* a)> onCollision_;
+	std::function<void(MapChipField::MapObject* chip)> onCollisionMapChip_;
 
 	// 半径
 	float radius_;

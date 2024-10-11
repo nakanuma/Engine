@@ -1,6 +1,7 @@
 #include "Collider.h"
 
-void Collider::Init(const Float3& pos, float radius, std::function<void(Collider*)> onCollisionFunc) {
+
+void Collider::Init(const Float3& pos, float radius, std::function<void(Collider*)> onCollisionFunc,std::function<void(MapChipField::MapObject* chip)> onCollisionMapChip) {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// Texture読み込み
@@ -18,6 +19,7 @@ void Collider::Init(const Float3& pos, float radius, std::function<void(Collider
 	radius_ = radius;
 
 	onCollision_ = onCollisionFunc;
+	onCollisionMapChip_ = onCollisionMapChip;
 }
 
 void Collider::Update() {

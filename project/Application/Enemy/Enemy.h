@@ -4,13 +4,13 @@
 
 #include <stdint.h>
 
-#include "Application/Collision/Collider.h"
 #include "ModelManager.h"
 #include "Object3D.h"
 
 #include "Float2.h"
 #include "Float3.h"
 
+class Collider;
 class Enemy
 {
 public:
@@ -21,7 +21,6 @@ public:
 	void Update();
 	void Draw();
 
-	void OnCollisionMapChip(const Float2& dir,float chipY,float mapChipVelocityY);
 private:
 	std::unique_ptr<Object3D> object_;
 	std::unique_ptr<Collider> collider_;

@@ -6,6 +6,8 @@
 #include "Object3D.h"
 #include "PlayerState.h"
 
+#include "Application/Collision/Collider.h"
+
 class Player
 {
 public:
@@ -16,6 +18,9 @@ public:
 	void Update();
 	void Draw();
 private:
+	Float3 prePos_;
+	Float3 velocity_;
+
 	std::unique_ptr<IPlayerState> currentState_;
 
 	ModelManager::ModelData bodyModelData_;
@@ -24,10 +29,14 @@ private:
 	ModelManager::ModelData handModelData_;
 	std::unique_ptr<Object3D> handObject_;
 
+	std::unique_ptr<Collider> handCollider_;
+
+	MapChipField* mapChipField_;
+
 	Float3 defaultHandOffset_;
-	// float handTrackingSensitivity_;
-	// Float3 currentHandOffset_;
 public:
+	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
+
 	void TransitionState(IPlayerState* state);
 
 	const Float3& GetBodyTranslate()const { return bodyObject_->transform_.translate; }
@@ -49,5 +58,6 @@ public:
 	const Float3& GetHandRotate()const { return handObject_->transform_.rotate; }
 	void SetHandRotate(const Float3& rotate) { handObject_->transform_.rotate = rotate; }
 
+	Collider* GetHandCollider()const { return handCollider_.get(); }
 };
 

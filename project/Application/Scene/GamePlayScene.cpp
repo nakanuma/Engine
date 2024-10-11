@@ -52,7 +52,6 @@ void GamePlayScene::Initialize()
 	object_->model_ = &model_;
 	object_->transform_.rotate = {0.0f,3.14f,0.0f};
 
-
 	// モデルの読み込みとテクスチャの設定(マップチップ)
 	modelBlock_ = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
 	modelBlock_.material.textureHandle = uvCheckerGH;
@@ -70,11 +69,12 @@ void GamePlayScene::Initialize()
 	camera->transform.translate = {20,50.0f,0};
 	object_->transform_.rotate = {0.0f,3.14f,0.0f};
 
+	uint32_t monsterBallTexture = TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice());
 	player_ = std::make_unique<Player>();
-	player_->Initialize(uvCheckerGH);
+	player_->Initialize(monsterBallTexture);
+	player_->SetMapChipField(mapChip_.get());
 
 	// Texture読み込み
-	uint32_t monsterBallTexture = TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice());
 	enemyModel = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
 	enemyModel.material.textureHandle = monsterBallTexture;
 
@@ -149,8 +149,6 @@ void GamePlayScene::Draw()
 
 	// マップチップ
 	mapChip_->Draw();
-
-
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -254,6 +252,9 @@ void GamePlayScene::CheckAllCollisions()
 {
 	for(auto& enemy : enemies_)
 	{
-		mapChip_->CheckCollision_Enemy(enemy.get());
+		mapChip_->CheckCollision_Collider(enemy->GetCollider());
 	}
+
+	mapChip_->CheckCollision_Collider(player_->GetHandCollider());
+
 }
