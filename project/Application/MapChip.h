@@ -8,6 +8,8 @@
 #include "Model/ModelManager.h"
 #include "MyMath.h"
 #include "Object3D.h"
+#include "InstancedObject.h"
+#include "Camera.h"
 
 #include "Int2.h"
 
@@ -43,7 +45,7 @@ public:
 
 		void Init();
 		void Update();
-		void Draw();
+		/*void Draw();*/
 
 		void StartWaveOrigin(float amplitude);
 		void StartWave(Int2 waveDirection,float amplitude);
@@ -56,7 +58,8 @@ public:
 	private:
 		IndexSet address_;
 
-		std::unique_ptr<Object3D> worldTransformBlocks_;
+		/*std::unique_ptr<Object3D> worldTransformBlocks_;*/
+		Transform transform_;
 		AABB collAABB_;
 
 		MapChipField* host_;
@@ -64,7 +67,7 @@ public:
 		float currentAmplitude_;
 	public:
 		const AABB& GetCollider()const { return collAABB_; }
-		const Float3& GetTranslate()const { return worldTransformBlocks_->transform_.translate; }
+		const Float3& GetTranslate()const { return transform_.translate; }
 	};
 
 public:
@@ -149,6 +152,12 @@ public:
 		}
 		mapWorld_[c][r]->StartWaveOrigin(amplitude);
 	}
+
+private:
+	InstancedObject mapObjIns_;
+
+	void InitInstancing();
+	void UpdateInstancedObjects();
 };
 
 

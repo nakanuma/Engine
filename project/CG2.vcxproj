@@ -42,6 +42,7 @@
     <ClCompile Include="Engine\Game\Framework.cpp" />
     <ClCompile Include="Application\Scene\GamePlayScene.cpp" />
     <ClCompile Include="Engine\3D\LightManager.cpp" />
+    <ClCompile Include="Engine\3D\InstancedObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Math\Matrix.cpp" />
     <ClCompile Include="Engine\Math\Matrix3x3.cpp" />
@@ -128,6 +129,7 @@
     <ClInclude Include="Application\Scene\TitleScene.h" />
     <ClInclude Include="Engine\DirectX\RTVManager.h" />
     <ClInclude Include="Engine\3D\LightManager.h" />
+    <ClInclude Include="Engine\3D\InstancedObject.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\Shaders\Mapchip.PS.hlsl">

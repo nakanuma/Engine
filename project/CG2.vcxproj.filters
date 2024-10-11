@@ -66,6 +66,7 @@
     <ClCompile Include="Application\Scene\TitleScene.cpp" />
     <ClCompile Include="Engine\DirectX\RTVManager.cpp" />
     <ClCompile Include="Engine\3D\DebugCamera.cpp" />
+    <ClCompile Include="Engine\3D\InstancedObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
@@ -74,6 +75,7 @@
     <ClCompile Include="Application\Collider\ContactRecord.cpp" />
     <ClCompile Include="Application\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\myRandom\MyRandom.cpp" />
+    <ClInclude Include="Engine\3D\InstancedObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />

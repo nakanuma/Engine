@@ -41,6 +41,8 @@ void MapChipField::Initialize(ModelManager::ModelData model)
 			}
 		}
 	}
+
+	InitInstancing();
 }
 
 void MapChipField::Update()
@@ -75,6 +77,9 @@ void MapChipField::Update()
 		}
 		i++;
 	}
+
+	// 描画用オブジェクトの更新
+	UpdateInstancedObjects();
 }
 
 void MapChipField::Draw()
@@ -86,9 +91,11 @@ void MapChipField::Draw()
 		{
 			if(!worldTransformBlock)
 				continue;
-			worldTransformBlock->Draw();
+			/*worldTransformBlock->Draw();*/
 		}
 	}
+
+	mapObjIns_.InstancedDraw();
 }
 
 void MapChipField::ResetMapChipData()
@@ -238,11 +245,58 @@ void MapChipField::IsMapY2(AABB& charcter,float& posY,float radY)
 	}
 }
 
+void MapChipField::InitInstancing()
+{
+	mapObjIns_.gTransformationMatrices.numMaxInstance_ = kNumBlockHorizontal * kNumBlockVirtical;
+	mapObjIns_.gTransformationMatrices.Create();
+
+	mapObjIns_.model_ = &model_;
+
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i)
+	{
+		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j)
+		{
+			if (GetMapChipTypeByIndex(j, i) == MapChipType::kBlock)
+			{
+				Matrix world = Matrix::Translation(mapWorld_[i][j]->GetTranslate());
+				Matrix view = Camera::GetCurrent()->MakeViewMatrix();
+				Matrix projection = Camera::GetCurrent()->MakePerspectiveFovMatrix();
+
+				// 初期座標をStructuredBufferに転送
+				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WVP = world * view * projection;
+				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].World = world;
+				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WorldInverseTranspose = Matrix::Inverse(world);
+			}
+		}
+	}
+}
+
+void MapChipField::UpdateInstancedObjects()
+{
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i)
+	{
+		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j)
+		{
+			if (GetMapChipTypeByIndex(j, i) == MapChipType::kBlock)
+			{
+				Matrix world = Matrix::Translation(mapWorld_[i][j]->GetTranslate());
+				Matrix view = Camera::GetCurrent()->MakeViewMatrix();
+				Matrix projection = Camera::GetCurrent()->MakePerspectiveFovMatrix();
+
+				// 初期座標をStructuredBufferに転送
+				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WVP = world * view * projection;
+				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].World = world;
+				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WorldInverseTranspose = Matrix::Inverse(world);
+			}
+		}
+	}
+}
+
 void MapChipField::MapObject::Init()
 {
-	worldTransformBlocks_ = std::make_unique<Object3D>();
-	worldTransformBlocks_->model_ = &host_->model_;
-	worldTransformBlocks_->transform_.translate = host_->GetMapChipPositionByIndex(address_.xIndex,address_.zIndex);
+	/*worldTransformBlocks_ = std::make_unique<Object3D>();
+	worldTransformBlocks_->model_ = &host_->model_;*/
+	/*worldTransformBlocks_->*/transform_.translate = host_->GetMapChipPositionByIndex(address_.xIndex,address_.zIndex);
 	collAABB_.max = Add(GetTranslate(),host_->rad_);
 	collAABB_.min = Subtract(GetTranslate(),host_->rad_);
 }
@@ -251,16 +305,16 @@ void MapChipField::MapObject::Update()
 {
 	Wave();
 	// AABBのmaxとminを設定
-	collAABB_.max = Add(worldTransformBlocks_->transform_.translate,host_->rad_);
-	collAABB_.min = Subtract(worldTransformBlocks_->transform_.translate,host_->rad_);
+	collAABB_.max = Add(/*worldTransformBlocks_->*/transform_.translate,host_->rad_);
+	collAABB_.min = Subtract(/*worldTransformBlocks_->*/transform_.translate,host_->rad_);
 
-	worldTransformBlocks_->UpdateMatrix();
+	/*worldTransformBlocks_->UpdateMatrix();*/
 }
 
-void MapChipField::MapObject::Draw()
-{
-	worldTransformBlocks_->Draw();
-}
+//void MapChipField::MapObject::Draw()
+//{
+//	worldTransformBlocks_->Draw();
+//}
 
 void MapChipField::MapObject::StartWaveOrigin(float amplitude)
 {
@@ -453,12 +507,12 @@ void MapChipField::MapObject::Wave()
 	
 	currentAmplitude_ -= kGravity * DeltaTime::getInstance()->getDeltaTime();
 
-	worldTransformBlocks_->transform_.translate.y += currentAmplitude_;
+	/*worldTransformBlocks_->*/transform_.translate.y += currentAmplitude_;
 
 	if(GetTranslate().y <= 0.01f)
 	{
 		currentAmplitude_ = 0.0f;
-		worldTransformBlocks_->transform_.translate.y = 0.0f;
+		/*worldTransformBlocks_->*/transform_.translate.y = 0.0f;
 		return;
 	}
 }
