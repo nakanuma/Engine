@@ -15,7 +15,7 @@
 
 #include "Application/Player/Player.h"
 #include "Application/MapChip.h"
-#include "Application/Collider/CollisionManager.h"
+#include "Application/Collision/CollisionManager.h"
 #include "Application/Enemy/Enemy.h"
 
 // ゲームプレイシーン
@@ -59,6 +59,8 @@ private:
 	/// ↓ ゲームシーン用
 	///
 
+	std::unique_ptr<CollisionManager> collisionManager_;
+
 	// モデルデータ
 	ModelManager::ModelData model_;
 	// 3Dオブジェクト
@@ -76,7 +78,5 @@ private:
 	std::list<std::unique_ptr<Enemy>> enemies_;
 
 	std::unique_ptr<Player> player_;
-
-	
 };
 

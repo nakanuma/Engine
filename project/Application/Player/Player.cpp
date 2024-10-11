@@ -22,6 +22,7 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	bodyModelData_.material.textureHandle = uvCheckerGH;
 	bodyObject_ = std::make_unique<Object3D>();
 	bodyObject_->model_ = &bodyModelData_;
+	bodyObject_->transform_.translate.y = 4.0f;
 
 ///===========================================================================================
 /// Hand
@@ -30,13 +31,21 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	handModelData_.material.textureHandle = uvCheckerGH;
 	handObject_ = std::make_unique<Object3D>();
 	handObject_->model_ = &handModelData_;
-
 	// handObject_.parent = &body;
+
+	auto onCollision = []([[maybe_unused]] Collider* a) {};
+	auto onCollisionMapChip = [this](MapChipField::MapObject* mapObj)
+	{
+		MapChipField::IndexSet address = mapObj->GetIndexSet();
+		mapChipField_->SetAmplitude(address.zIndex,address.xIndex,1.6f);
+	};
+	handCollider_ = std::make_unique<Collider>();
+	handCollider_->Init(handObject_->transform_.translate,2.0f,onCollision,onCollisionMapChip);
 
 ///===========================================================================================
 /// GlobalVariables
 ///===========================================================================================
-	
+
 
 ///===========================================================================================
 /// State
@@ -49,6 +58,8 @@ void Player::Update()
 	currentState_->Update();
 	bodyObject_->UpdateMatrix();
 	handObject_->UpdateMatrix();
+
+	handCollider_->SetPosition(handObject_->transform_.translate);
 }
 
 void Player::Draw()

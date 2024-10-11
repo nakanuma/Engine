@@ -11,6 +11,7 @@
 
 #include "Int2.h"
 
+class Collider;
 // マップチップタイプ
 enum class MapChipType
 {
@@ -30,8 +31,8 @@ public:
 	// マップ単位XZ
 	struct IndexSet
 	{
-		uint32_t xIndex;
-		uint32_t zIndex;
+		int32_t xIndex;
+		int32_t zIndex;
 	};
 
 	// マップチップ1つの
@@ -50,14 +51,17 @@ public:
 		std::queue<std::function<void()>> startWaveTaskQueue_;
 
 		void WaveSpawn();
+
 		bool isStop = false;
+		AABB collAABB_;
+		Float3 velocity_;
 	private:
 		void Wave();
 	private:
+		Float3 prePos_;
 		IndexSet address_;
 
 		std::unique_ptr<Object3D> worldTransformBlocks_;
-		AABB collAABB_;
 
 		MapChipField* host_;
 
@@ -65,10 +69,10 @@ public:
 	public:
 		const AABB& GetCollider()const { return collAABB_; }
 		const Float3& GetTranslate()const { return worldTransformBlocks_->transform_.translate; }
+		IndexSet GetIndexSet()const { return address_; }
 	};
 
 public:
-
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -113,6 +117,8 @@ public:
 	void IsMapY(AABB& charcter,float& posY,float radY);
 	// マップチップ全体のAABBと当たり判定をとり当たったAABBとY座標の固定処理(onGround_がtrue)のとき
 	void IsMapY2(AABB& charcter,float& posY,float radY);
+
+	void CheckCollision_Collider(Collider* collider);
 private:
 
 	// モデルデータ
@@ -122,7 +128,7 @@ private:
 	static inline const float kBlockWidth = 1.0f;
 	static inline const float kBlockHeight = 1.0f;
 
-	// 1ブロックの個数
+	// ブロックの個数
 	static inline const uint32_t kNumBlockVirtical = 20;
 	static inline const uint32_t kNumBlockHorizontal = 20;
 
@@ -150,5 +156,3 @@ public:
 		mapWorld_[c][r]->StartWaveOrigin(amplitude);
 	}
 };
-
-

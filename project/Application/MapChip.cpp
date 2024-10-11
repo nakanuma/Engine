@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "Collision/Collider.h"
 #include "DeltaTime/DeltaTime.h"
 
 namespace
@@ -33,7 +34,7 @@ void MapChipField::Initialize(ModelManager::ModelData model)
 			if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
 			{
 				// MapObjectの生成
-				auto mapObject = std::make_unique<MapObject>(this,IndexSet(i,j));
+				auto mapObject = std::make_unique<MapObject>(this,IndexSet(j,i));
 				mapObject->Init();
 
 				// マップワールドに格納
@@ -104,7 +105,6 @@ void MapChipField::ResetMapChipData()
 //読み込み
 void MapChipField::LoadMapChipCsv(const std::string& filePath)
 {
-
 	// マップチップデータをリセット
 	ResetMapChipData();
 
@@ -131,7 +131,6 @@ void MapChipField::LoadMapChipCsv(const std::string& filePath)
 
 		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-
 			std::string word;
 			getline(line_stream,word,',');
 
@@ -238,6 +237,50 @@ void MapChipField::IsMapY2(AABB& charcter,float& posY,float radY)
 	}
 }
 
+void MapChipField::CheckCollision_Collider(Collider* collider)
+{
+	Float3 colliderPos = collider->GetPosition();
+	IndexSet colliderIndex = GetMapChipIndexSetByPosition(colliderPos);
+
+	for(int32_t row = 1; row < 2; row++)
+	{
+		IndexSet currentIndex;
+		currentIndex.zIndex = colliderIndex.zIndex + row;
+		if(currentIndex.zIndex < 0 || currentIndex.zIndex >= mapWorld_.size())
+		{
+			continue;
+		}
+		for(int32_t col = -1; col < 2; col++)
+		{
+			currentIndex.xIndex = colliderIndex.xIndex + row;
+			// 自分自身をスキップ
+			if(row == 0 && col == 0)
+			{
+				continue;
+			}
+			// 列が範囲外なら早期にスキップ
+			if(currentIndex.xIndex < 0 || currentIndex.xIndex >= mapWorld_[row].size())
+			{
+				continue;
+			}
+
+			auto& aabb = mapWorld_[currentIndex.zIndex][currentIndex.xIndex]->collAABB_;
+			Float3 closestPoint = {
+				std::clamp<float>(colliderPos.x,aabb.min.x,aabb.max.x),
+				std::clamp<float>(colliderPos.y,aabb.min.y,aabb.max.y),
+				std::clamp<float>(colliderPos.z,aabb.min.z,aabb.max.z)
+			};
+
+			float distance = Float3::Length(closestPoint - colliderPos);
+
+			if(distance <= collider->GetRadius())
+			{
+				collider->OnCollisionMapChip(mapWorld_[currentIndex.zIndex][currentIndex.xIndex].get());
+			}
+		}
+	}
+}
+
 void MapChipField::MapObject::Init()
 {
 	worldTransformBlocks_ = std::make_unique<Object3D>();
@@ -249,8 +292,12 @@ void MapChipField::MapObject::Init()
 
 void MapChipField::MapObject::Update()
 {
+	prePos_ = worldTransformBlocks_->transform_.translate;
 	Wave();
-	// AABBのmaxとminを設定
+
+	velocity_ = worldTransformBlocks_->transform_.translate - prePos_;
+
+	// AABBの max と min を 設定
 	collAABB_.max = Add(worldTransformBlocks_->transform_.translate,host_->rad_);
 	collAABB_.min = Subtract(worldTransformBlocks_->transform_.translate,host_->rad_);
 
@@ -450,10 +497,13 @@ void MapChipField::MapObject::WaveSpawn()
 
 void MapChipField::MapObject::Wave()
 {
-	
+	if(currentAmplitude_ * currentAmplitude_ <= 0.0f)
+	{
+		return;
+	}
 	currentAmplitude_ -= kGravity * DeltaTime::getInstance()->getDeltaTime();
 
-	worldTransformBlocks_->transform_.translate.y += currentAmplitude_;
+	worldTransformBlocks_->transform_.translate.y += currentAmplitude_ ;
 
 	if(GetTranslate().y <= 0.01f)
 	{
