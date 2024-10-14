@@ -349,7 +349,7 @@ void MapChipField::MapObject::Init()
 
 void MapChipField::MapObject::Update()
 {
-	prePos_ = worldTransformBlocks_->transform_.translate;
+	prePos_ = /*worldTransformBlocks_->*/transform_.translate;
 	Wave();
 	// AABBのmaxとminを設定
 	collAABB_.max = Add(/*worldTransformBlocks_->*/transform_.translate,host_->rad_);

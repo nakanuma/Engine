@@ -65,7 +65,6 @@ public:
 
 		/*std::unique_ptr<Object3D> worldTransformBlocks_;*/
 		Transform transform_; // 上記のオブジェクトが必要無くなったのでTransformをそのまま持たせる
-		AABB collAABB_;
 
 		MapChipField* host_;
 
@@ -73,6 +72,7 @@ public:
 	public:
 		const AABB& GetCollider()const { return collAABB_; }
 		const Float3& GetTranslate()const { return transform_.translate; }
+		IndexSet GetIndexSet()const { return address_; }
 	};
 
 public:
