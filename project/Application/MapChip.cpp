@@ -247,11 +247,13 @@ void MapChipField::IsMapY2(AABB& charcter,float& posY,float radY)
 
 void MapChipField::InitInstancing()
 {
+	// ブロックの最大数分、StructuredBufferを用意して作成
 	mapObjIns_.gTransformationMatrices.numMaxInstance_ = kNumBlockHorizontal * kNumBlockVirtical;
 	mapObjIns_.gTransformationMatrices.Create();
-
+	// モデルを指定
 	mapObjIns_.model_ = &model_;
 
+	// 全てのブロックの情報をStructuredBufferに格納
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i)
 	{
 		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j)
@@ -273,6 +275,7 @@ void MapChipField::InitInstancing()
 
 void MapChipField::UpdateInstancedObjects()
 {
+	// 全てのブロックの情報をStructuredBufferに転送して更新する
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i)
 	{
 		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j)

@@ -59,7 +59,7 @@ public:
 		IndexSet address_;
 
 		/*std::unique_ptr<Object3D> worldTransformBlocks_;*/
-		Transform transform_;
+		Transform transform_; // 上記のオブジェクトが必要無くなったのでTransformをそのまま持たせる
 		AABB collAABB_;
 
 		MapChipField* host_;
@@ -154,6 +154,7 @@ public:
 	}
 
 private:
+	// Instancing用オブジェクト
 	InstancedObject mapObjIns_;
 
 	void InitInstancing();
