@@ -147,8 +147,13 @@ void GamePlayScene::Draw()
 
 	player_->Draw();
 
+#pragma region マップチップ描画用PSOに変更->マップチップ描画->通常PSOに戻す
+	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateMapchip());
 	// マップチップ
 	mapChip_->Draw();
+	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineState());
+#pragma endregion
+
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -182,6 +187,8 @@ void GamePlayScene::Draw()
 #endif
 
 	ImGui::DragFloat3("camera.rotation",&camera->transform.rotate.x,0.01f);
+
+	ImGui::Text("fps : %.1f", ImGui::GetIO().Framerate);
 
 	ImGui::End();
 

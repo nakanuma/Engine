@@ -68,6 +68,8 @@ public:
 		CreateRootSignature();
 		// RootSignature生成(Particle用)
 		CreateRootSignatureParticle();
+		// RootSignature生成(Mapchip用)
+		CreateRootSignatureMapchip();
 
 		// InputLayoutの設定
 		SetInputLayout();
@@ -112,6 +114,8 @@ public:
 	void CreateRootSignature();
 	// RootSignature生成(Particle用)
 	void CreateRootSignatureParticle();
+	// RootSignature生成(Mapchip用)
+	void CreateRootSignatureMapchip();
 	// InputLayoutの設定
 	void SetInputLayout();
 	// BlendStateの設定
@@ -177,6 +181,11 @@ public:
 	// ポストエフェクト用PSOを取得
 	ID3D12PipelineState* GetPipelineStateSobelFilter() { return graphicsPipelineStateSobelFilter_.Get(); }
 
+	// Mapchip用ルートシグネチャを取得
+	ID3D12RootSignature* GetRootSignatureMapchip() { return rootSignatureMapchip_.Get(); }
+	// Mapchip用PSOを取得
+	ID3D12PipelineState* GetPipelineStateMapchip() { return graphicsPipelineStateMapchip_.Get(); }
+
 	friend RTVManager;
 private:
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
@@ -202,6 +211,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignatureParticle_;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignatureMapchip_;
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[5];
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc_;
 
@@ -219,6 +229,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineStateBlendModeScreen_;
 	// ポストエフェクト用PSO
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineStateSobelFilter_;
+	// Mapchip用PSO
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineStateMapchip_;
 
 	D3D12_RASTERIZER_DESC rasterizerDesc_;
 	// 通常
@@ -230,6 +242,9 @@ private:
 	// ソベルフィルター用
 	IDxcBlob* vertexShaderBlobSobel_;
 	IDxcBlob* pixelShaderBlobSobel_;
+	// マップチップ用
+	IDxcBlob* vertexShaderBlobMapchip_;
+	IDxcBlob* pixelShaderBlobMapchip_;
 
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineStateOutline_;
