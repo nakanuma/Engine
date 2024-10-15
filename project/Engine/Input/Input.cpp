@@ -4,6 +4,8 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
+#pragma comment(lib, "xinput.lib")
+
 Input* Input::GetInstance()
 {
 	static Input instance;
@@ -47,6 +49,20 @@ void Input::Initialize(Window* window)
 	result = mouse_->SetCooperativeLevel(
 		window->GetHandle(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 	assert(SUCCEEDED(result));
+
+	// XInputデバイスの登録
+	for (DWORD i = 0; i < XUSER_MAX_COUNT; i++) {
+		XINPUT_STATE state = {};
+		if (XInputGetState(i, &state) == ERROR_SUCCESS) {
+			// XInputデバイスが接続されている場合
+			Joystick joystick;
+			joystick.type_ = PadType::XInput;
+			joystick.deadZoneL_ = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
+			joystick.deadZoneR_ = XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;
+			joysticks_.push_back(joystick);
+		}
+	}
+
 }
 
 void Input::Update()
@@ -136,4 +152,60 @@ int32_t Input::GetWheel() const {
 
 const POINT& Input::GetMousePosition() const { 
 	return mousePosition_; 
+}
+
+bool Input::GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const { 
+	// stickNoが範囲内かチェック
+	if (stickNo < 0 || stickNo >= joysticks_.size()) {
+		return false; // 無効なジョイスティック番号
+	}
+
+	// 指定されたジョイスティックを取得
+	const Joystick& joystick = joysticks_[stickNo];
+
+	// ジョイスティックがXInputタイプか確認
+	if (joystick.type_ != PadType::XInput) {
+		return false; // DirectInputコントローラーの場合は処理しない
+	}
+
+	// XInputから状態を取得
+	DWORD result = XInputGetState(stickNo, &out);
+	if (result != ERROR_SUCCESS) {
+		return false; // 状態取得失敗
+	}
+
+	///
+	///	デッドゾーンの適用
+	/// 
+	
+	// 左スティック
+	if (abs(out.Gamepad.sThumbLX) < joysticks_[stickNo].deadZoneL_) {
+		out.Gamepad.sThumbLX = 0;
+	}
+	if (abs(out.Gamepad.sThumbLY) < joysticks_[stickNo].deadZoneL_) {
+		out.Gamepad.sThumbLY = 0;
+	}
+	// 右スティック
+	if (abs(out.Gamepad.sThumbRX) < joysticks_[stickNo].deadZoneL_) {
+		out.Gamepad.sThumbRX = 0;
+	}
+	if (abs(out.Gamepad.sThumbRY) < joysticks_[stickNo].deadZoneL_) {
+		out.Gamepad.sThumbRY = 0;
+	}
+
+	return true; // 正常に取得
+}
+
+void Input::SetJoystickDeadZone(int32_t stickNo, int32_t deadZoneL, int32_t deadZoneR) {
+	// ジョイスティック番号が有効か確認
+	if (stickNo < 0 || stickNo >= joysticks_.size()) {
+		return; // 無効なジョイスティック番号の場合は終了
+	}
+
+	// 対象のジョイスティックを取得
+	Joystick& joystick = joysticks_[stickNo];
+
+	// 左右スティックのデッドゾーンを設定
+	joystick.deadZoneL_ = deadZoneL;
+	joystick.deadZoneR_ = deadZoneR;
 }
