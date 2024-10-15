@@ -17,6 +17,7 @@
 #include "Application/MapChip.h"
 #include "Application/Collision/CollisionManager.h"
 #include "Application/Enemy/Enemy.h"
+#include "Application/Enemy/EnemySpawner.h"
 
 // ゲームプレイシーン
 class GamePlayScene : public BaseScene
@@ -75,6 +76,12 @@ private:
 	std::vector<std::vector<std::unique_ptr<Object3D>>> objectBlocks_;
 
 	ModelManager::ModelData enemyModel;
+	int32_t enemySpawnerValue_;
+#ifdef _DEBUG
+	int32_t preEnemySpawnerValue_;
+#endif // _DEBUG
+
+	std::vector<std::unique_ptr<EnemySpawner>> enemySpawners_;
 	std::list<std::unique_ptr<Enemy>> enemies_;
 
 	std::unique_ptr<Player> player_;

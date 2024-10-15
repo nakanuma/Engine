@@ -71,6 +71,8 @@ void Player::Draw()
 {
 	ImGui::DragFloat3("Rotate",&bodyObject_->transform_.rotate.x,0.1f);
 	ImGui::DragFloat3("Translate",&bodyObject_->transform_.translate.x,0.1f);
+
+	ImGui::DragFloat3("Hand.Translate", &handObject_->transform_.translate.x, 0.1f);
 	bodyObject_->Draw();
 
 	handObject_->Draw();

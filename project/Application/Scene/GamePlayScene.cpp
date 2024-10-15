@@ -11,8 +11,11 @@ void GamePlayScene::Initialize()
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// カメラのインスタンスを生成
-	camera = std::make_unique<Camera>(Float3{0.0f,15.0f,-40.0f},Float3{0.3f,0.0f,0.0f},0.45f);
+	camera = std::make_unique<Camera>(Float3{10.0f, 20.0f, -30.0f}, Float3{0.44f, 0.0f, 0.0f}, 0.45f);
 	Camera::Set(camera.get()); // 現在のカメラをセット
+
+	// カメラのoriginalPositionに現在のカメラのtranslateをセット（シェイク時に使用、ずれを防止するために必要）
+	camera->SetOriginalPosition(camera->transform.translate);
 
 	// デバッグカメラの生成と初期化
 	debugCamera = std::make_unique<DebugCamera>();
@@ -64,19 +67,26 @@ void GamePlayScene::Initialize()
 	// そのあとに初期化
 	mapChip_->Initialize(modelBlock_);
 
-	// カメラ位置
-	camera->transform.rotate = {1.14f,0,0};
-	camera->transform.translate = {20,50.0f,0};
-	object_->transform_.rotate = {0.0f,3.14f,0.0f};
+	object_->transform_.rotate = {0.0f, 3.14f, 0.0f};
 
+	// Texture読み込み
 	uint32_t monsterBallTexture = TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice());
 	player_ = std::make_unique<Player>();
 	player_->Initialize(monsterBallTexture);
 	player_->SetMapChipField(mapChip_.get());
 
-	// Texture読み込み
+	GlobalVariables::getInstance()->addValue("Game","EnemySpawner_Default","spawnerValue",enemySpawnerValue_);
 	enemyModel = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
 	enemyModel.material.textureHandle = monsterBallTexture;
+
+	for(size_t i = 0; i < enemySpawnerValue_; i++)
+	{
+		enemySpawners_.push_back(std::make_unique<EnemySpawner>());
+		enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+	}
+#ifdef _DEBUG
+	preEnemySpawnerValue_ = enemySpawnerValue_;
+#endif // _DEBUG
 
 	// 衝突マネージャの生成
 	collisionManager_ = std::make_unique<CollisionManager>();
@@ -88,6 +98,25 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
+#ifdef _DEBUG
+	int32_t movingSpawnerValue = enemySpawnerValue_ - preEnemySpawnerValue_;
+	if(movingSpawnerValue >=  1)
+	{
+		for(size_t i = 0; i < movingSpawnerValue; i++)
+		{
+			enemySpawners_.push_back(std::make_unique<EnemySpawner>());
+			enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+		}
+	} else if(movingSpawnerValue <= -1)
+	{
+		for(size_t i = 0; i < movingSpawnerValue; i++)
+		{
+			enemySpawners_.pop_back();
+		}
+	}
+	preEnemySpawnerValue_ = enemySpawnerValue_;
+#endif // _DEBUG
+
 	if(input->TriggerKey(DIK_1))
 	{
 		// 定数値でウェーブを起こす
@@ -106,6 +135,17 @@ void GamePlayScene::Update()
 
 	player_->Update();
 
+	for(auto& enemySpawner : enemySpawners_)
+	{
+		enemySpawner->Update();
+		if(enemySpawner->IsSpawn())
+		{
+			std::unique_ptr<Enemy> enemy;
+			enemy.reset(enemySpawner->Spawn());
+			enemies_.emplace_back(std::move(enemy));
+		}
+	}
+
 	for(auto& enemy : enemies_)
 	{
 		enemy->Update();
@@ -114,6 +154,17 @@ void GamePlayScene::Update()
 	mapChip_->Update();
 
 	object_->UpdateMatrix();
+
+	#pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
+
+	// プレイヤーの手が地面にめり込んだらシェイク開始
+	if (player_->GetHandTranslate().y <= 0.0f) {
+		camera->ApplyShake(1.5f, 150);
+	}
+	// カメラのシェイクを更新
+	camera->UpdateShake();
+
+	#pragma endregion
 
 #ifdef _DEBUG // デバッグカメラ
 	DebugCameraUpdate(input);
@@ -145,6 +196,10 @@ void GamePlayScene::Draw()
 
 	// オブジェクトの描画
 	object_->Draw();
+	for(auto& enemySpawner : enemySpawners_)
+	{
+		enemySpawner->Draw();
+	}
 
 	for(auto& enemy : enemies_)
 	{

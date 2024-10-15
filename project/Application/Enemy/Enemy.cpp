@@ -7,22 +7,24 @@
 
 #include <cmath>
 
+Enemy::Enemy()
+{
+}
+
 Enemy::~Enemy()
 {
+
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->DestroyItem("Game","Enemy","speed");
 }
 
-void Enemy::Initialize(ModelManager::ModelData* modelData)
+void Enemy::Initialize(Float2 moveDirection,ModelManager::ModelData* modelData)
 {
 	object_ = std::make_unique<Object3D>();
 	object_->model_ = modelData;
 	object_->transform_.translate = {2.0f,2.0f,2.0f};
 
-	// MyRandom randX = MyRandom(-1.0f,1.0f);
-	// MyRandom randZ = MyRandom(-1.0f,1.0f);
-
-	moveDirection_ = {0.5f,0.5f};
+	moveDirection_ = moveDirection;
 	moveDirection_ = Float2::Normalize(moveDirection_);
 	object_->transform_.rotate.y = atan2(moveDirection_.y,moveDirection_.x);
 
@@ -35,7 +37,7 @@ void Enemy::Initialize(ModelManager::ModelData* modelData)
 		floorVelocityY_ += mapObject->velocity_.y;
 		object_->transform_.translate.y = mapObject->GetTranslate().y;
 	};
-	
+
 	collider_->Init(object_->transform_.translate,1.0f,onCollision,onCollisionMapChip);
 
 	GlobalVariables* variables = GlobalVariables::getInstance();
@@ -45,7 +47,7 @@ void Enemy::Initialize(ModelManager::ModelData* modelData)
 void Enemy::Update()
 {
 	if(preOnGround_ && !isOnGround_)
-	{// 地面を離れた 
+	{// 地面を離れた
 		velocity_.y = floorVelocityY_;
 	} else if(!preOnGround_ && isOnGround_)
 	{// 着地した 瞬間
