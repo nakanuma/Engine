@@ -119,7 +119,18 @@ void GamePlayScene::Update()
 
 	if(input->TriggerKey(DIK_1))
 	{
-		mapChip_->SetAmplitude(0,15,1.8f);
+		// 定数値でウェーブを起こす
+		int hitX = 10;
+		int hitZ = 10;
+		float waveRange = 15.0f;
+		float initialYVelocity = 0.86f;
+		mapChip_->TriggerWave(hitX, hitZ, waveRange, initialYVelocity);
+		
+	} else if(input->TriggerKey(DIK_2))
+	{
+		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
+		enemy->Initialize(&enemyModel);
+		enemies_.emplace_back(std::move(enemy));
 	}
 
 	player_->Update();

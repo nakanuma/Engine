@@ -35,7 +35,14 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	auto onCollisionMapChip = [this](MapChipField::MapObject* mapObj)
 	{
 		MapChipField::IndexSet address = mapObj->GetIndexSet();
-		mapChipField_->SetAmplitude(address.zIndex,address.xIndex,1.6f);
+		
+		// 修正必要箇所
+		// 今は定数値
+		// ウェーブ範囲
+		float waveRange = 10.0f;
+		// Y軸速度
+		float initialYVelocity = 0.86f;
+		mapChipField_->TriggerWave(address.zIndex,address.xIndex,waveRange,initialYVelocity);
 	};
 	handCollider_ = std::make_unique<Collider>();
 	handCollider_->Init(handObject_->transform_.translate,2.0f,onCollision,onCollisionMapChip);

@@ -71,6 +71,7 @@ public:
 
 	void Initialize()override;
 	void Update()override;
+
 private:
 	float maxTime_;
 	// 最低限の 硬直 時間

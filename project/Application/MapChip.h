@@ -27,6 +27,7 @@ struct  MapChipData
 	std::vector<std::vector<MapChipType>> data;
 };
 
+// マップチップ全体
 class MapChipField
 {
 public:
@@ -46,32 +47,24 @@ public:
 
 		void Init();
 		void Update();
-		/*void Draw();*/
 
-		void StartWaveOrigin(float amplitude);
-		void StartWave(Int2 waveDirection,float amplitude);
-		std::queue<std::function<void()>> startWaveTaskQueue_;
-
-		void WaveSpawn();
-
-		bool isStop = false;
-		AABB collAABB_;
-		Float3 velocity_;
-	private:
-		void Wave();
+		
+		float waveDelay;		// ウェーブの広がり遅延
+		bool isWeve = false;	// ウェーブしているかどうかのフラグ
+		AABB collAABB_;			// AABB
+		Float3 velocity_;		// マップの速度
 	private:
 		Float3 prePos_;
 		IndexSet address_;
 
-		/*std::unique_ptr<Object3D> worldTransformBlocks_;*/
 		Transform transform_; // 上記のオブジェクトが必要無くなったのでTransformをそのまま持たせる
 
 		MapChipField* host_;
 
-		float currentAmplitude_;
 	public:
 		const AABB& GetCollider()const { return collAABB_; }
 		const Float3& GetTranslate()const { return transform_.translate; }
+		void SetTranslate(Float3 &trans) { transform_.translate = trans; } // translateの設定
 		IndexSet GetIndexSet()const { return address_; }
 	};
 
@@ -122,6 +115,11 @@ public:
 	void IsMapY2(AABB& charcter,float& posY,float radY);
 
 	void CheckCollision_Collider(Collider* collider);
+
+	// 衝突時にウェーブを発生させるための関数(マップ番号、マップ番号、ウェーブ範囲、Y軸の速度)
+	void TriggerWave(int hitX, int hitZ, float waveRange, float initialYVelocity);
+
+
 private:
 
 	// モデルデータ
@@ -145,19 +143,17 @@ private:
 	//AABBの半径
 	Float3 rad_ = {0.5f,0.5f,0.5f};
 
+
+	// マップのウェーブ範囲
+	float maxWaveRange_; //MAX
+	float minWaveRange_; //MIN
+	// マップのY軸速度
+	float maxVelocityY_; //MAX
+	float minVelocityY_; //MIN
+
+
 public:
-	void SetAmplitude(int32_t r,int32_t c,float amplitude)
-	{
-		if(r >= mapWorld_.size())
-		{
-			return;
-		}
-		if(c >= mapWorld_[r].size())
-		{
-			return;
-		}
-		mapWorld_[c][r]->StartWaveOrigin(amplitude);
-	}
+
 
 private:
 	// Instancing用オブジェクト
