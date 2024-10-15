@@ -48,22 +48,28 @@ void MapChipField::Update()
 {
 	// 波
 	// ブロックの更新
-	for (int i = 0; i < mapWorld_.size(); ++i) {
-		for (int j = 0; j < mapWorld_[i].size(); ++j) {
+	for (int i = 0; i < mapWorld_.size(); ++i)
+	{
+		for (int j = 0; j < mapWorld_[i].size(); ++j) 
+		{
 			auto& worldTransformBlock = mapWorld_[i][j];
 			if (!worldTransformBlock)
 				continue;
 
 			// ウェーブが発生中の場合
-			if (worldTransformBlock->isWeve) {
+			if (worldTransformBlock->isWeve) 
+			{
 				// 遅延がまだ残っている場合はカウントダウン
-				if (worldTransformBlock->waveDelay > 0) {
+				if (worldTransformBlock->waveDelay > 0) 
+				{
+
+					// 速ければすぐ伝播する
 					worldTransformBlock->waveDelay -= 0.016f; // フレーム時間分減少（約60FPSの場合）
 					continue;                                 // 遅延中なので処理をスキップ
 				}
 
 				// 重力を適用してY軸を下降させる
-				worldTransformBlock->velocity_.y -= 0.1f;
+				worldTransformBlock->velocity_.y -= 0.098f;
 				
 				// マップチップの位置情報の取得
 				Float3 pos = worldTransformBlock->GetTranslate();
@@ -76,28 +82,25 @@ void MapChipField::Update()
 			}
 
 			// ブロックが下まで落ちたらリセット
-			if (worldTransformBlock->GetTranslate().y <= 0) {
-
+			if (worldTransformBlock->GetTranslate().y <= 0)
+			{
 				// マップのウェーブを止める 
 				worldTransformBlock->isWeve = false;
 
 				// 座標を取得
 			    Float3 pos = worldTransformBlock->GetTranslate();
 
-				//　Y座標を0に設定
+				// Y座標を0に設定
 				pos.y = 0;
 
-				//　値を設定
+				// 値を代入
 				worldTransformBlock->SetTranslate(pos);
 
-				// 速度を
+				// 速度を0に設定
 				worldTransformBlock->velocity_.y = 0;
 			}
-
-			
 		}
 	}
-
 	// ブロックの更新
 	int i = 0;
 	for(auto& worldTransformBlockLine : mapWorld_)
@@ -114,7 +117,6 @@ void MapChipField::Update()
 		}
 		i++;
 	}
-
 	// 描画用オブジェクトの更新
 	UpdateInstancedObjects();
 }
@@ -393,12 +395,17 @@ void MapChipField::MapObject::Update()
 	
 }
 
-// 衝突時にウェーブを発生させるための関数
-void MapChipField::TriggerWave(int hitX, int hitZ, float waveRange, float initialYVelocity) {
+// 衝突時にウェーブを発生させるための関数(マップ番号、マップ番号、ウェーブ範囲、Y軸の速度)
+void MapChipField::TriggerWave(int hitX, int hitZ, float waveRange, float initialYVelocity)
+{
 	// 衝突した位置から円状にウェーブを広げる
-	for (int i = 0; i < mapWorld_.size(); ++i) {
-		for (int j = 0; j < mapWorld_[i].size(); ++j) {
+	for (int i = 0; i < mapWorld_.size(); ++i) 
+	{
+		for (int j = 0; j < mapWorld_[i].size(); ++j)
+		{
 			auto& worldTransformBlock = mapWorld_[i][j];
+			
+			// マップブロックがないなら動作させない
 			if (!worldTransformBlock)
 				continue;
 
@@ -406,6 +413,7 @@ void MapChipField::TriggerWave(int hitX, int hitZ, float waveRange, float initia
 			if (i == hitX && j == hitZ)
 				continue;
 
+			// ウェーブしている物は動作させない
 			if (worldTransformBlock->isWeve)
 				continue;
 
@@ -417,9 +425,10 @@ void MapChipField::TriggerWave(int hitX, int hitZ, float waveRange, float initia
 			float distance = sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
 			// 衝突位置から一定範囲内にある場合にウェーブを発生
-			if (distance < waveRange) {
-				worldTransformBlock->isWeve = true;
-				worldTransformBlock->velocity_.y = initialYVelocity;
+			if (distance < waveRange) 
+			{
+				worldTransformBlock->isWeve = true; // ウェーブさせる
+				worldTransformBlock->velocity_.y = initialYVelocity; // y軸の速度を代入
 				worldTransformBlock->waveDelay = distance * 0.1f; // 距離に応じた遅延時間を設定
 			}
 		}

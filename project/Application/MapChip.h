@@ -48,26 +48,23 @@ public:
 		void Init();
 		void Update();
 
-		float waveDelay;
-		bool isWeve = false;
-		AABB collAABB_;
-		Float3 velocity_;
-	private:
-		//void Wave();
+		
+		float waveDelay;		// ウェーブの広がり遅延
+		bool isWeve = false;	// ウェーブしているかどうかのフラグ
+		AABB collAABB_;			// AABB
+		Float3 velocity_;		// マップの速度
 	private:
 		Float3 prePos_;
 		IndexSet address_;
 
-		/*std::unique_ptr<Object3D> worldTransformBlocks_;*/
 		Transform transform_; // 上記のオブジェクトが必要無くなったのでTransformをそのまま持たせる
 
 		MapChipField* host_;
 
-		//float currentAmplitude_;
 	public:
 		const AABB& GetCollider()const { return collAABB_; }
 		const Float3& GetTranslate()const { return transform_.translate; }
-		void SetTranslate(Float3 &trans) { transform_.translate = trans; };
+		void SetTranslate(Float3 &trans) { transform_.translate = trans; } // translateの設定
 		IndexSet GetIndexSet()const { return address_; }
 	};
 
@@ -119,7 +116,7 @@ public:
 
 	void CheckCollision_Collider(Collider* collider);
 
-	//ウェーブを発生させる関数
+	// 衝突時にウェーブを発生させるための関数(マップ番号、マップ番号、ウェーブ範囲、Y軸の速度)
 	void TriggerWave(int hitX, int hitZ, float waveRange, float initialYVelocity);
 
 
@@ -145,6 +142,15 @@ private:
 
 	//AABBの半径
 	Float3 rad_ = {0.5f,0.5f,0.5f};
+
+
+	// マップのウェーブ範囲
+	float maxWaveRange_; //MAX
+	float minWaveRange_; //MIN
+	// マップのY軸速度
+	float maxVelocityY_; //MAX
+	float minVelocityY_; //MIN
+
 
 public:
 
