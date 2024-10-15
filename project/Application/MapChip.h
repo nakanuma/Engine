@@ -27,6 +27,7 @@ struct  MapChipData
 	std::vector<std::vector<MapChipType>> data;
 };
 
+// マップチップ全体
 class MapChipField
 {
 public:
@@ -46,19 +47,13 @@ public:
 
 		void Init();
 		void Update();
-		/*void Draw();*/
 
-		void StartWaveOrigin(float amplitude);
-		void StartWave(Int2 waveDirection,float amplitude);
-		std::queue<std::function<void()>> startWaveTaskQueue_;
-
-		void WaveSpawn();
-
-		bool isStop = false;
+		float waveDelay;
+		bool isWeve = false;
 		AABB collAABB_;
 		Float3 velocity_;
 	private:
-		void Wave();
+		//void Wave();
 	private:
 		Float3 prePos_;
 		IndexSet address_;
@@ -68,10 +63,11 @@ public:
 
 		MapChipField* host_;
 
-		float currentAmplitude_;
+		//float currentAmplitude_;
 	public:
 		const AABB& GetCollider()const { return collAABB_; }
 		const Float3& GetTranslate()const { return transform_.translate; }
+		void SetTranslate(Float3 &trans) { transform_.translate = trans; };
 		IndexSet GetIndexSet()const { return address_; }
 	};
 
@@ -122,6 +118,11 @@ public:
 	void IsMapY2(AABB& charcter,float& posY,float radY);
 
 	void CheckCollision_Collider(Collider* collider);
+
+	//ウェーブを発生させる関数
+	void TriggerWave(int hitX, int hitZ, float waveRange, float initialYVelocity);
+
+
 private:
 
 	// モデルデータ
@@ -146,18 +147,7 @@ private:
 	Float3 rad_ = {0.5f,0.5f,0.5f};
 
 public:
-	void SetAmplitude(int32_t r,int32_t c,float amplitude)
-	{
-		if(r >= mapWorld_.size())
-		{
-			return;
-		}
-		if(c >= mapWorld_[r].size())
-		{
-			return;
-		}
-		mapWorld_[c][r]->StartWaveOrigin(amplitude);
-	}
+
 
 private:
 	// Instancing用オブジェクト

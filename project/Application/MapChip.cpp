@@ -13,8 +13,6 @@ namespace
 	};
 }
 
-const float kGravity = 9.8f;
-
 void MapChipField::Initialize(ModelManager::ModelData model)
 {
 	model_ = model;
@@ -49,15 +47,54 @@ void MapChipField::Initialize(ModelManager::ModelData model)
 void MapChipField::Update()
 {
 	// 波
-	for(auto& worldTransformBlockLine : mapWorld_)
-	{
-		for(auto& worldTransformBlock : worldTransformBlockLine)
-		{
-			if(!worldTransformBlock)
-			{
+	// ブロックの更新
+	for (int i = 0; i < mapWorld_.size(); ++i) {
+		for (int j = 0; j < mapWorld_[i].size(); ++j) {
+			auto& worldTransformBlock = mapWorld_[i][j];
+			if (!worldTransformBlock)
 				continue;
+
+			// ウェーブが発生中の場合
+			if (worldTransformBlock->isWeve) {
+				// 遅延がまだ残っている場合はカウントダウン
+				if (worldTransformBlock->waveDelay > 0) {
+					worldTransformBlock->waveDelay -= 0.016f; // フレーム時間分減少（約60FPSの場合）
+					continue;                                 // 遅延中なので処理をスキップ
+				}
+
+				// 重力を適用してY軸を下降させる
+				worldTransformBlock->velocity_.y -= 0.1f;
+				
+				// マップチップの位置情報の取得
+				Float3 pos = worldTransformBlock->GetTranslate();
+
+				// ｙ座標にマップの速度を加算
+				pos.y += worldTransformBlock->velocity_.y;
+
+				// その値を設定する
+				worldTransformBlock->SetTranslate(pos);
 			}
-			worldTransformBlock->isStop = false;
+
+			// ブロックが下まで落ちたらリセット
+			if (worldTransformBlock->GetTranslate().y <= 0) {
+
+				// マップのウェーブを止める 
+				worldTransformBlock->isWeve = false;
+
+				// 座標を取得
+			    Float3 pos = worldTransformBlock->GetTranslate();
+
+				//　Y座標を0に設定
+				pos.y = 0;
+
+				//　値を設定
+				worldTransformBlock->SetTranslate(pos);
+
+				// 速度を
+				worldTransformBlock->velocity_.y = 0;
+			}
+
+			
 		}
 	}
 
@@ -72,7 +109,6 @@ void MapChipField::Update()
 			{
 				continue;
 			}
-			worldTransformBlock->WaveSpawn();
 			worldTransformBlock->Update();
 			j++;
 		}
@@ -207,7 +243,6 @@ void MapChipField::IsMapY(float& posY,float radY,IndexSet& index)
 		posY = mapWorld_[index.xIndex][index.zIndex]->GetTranslate().y + radY + rad_.y;
 	}
 }
-
 
 void MapChipField::IsMapY(AABB& charcter,float& posY,float radY)
 {
@@ -350,219 +385,44 @@ void MapChipField::MapObject::Init()
 void MapChipField::MapObject::Update()
 {
 	prePos_ = /*worldTransformBlocks_->*/transform_.translate;
-	Wave();
+	//Wave();
 	// AABBのmaxとminを設定
 	collAABB_.max = Add(/*worldTransformBlocks_->*/transform_.translate,host_->rad_);
 	collAABB_.min = Subtract(/*worldTransformBlocks_->*/transform_.translate,host_->rad_);
 
-	/*worldTransformBlocks_->UpdateMatrix();*/
+	
 }
 
-//void MapChipField::MapObject::Draw()
-//{
-//	worldTransformBlocks_->Draw();
-//}
-
-void MapChipField::MapObject::StartWaveOrigin(float amplitude)
-{
-	for(int row = -1; row < 2; row++)
-	{
-		int newRow = address_.xIndex + row;
-		// 行が範囲外なら早期にスキップ
-		if(newRow < 0 || newRow >= host_->mapWorld_.size())
-		{
-			continue;
-		}
-		for(int col = -1; col < 2; col++)
-		{
-			// 自分自身をスキップ
-			if(row == 0 && col == 0)
-			{
+// 衝突時にウェーブを発生させるための関数
+void MapChipField::TriggerWave(int hitX, int hitZ, float waveRange, float initialYVelocity) {
+	// 衝突した位置から円状にウェーブを広げる
+	for (int i = 0; i < mapWorld_.size(); ++i) {
+		for (int j = 0; j < mapWorld_[i].size(); ++j) {
+			auto& worldTransformBlock = mapWorld_[i][j];
+			if (!worldTransformBlock)
 				continue;
-			}
 
-			int newCol = address_.zIndex + col;
-
-			// 列が範囲外なら早期にスキップ
-			if(newCol < 0 || newCol >= host_->mapWorld_[newRow].size())
-			{
+			// 衝突位置のマップチップは動作させない
+			if (i == hitX && j == hitZ)
 				continue;
-			}
 
-			host_->mapWorld_[newRow][newCol]->StartWave(
-				{col,row},
-				amplitude * 0.87f
-			);
-		};
-	}
-}
-
-void MapChipField::MapObject::StartWave(Int2 waveDirection,float amplitude)
-{
-	currentAmplitude_ += amplitude;
-
-	if(currentAmplitude_ <= 1.0f && waveDirection == Int2(0,0))
-	{
-		currentAmplitude_ = 0.0f;
-		return;
-	}
-
-	// 与える振幅 (waveDirection.x方向)
-	int row = 0;
-	int col = 0;
-
-	float propagationAmplitude = amplitude * 0.89f;
-
-	if(propagationAmplitude <= 1.0f)
-	{
-		return;
-	}
-
-	if(waveDirection.x != 0)
-	{
-		bool isStop = waveDirection.x < 0;
-		// 与える振幅 (waveDirection.x方向)
-		row = address_.zIndex + 1;
-		col = address_.xIndex + waveDirection.x;
-
-	   // 範囲チェック (行と列がそれぞれ有効な範囲に収まっているか)
-		if(row >= 0 && row < host_->mapWorld_.size() &&
-		   col >= 0 && col < host_->mapWorld_[row].size())
-		{
-			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
-			{
-				host_->mapWorld_[row][col]->isStop |= isStop;
-				auto start = [this,row,col,waveDirection,propagationAmplitude]()
-				{
-					host_->mapWorld_[row][col]->StartWave({waveDirection.x,1},propagationAmplitude);
-				};
-				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
-			}
-		}
+			if (worldTransformBlock->isWeve)
+				continue;
 
 
-	// 与える振幅 (waveDirection.y方向)
-		row = address_.zIndex + 0;
 
-		// 範囲チェック
-		if(row >= 0 && row < host_->mapWorld_.size() &&
-		   col >= 0 && col < host_->mapWorld_[row].size())
-		{
-			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
-			{
-				host_->mapWorld_[row][col]->isStop |= isStop;
-				auto start = [this,row,col,waveDirection,propagationAmplitude]()
-				{
-					host_->mapWorld_[row][col]->StartWave({waveDirection.x,0},propagationAmplitude);
-				};
-				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
-			}
-		}
+			// マップチップのXZ座標から衝突位置までの距離を計算
+			float distanceX = static_cast<float>(i - hitX);
+			float distanceZ = static_cast<float>(j - hitZ);
+			float distance = sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
-
-// 与える振幅 (waveDirection.x, waveDirection.y 両方方向、斜め)
-		row = address_.xIndex + -1;
-		isStop = false;
-		// 範囲チェック
-		if(row >= 0 && row < host_->mapWorld_.size() &&
-		   col >= 0 && col < host_->mapWorld_[row].size())
-		{
-			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
-			{
-				host_->mapWorld_[row][col]->isStop |= isStop;
-				auto start = [this,row,col,waveDirection,propagationAmplitude]()
-				{
-					host_->mapWorld_[row][col]->StartWave({waveDirection.x,-1},propagationAmplitude);
-				};
-				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
-			}
-		}
-	}
-	if(waveDirection.y != 0)
-	{
-		bool isStop = waveDirection.y < 0;
-		row = address_.zIndex;
-		col = address_.xIndex + 1;
-
-	   // 範囲チェック (行と列がそれぞれ有効な範囲に収まっているか)
-		if(row >= 0 && row < host_->mapWorld_.size() &&
-		   col >= 0 && col < host_->mapWorld_[row].size())
-		{
-			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
-			{
-				host_->mapWorld_[row][col]->isStop |= isStop;
-				auto start = [this,row,col,waveDirection,propagationAmplitude]()
-				{
-					host_->mapWorld_[row][col]->StartWave({1,waveDirection.y},propagationAmplitude);
-				};
-				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
-			}
-		}
-
-		col = address_.xIndex + 0;
-
-		// 範囲チェック
-		if(row >= 0 && row < host_->mapWorld_.size() &&
-		   col >= 0 && col < host_->mapWorld_[row].size())
-		{
-			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
-			{
-				host_->mapWorld_[row][col]->isStop |= isStop;
-				auto start = [this,row,col,waveDirection,propagationAmplitude]()
-				{
-					host_->mapWorld_[row][col]->StartWave({0,waveDirection.y},propagationAmplitude);
-				};
-				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
-			}
-		}
-
-   // 与える振幅 (waveDirection.x, waveDirection.y 両方方向、斜め)
-		col = address_.xIndex + -1;
-		isStop = true;
-		// 範囲チェック
-		if(row >= 0 && row < host_->mapWorld_.size() &&
-		   col >= 0 && col < host_->mapWorld_[row].size())
-		{
-			if(host_->mapWorld_[row][col]->startWaveTaskQueue_.empty())
-			{
-				host_->mapWorld_[row][col]->isStop |= isStop;
-				auto start = [this,row,col,waveDirection,propagationAmplitude]()
-				{
-					host_->mapWorld_[row][col]->StartWave({-1,waveDirection.y},propagationAmplitude);
-				};
-				host_->mapWorld_[row][col]->startWaveTaskQueue_.push(start);
+			// 衝突位置から一定範囲内にある場合にウェーブを発生
+			if (distance < waveRange) {
+				worldTransformBlock->isWeve = true;
+				worldTransformBlock->velocity_.y = initialYVelocity;
+				worldTransformBlock->waveDelay = distance * 0.1f; // 距離に応じた遅延時間を設定
 			}
 		}
 	}
 }
 
-void MapChipField::MapObject::WaveSpawn()
-{
-	if(isStop)
-	{
-		return;
-	}
-	if(!startWaveTaskQueue_.empty())
-	{
-		startWaveTaskQueue_.back()();
-		startWaveTaskQueue_.pop();
-	}
-}
-
-void MapChipField::MapObject::Wave()
-{
-	if(currentAmplitude_ * currentAmplitude_ <= 0.0f)
-	{
-		return;
-	}
-	currentAmplitude_ -= kGravity * DeltaTime::getInstance()->getDeltaTime();
-
-	/*worldTransformBlocks_->*/transform_.translate.y += currentAmplitude_;
-
-	if(GetTranslate().y <= 0.01f)
-	{
-		currentAmplitude_ = 0.0f;
-		/*worldTransformBlocks_->*/transform_.translate.y = 0.0f;
-		return;
-	}
-}

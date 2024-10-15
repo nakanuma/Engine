@@ -35,7 +35,12 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	auto onCollisionMapChip = [this](MapChipField::MapObject* mapObj)
 	{
 		MapChipField::IndexSet address = mapObj->GetIndexSet();
-		mapChipField_->SetAmplitude(address.zIndex,address.xIndex,1.6f);
+		
+		float waveRange = 10.0f;
+		float initialYVelocity = 0.86f;
+		mapChipField_->TriggerWave(address.zIndex,address.xIndex,waveRange,initialYVelocity);
+
+		//mapChipField_->SetAmplitude(address.zIndex,address.xIndex,1.8f);
 	};
 	handCollider_ = std::make_unique<Collider>();
 	handCollider_->Init(handObject_->transform_.translate,2.0f,onCollision,onCollisionMapChip);
