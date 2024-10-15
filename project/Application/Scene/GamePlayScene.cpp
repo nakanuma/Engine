@@ -69,14 +69,24 @@ void GamePlayScene::Initialize()
 	camera->transform.translate = {20,50.0f,0};
 	object_->transform_.rotate = {0.0f,3.14f,0.0f};
 
+	// Texture読み込み
 	uint32_t monsterBallTexture = TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice());
 	player_ = std::make_unique<Player>();
 	player_->Initialize(monsterBallTexture);
 	player_->SetMapChipField(mapChip_.get());
 
-	// Texture読み込み
+	GlobalVariables::getInstance()->addValue("Game","EnemySpawner_Default","spawnerValue",enemySpawnerValue_);
 	enemyModel = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
 	enemyModel.material.textureHandle = monsterBallTexture;
+
+	for(size_t i = 0; i < enemySpawnerValue_; i++)
+	{
+		enemySpawners_.push_back(std::make_unique<EnemySpawner>());
+		enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+	}
+#ifdef _DEBUG
+	preEnemySpawnerValue_ = enemySpawnerValue_;
+#endif // _DEBUG
 
 	// 衝突マネージャの生成
 	collisionManager_ = std::make_unique<CollisionManager>();
@@ -88,17 +98,42 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
+#ifdef _DEBUG
+	int32_t movingSpawnerValue = enemySpawnerValue_ - preEnemySpawnerValue_;
+	if(movingSpawnerValue >=  1)
+	{
+		for(size_t i = 0; i < movingSpawnerValue; i++)
+		{
+			enemySpawners_.push_back(std::make_unique<EnemySpawner>());
+			enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+		}
+	} else if(movingSpawnerValue <= -1)
+	{
+		for(size_t i = 0; i < movingSpawnerValue; i++)
+		{
+			enemySpawners_.pop_back();
+		}
+	}
+	preEnemySpawnerValue_ = enemySpawnerValue_;
+#endif // _DEBUG
+
 	if(input->TriggerKey(DIK_1))
 	{
 		mapChip_->SetAmplitude(0,15,1.8f);
-	} else if(input->TriggerKey(DIK_2))
-	{
-		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
-		enemy->Initialize(&enemyModel);
-		enemies_.emplace_back(std::move(enemy));
 	}
 
 	player_->Update();
+
+	for(auto& enemySpawner : enemySpawners_)
+	{
+		enemySpawner->Update();
+		if(enemySpawner->IsSpawn())
+		{
+			std::unique_ptr<Enemy> enemy;
+			enemy.reset(enemySpawner->Spawn());
+			enemies_.emplace_back(std::move(enemy));
+		}
+	}
 
 	for(auto& enemy : enemies_)
 	{
@@ -139,6 +174,10 @@ void GamePlayScene::Draw()
 
 	// オブジェクトの描画
 	object_->Draw();
+	for(auto& enemySpawner : enemySpawners_)
+	{
+		enemySpawner->Draw();
+	}
 
 	for(auto& enemy : enemies_)
 	{
