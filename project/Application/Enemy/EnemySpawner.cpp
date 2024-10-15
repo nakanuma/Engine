@@ -26,7 +26,7 @@ void EnemySpawner::Update()
 	isSpawn_ = false;
 
 	currentCoolTime_ -= DeltaTime::getInstance()->getDeltaTime();
-	if(currentCoolTime_ <=0.0f)
+	if(currentCoolTime_ <= 0.0f)
 	{
 		isSpawn_ = true;
 		currentCoolTime_ = spawnCoolTime_();
@@ -44,6 +44,6 @@ void EnemySpawner::Draw()
 Enemy* EnemySpawner::Spawn()
 {
 	Enemy* enemy = new Enemy();
-	enemy->Initialize(moveDirection_,&enemyModel_);
+	enemy->Initialize(object_->transform_.translate,moveDirection_,&enemyModel_);
 	return enemy;
 }

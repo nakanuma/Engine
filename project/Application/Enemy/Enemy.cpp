@@ -13,16 +13,17 @@ Enemy::Enemy()
 
 Enemy::~Enemy()
 {
-
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->DestroyItem("Game","Enemy","speed");
 }
 
-void Enemy::Initialize(Float2 moveDirection,ModelManager::ModelData* modelData)
+void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData)
 {
+	isAlive_ = true;
+
 	object_ = std::make_unique<Object3D>();
 	object_->model_ = modelData;
-	object_->transform_.translate = {2.0f,2.0f,2.0f};
+	object_->transform_.translate = spawnPos;
 
 	moveDirection_ = moveDirection;
 	moveDirection_ = Float2::Normalize(moveDirection_);
@@ -46,6 +47,16 @@ void Enemy::Initialize(Float2 moveDirection,ModelManager::ModelData* modelData)
 
 void Enemy::Update()
 {
+	if(!isAlive_)
+	{
+		return;
+	}
+	if(object_->transform_.translate.y <= -6.0f)
+	{
+		isAlive_ = false;
+		return;
+	}
+
 	if(preOnGround_ && !isOnGround_)
 	{// 地面を離れた
 		velocity_.y = floorVelocityY_;
@@ -61,7 +72,7 @@ void Enemy::Update()
 	velocity_.z = moveVal.y;
 	if(isOnGround_)
 	{
-		velocity_.y = 9.8f * deltaTime;
+		velocity_.y = 0.0f;
 	} else
 	{
 		velocity_.y -= 9.8f * deltaTime;

@@ -79,14 +79,12 @@ void GamePlayScene::Initialize()
 	enemyModel = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
 	enemyModel.material.textureHandle = monsterBallTexture;
 
-	for(size_t i = 0; i < enemySpawnerValue_; i++)
+	for(size_t i = 0; i < enemySpawnerValue_; ++i)
 	{
 		enemySpawners_.push_back(std::make_unique<EnemySpawner>());
 		enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+		enemySpawners_.back()->SetEnemyModel(enemyModel);
 	}
-#ifdef _DEBUG
-	preEnemySpawnerValue_ = enemySpawnerValue_;
-#endif // _DEBUG
 
 	// 衝突マネージャの生成
 	collisionManager_ = std::make_unique<CollisionManager>();
@@ -99,23 +97,29 @@ void GamePlayScene::Finalize()
 void GamePlayScene::Update()
 {
 #ifdef _DEBUG
-	int32_t movingSpawnerValue = enemySpawnerValue_ - preEnemySpawnerValue_;
-	if(movingSpawnerValue >=  1)
+	int32_t movingSpawnerValue = enemySpawnerValue_ - static_cast<int32_t>(enemySpawners_.size());
+
+	if(movingSpawnerValue > 0)  // 増加する場合
 	{
-		for(size_t i = 0; i < movingSpawnerValue; i++)
+		for(int32_t i = 0; i < movingSpawnerValue; ++i)
 		{
 			enemySpawners_.push_back(std::make_unique<EnemySpawner>());
 			enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+			enemySpawners_.back()->SetEnemyModel(enemyModel);
 		}
-	} else if(movingSpawnerValue <= -1)
+	} else if(movingSpawnerValue < 0)  // 減少する場合
 	{
-		for(size_t i = 0; i < movingSpawnerValue; i++)
+		// 減少させる数だけポップバックする
+		for(int32_t i = 0; i < abs(movingSpawnerValue); ++i)
 		{
-			enemySpawners_.pop_back();
+			if(!enemySpawners_.empty())
+			{
+				enemySpawners_.pop_back();
+			}
 		}
 	}
-	preEnemySpawnerValue_ = enemySpawnerValue_;
 #endif // _DEBUG
+
 
 	if(input->TriggerKey(DIK_1))
 	{
@@ -138,18 +142,20 @@ void GamePlayScene::Update()
 	for(auto& enemySpawner : enemySpawners_)
 	{
 		enemySpawner->Update();
-		if(enemySpawner->IsSpawn())
+		if(!enemySpawner->IsSpawn())
 		{
+			continue;
+		}
 			std::unique_ptr<Enemy> enemy;
 			enemy.reset(enemySpawner->Spawn());
 			enemies_.emplace_back(std::move(enemy));
-		}
 	}
 
 	for(auto& enemy : enemies_)
 	{
 		enemy->Update();
 	}
+	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy){return 1 - enemy->IsAlive();});
 
 	mapChip_->Update();
 

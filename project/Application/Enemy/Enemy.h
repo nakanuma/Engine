@@ -17,7 +17,7 @@ public:
 	Enemy();
 	~Enemy();
 
-	void Initialize(Float2 moveDirection,ModelManager::ModelData* modelData);
+	void Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData);
 	void Update();
 	void Draw();
 private:
@@ -29,9 +29,11 @@ private:
 
 	Float3 velocity_;
 	float  floorVelocityY_;
+	bool isAlive_;
 
 	bool isOnGround_;
 	bool preOnGround_;
 public:
+	bool IsAlive()const{return isAlive_;}
 	Collider* GetCollider()const { return collider_.get(); }
 };

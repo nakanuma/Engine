@@ -77,9 +77,6 @@ private:
 
 	ModelManager::ModelData enemyModel;
 	int32_t enemySpawnerValue_;
-#ifdef _DEBUG
-	int32_t preEnemySpawnerValue_;
-#endif // _DEBUG
 
 	std::vector<std::unique_ptr<EnemySpawner>> enemySpawners_;
 	std::list<std::unique_ptr<Enemy>> enemies_;
