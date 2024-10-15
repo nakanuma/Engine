@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿  DirectXTexUtil.cpp
   BC.cpp
   BC4BC5.cpp
@@ -21,3 +22,11 @@
   DirectXTexWIC.cpp
   コードを生成中...
   DirectXTex_Desktop_2022_Win10.vcxproj -> D:\k023g0121\Engine\project\externals\DirectXTex\Bin\Desktop_2022_Win10\x64\Debug\DirectXTex.lib
+=======
+﻿  BC.cpp
+  BC4BC5.cpp
+  BC6HBC7.cpp
+  BCDirectCompute.cpp
+  コードを生成中...
+  DirectXTex_Desktop_2022_Win10.vcxproj -> C:\school\Engine\project\externals\DirectXTex\Bin\Desktop_2022_Win10\x64\Debug\DirectXTex.lib
+>>>>>>> Engine
