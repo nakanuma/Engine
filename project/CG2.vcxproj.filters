@@ -67,6 +67,7 @@
     <ClCompile Include="Engine\DirectX\RTVManager.cpp" />
     <ClCompile Include="Engine\3D\DebugCamera.cpp" />
     <ClCompile Include="Engine\3D\InstancedObject.cpp" />
+    <ClCompile Include="Application\Collision\CollisionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
@@ -74,6 +75,7 @@
     <ClCompile Include="Application\Enemy\Enemy.cpp" />
     <ClCompile Include="Application\myRandom\MyRandom.cpp" />
     <ClInclude Include="Engine\3D\InstancedObject.h" />
+    <ClInclude Include="Application\Collision\CollisionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />
