@@ -14,13 +14,12 @@ class Collider;
 class Enemy
 {
 public:
-	Enemy() = default;
+	Enemy();
 	~Enemy();
 
-	void Initialize(ModelManager::ModelData* modelData);
+	void Initialize(Float2 moveDirection,ModelManager::ModelData* modelData);
 	void Update();
 	void Draw();
-
 private:
 	std::unique_ptr<Object3D> object_;
 	std::unique_ptr<Collider> collider_;
@@ -29,11 +28,10 @@ private:
 	float speed_;
 
 	Float3 velocity_;
-	float floorVelocityY_;
+	float  floorVelocityY_;
 
 	bool isOnGround_;
 	bool preOnGround_;
-
 public:
 	Collider* GetCollider()const { return collider_.get(); }
 };

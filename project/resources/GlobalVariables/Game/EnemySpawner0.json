@@ -1,0 +1,15 @@
+{
+    "EnemySpawner0": {
+        "Translate": [
+            17.200000762939453,
+            4.800000190734863,
+            17.5
+        ],
+        "moveDirection": [
+            3.9000000953674316,
+            3.5
+        ],
+        "spawnCoolTimeMax": 2.0,
+        "spawnCoolTimeMin": 1.600000023841858
+    }
+}
