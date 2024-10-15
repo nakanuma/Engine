@@ -90,7 +90,6 @@ void GamePlayScene::Update()
 {
 	if(input->TriggerKey(DIK_1))
 	{
-
 		// 定数値でウェーブを起こす
 		int hitX = 10;
 		int hitZ = 10;
