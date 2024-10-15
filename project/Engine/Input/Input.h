@@ -1,17 +1,40 @@
 #pragma once
 #include <Windows.h>
 #include <wrl.h>
+#include <vector>
+
+#include <XInput.h>
 #define DIRECTINPUT_VERSON 0x0800 // DirectInputのバージョン指定
 #include <dinput.h>
 
 #include "MyWindow.h"
 
 // 入力
-class Input
-{
+class Input {
 public:
 	// namespace省略
-	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+
+public:
+	enum class PadType {
+		DirectInput,
+		XInput,
+	};
+
+	// variantがC++17から
+	union State {
+		XINPUT_STATE xInput_;
+		DIJOYSTATE2 directInput_;
+	};
+
+	struct Joystick {
+		ComPtr<IDirectInputDevice8> device_;
+		int32_t deadZoneL_;
+		int32_t deadZoneR_;
+		PadType type_;
+		State state_;
+		State statePre_;
+	};
 
 public: // メンバ関数
 	static Input* GetInstance();
@@ -78,6 +101,22 @@ public: // メンバ関数
 	/// </summary>
 	const POINT& GetMousePosition() const;
 
+	/// <summary>
+	/// 現在のジョイスティック状態を取得する（XInput）
+	/// </summary>
+	/// <param name="stickNo">ジョイスティック番号</param>
+	/// <param name="out">現在のジョイスティック状態</param>
+	/// <returns>正しく取得できたか</returns>
+	bool GetJoystickState(int32_t stickNo, XINPUT_STATE& out) const;
+
+	/// <summary>
+	/// デッドゾーンを設定する
+	/// </summary>
+	/// <param name="stickNo">ジョイスティック番号</param>
+	/// <param name="deadZoneL">デッドゾーン左スティック</param>
+	/// <param name="deadZoneR">デッドゾーン右スティック</param>
+	void SetJoystickDeadZone(int32_t stickNo, int32_t deadZoneL, int32_t deadZoneR);
+
 private: // メンバ変数
 	// DirectInputのインスタンス
 	ComPtr<IDirectInput8> directInput_;
@@ -88,9 +127,12 @@ private: // メンバ変数
 	// マウスのデバイス
 	ComPtr<IDirectInputDevice8> mouse_;
 
+	// ジョイスティックのデバイス
+	std::vector<Joystick> joysticks_;
+
 	// 全キーの状態
 	BYTE key_[256] = {};
-	
+
 	// 前回の全キーの状態
 	BYTE keyPre[256] = {};
 
@@ -104,4 +146,3 @@ private: // メンバ変数
 	// WindowsAPI
 	Window* window = nullptr;
 };
-
