@@ -11,8 +11,11 @@ void GamePlayScene::Initialize()
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// カメラのインスタンスを生成
-	camera = std::make_unique<Camera>(Float3{0.0f,15.0f,-40.0f},Float3{0.3f,0.0f,0.0f},0.45f);
+	camera = std::make_unique<Camera>(Float3{10.0f, 20.0f, -30.0f}, Float3{0.44f, 0.0f, 0.0f}, 0.45f);
 	Camera::Set(camera.get()); // 現在のカメラをセット
+
+	// カメラのoriginalPositionに現在のカメラのtranslateをセット（シェイク時に使用、ずれを防止するために必要）
+	camera->SetOriginalPosition(camera->transform.translate);
 
 	// デバッグカメラの生成と初期化
 	debugCamera = std::make_unique<DebugCamera>();
@@ -64,10 +67,7 @@ void GamePlayScene::Initialize()
 	// そのあとに初期化
 	mapChip_->Initialize(modelBlock_);
 
-	// カメラ位置
-	camera->transform.rotate = {1.14f,0,0};
-	camera->transform.translate = {20,50.0f,0};
-	object_->transform_.rotate = {0.0f,3.14f,0.0f};
+	object_->transform_.rotate = {0.0f, 3.14f, 0.0f};
 
 	// Texture読み込み
 	uint32_t monsterBallTexture = TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice());
@@ -143,6 +143,17 @@ void GamePlayScene::Update()
 	mapChip_->Update();
 
 	object_->UpdateMatrix();
+
+	#pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
+
+	// プレイヤーの手が地面にめり込んだらシェイク開始
+	if (player_->GetHandTranslate().y <= 0.0f) {
+		camera->ApplyShake(1.5f, 150);
+	}
+	// カメラのシェイクを更新
+	camera->UpdateShake();
+
+	#pragma endregion
 
 #ifdef _DEBUG // デバッグカメラ
 	DebugCameraUpdate(input);
