@@ -31,7 +31,6 @@ private:
 
 	std::unique_ptr<Collider> handCollider_;
 
-
 	Float3 defaultHandOffset_;
 
 	// wave の 広さに 関係する

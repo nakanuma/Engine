@@ -58,7 +58,7 @@ void MapChipField::Update()
 				continue;
 
 			// ウェーブが発生中の場合
-			if(worldTransformBlock->isWeve)
+			if(worldTransformBlock->isWave)
 			{
 				// 遅延がまだ残っている場合はカウントダウン
 				if(worldTransformBlock->waveDelay > 0)
@@ -85,7 +85,9 @@ void MapChipField::Update()
 			if(worldTransformBlock->GetTranslate().y <= 0)
 			{
 				// マップのウェーブを止める 
-				worldTransformBlock->isWeve = false;
+				worldTransformBlock->isWave = false;
+				worldTransformBlock->waveRange_ = 0.0f;
+				worldTransformBlock->waveDelay = 0.0f;
 				worldTransformBlock->addressOfWaveOrigin_ = {0,0};
 				// 座標を取得
 				Float3 pos = worldTransformBlock->GetTranslate();
@@ -406,7 +408,6 @@ void MapChipField::MapObject::Init()
 void MapChipField::MapObject::Update()
 {
 	prePos_ = transform_.translate;
-	//Wave();
 	// AABBのmaxとminを設定
 	collAABB_.max = Add(transform_.translate,host_->rad_);
 	collAABB_.min = Subtract(transform_.translate,host_->rad_);
@@ -433,7 +434,7 @@ void MapChipField::TriggerWave(int hitX,int hitZ,float waveRange,float initialYV
 			}
 
 			// ウェーブしている物は動作させない
-			if(worldTransformBlock->isWeve)
+			if(worldTransformBlock->isWave)
 				continue;
 
 			// マップチップのXZ座標から衝突位置までの距離を計算
@@ -445,7 +446,8 @@ void MapChipField::TriggerWave(int hitX,int hitZ,float waveRange,float initialYV
 			if(distance < waveRange)
 			{
 				worldTransformBlock->addressOfWaveOrigin_ = {hitX,hitZ};
-				worldTransformBlock->isWeve = true; // ウェーブさせる
+				worldTransformBlock->waveRange_ = waveRange;
+				worldTransformBlock->isWave = true; // ウェーブさせる
 				worldTransformBlock->velocity_.y = initialYVelocity; // y軸の速度を代入
 				worldTransformBlock->waveDelay = distance * 0.1f; // 距離に応じた遅延時間を設定
 			}

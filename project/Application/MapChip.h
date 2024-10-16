@@ -49,8 +49,9 @@ public:
 		void Update();
 		
 		IndexSet addressOfWaveOrigin_;
+		float waveRange_;
 		float waveDelay;		// ウェーブの広がり遅延
-		bool isWeve = false;	// ウェーブしているかどうかのフラグ
+		bool isWave = false;	// ウェーブしているかどうかのフラグ
 		AABB collAABB_;			// AABB
 		Float3 velocity_;		// マップの速度
 	private:

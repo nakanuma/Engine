@@ -38,7 +38,7 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 		isOnGround_ = true;
 
 		// Wave が 発動した 床
-		if(mapObject->isWeve && mapObject->waveDelay <= 0.0f)
+		if(mapObject->isWave && mapObject->waveDelay <= 0.0f)
 		{
 			// 原点からの方向
 			Float2 moveDirectionXZ = Float2({
@@ -46,6 +46,8 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 				static_cast<float>(mapObject->addressOfWaveOrigin_.zIndex - mapObject->GetIndexSet().zIndex)
 													   });
 			onWavingMapChip_ = true;
+
+			waveRange_ = mapObject->waveRange_;
 
 			mapObjectWaveDistance_ = Float2::Length(moveDirectionXZ);
 			moveDirection_ = Float2::Normalize(moveDirectionXZ);
@@ -78,8 +80,10 @@ void Enemy::Update()
 	{// 地面を離れた
 		// TODO
 		// GlobalVariables の 脱却
-			velocity_.y = Lerp<float>(1.0f - (mapObjectWaveDistance_ / waveRange),minJumpPower_,maxJumpPower_);
-			onWavingMapChip_ = false;
+		
+		velocity_.y = Lerp<float>(1.0f - (mapObjectWaveDistance_ / waveRange_),minJumpPower_,maxJumpPower_);
+		waveRange_ = 0.0f;
+		onWavingMapChip_ = false;
 	} else if(!preOnGround_ && isOnGround_)
 	{// 着地した 瞬間
 	}

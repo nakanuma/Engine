@@ -30,12 +30,16 @@ private:
 	Float3 velocity_;
 
 	float mapObjectWaveDistance_;
+	float waveRange_;
+
 	float maxJumpPower_;
 	float minJumpPower_;
-	bool onWavingMapChip_;
 
 	bool isAlive_;
+	// 複製体 かどうか
+	bool isClone_;
 
+	bool onWavingMapChip_;
 	bool isOnGround_;
 	bool preOnGround_;
 public:
