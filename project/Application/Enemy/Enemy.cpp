@@ -37,7 +37,8 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 
 	auto onCollision = []([[maybe_unused]] Collider* a) {};
 
-	auto onCollisionMapChip = [this](MapChipField::MapObject *mapObject){
+	auto onCollisionMapChip = [this](MapChipField::MapObject* mapObject)
+	{
 		isOnGround_ = true;
 
 		// Wave が 発動した 床
@@ -45,9 +46,9 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 		{
 			// 原点からの方向
 			Float2 moveDirectionXZ = Float2({
-				static_cast<float>(mapObject->GetIndexSet().xIndex - mapObject->addressOfWaveOrigin_.xIndex ),
+				static_cast<float>(mapObject->GetIndexSet().xIndex - mapObject->addressOfWaveOrigin_.xIndex),
 				static_cast<float>(mapObject->addressOfWaveOrigin_.zIndex - mapObject->GetIndexSet().zIndex)
-													   });
+											});
 			onWavingMapChip_ = true;
 
 			waveRange_ = mapObject->waveRange_;
@@ -64,14 +65,14 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->addValue("Game","Enemy","speed",speed_);
 	variables->addValue("Game","Enemy","minJumpPower",minJumpPower_);
-	variables->addValue("Game","Enemy","maxJumpPower",maxJumpPower_); 
-		variables->addValue("Game","Enemy","cloneOffset",cloneOffset_);
+	variables->addValue("Game","Enemy","maxJumpPower",maxJumpPower_);
+	variables->addValue("Game","Enemy","cloneOffset",cloneOffset_);
 }
 
 void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 {
 	// 死んだら スキップ
-	if(!isAlive_){ return; }
+	if(!isAlive_) { return; }
 	if(object_->transform_.translate.y <= -6.0f)
 	{
 		isAlive_ = false;
@@ -80,8 +81,11 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 
 	if(preOnGround_ && !isOnGround_)
 	{// 地面を離れた
-		velocity_.y = Lerp<float>(1.0f - (mapObjectWaveDistance_ / waveRange_),minJumpPower_,maxJumpPower_);
-		onWavingMapChip_ = false;
+		if(onWavingMapChip_)
+		{
+			onWavingMapChip_ = false;
+			velocity_.y = Lerp<float>(1.0f - (mapObjectWaveDistance_ / waveRange_),minJumpPower_,maxJumpPower_);
+		}
 	} else if(!preOnGround_ && isOnGround_)
 	{// 着地した 瞬間
 		// waveRange を 複製体 の 切符として 機能させる
@@ -106,7 +110,7 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 		velocity_.x = 0.0f;
 		velocity_.z = 0.0f;
 	}
-	
+
 	if(isOnGround_)
 	{
 		velocity_.y = 0.0f;
