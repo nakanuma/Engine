@@ -167,6 +167,12 @@ void ChargePlayerState::Update()
 }
 //=====================================================
 
+AttackPlayerState::AttackPlayerState(Player* player,float chargePercent):IPlayerState(player)
+{
+	chargePercent_ = chargePercent;
+	player_->SetChargePercent(chargePercent);
+}
+
 AttackPlayerState::~AttackPlayerState()
 {
 	GlobalVariables* variables = GlobalVariables::getInstance();
