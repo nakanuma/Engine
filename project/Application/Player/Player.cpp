@@ -7,7 +7,6 @@
 
 Player::~Player()
 {
-
 }
 
 void Player::Initialize(uint32_t uvCheckerGH)
@@ -35,14 +34,9 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	auto onCollisionMapChip = [this](MapChipField::MapObject* mapObj)
 	{
 		MapChipField::IndexSet address = mapObj->GetIndexSet();
-		
-		// 修正必要箇所
-		// 今は定数値
-		// ウェーブ範囲
-		float waveRange = 10.0f;
-		// Y軸速度
-		float initialYVelocity = 0.86f;
-		mapChipField_->TriggerWave(address.zIndex,address.xIndex,waveRange,initialYVelocity);
+		float waveRange = Lerp(chargePercent_,minWaveRange_,maxWaveRange_);
+		mapChipField_->TriggerWave(address.xIndex,address.zIndex,waveRange,initialYVelocity_);
+		chargePercent_ = 0.0f;
 	};
 	handCollider_ = std::make_unique<Collider>();
 	handCollider_->Init(handObject_->transform_.translate,2.0f,onCollision,onCollisionMapChip);
@@ -50,7 +44,12 @@ void Player::Initialize(uint32_t uvCheckerGH)
 ///===========================================================================================
 /// GlobalVariables
 ///===========================================================================================
-
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	// TODO
+	// 要対策
+	variables->addValue("Game","Wave","minRange_",minWaveRange_);
+	variables->addValue("Game","Wave","maxRange_",maxWaveRange_);
+	variables->addValue("Game","Wave","initialYVelocity_",initialYVelocity_);
 
 ///===========================================================================================
 /// State

@@ -12,6 +12,12 @@ static constexpr double PI = 3.14159265359;
 
 static constexpr float PIf = 3.14159265359f;
 
+template <typename T>
+T Lerp(const float& t,const T& start,const T& end)
+{
+    return static_cast<T>(((1.0f - t) * static_cast<float>(start)) + (t * static_cast<float>(end)));
+}
+
 // AABB
 struct AABB {
     Float3 min;
@@ -68,7 +74,6 @@ static Float3 Subtract(const Float3& v1, const Float3& v2) {
     return result;
 };
 
-
 static bool IsCollision(const AABB& aabb1, const AABB& aabb2) {
     if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) &&
         (aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) &&
@@ -93,3 +98,4 @@ static float Length(const float& v) {
 
     return result;
 };
+

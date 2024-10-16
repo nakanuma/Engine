@@ -47,8 +47,8 @@ public:
 
 		void Init();
 		void Update();
-
 		
+		IndexSet addressOfWaveOrigin_;
 		float waveDelay;		// ウェーブの広がり遅延
 		bool isWeve = false;	// ウェーブしているかどうかのフラグ
 		AABB collAABB_;			// AABB
@@ -118,7 +118,6 @@ public:
 
 	// 衝突時にウェーブを発生させるための関数(マップ番号、マップ番号、ウェーブ範囲、Y軸の速度)
 	void TriggerWave(int hitX, int hitZ, float waveRange, float initialYVelocity);
-
 
 private:
 

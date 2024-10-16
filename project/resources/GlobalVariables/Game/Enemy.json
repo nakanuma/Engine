@@ -1,5 +1,7 @@
 {
     "Enemy": {
+        "maxJumpPower": 0.6000000238418579,
+        "minJumpPower": 0.5,
         "speed": 7.5
     }
 }

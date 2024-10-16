@@ -28,7 +28,12 @@ private:
 	float speed_;
 
 	Float3 velocity_;
-	float  floorVelocityY_;
+
+	float mapObjectWaveDistance_;
+	float maxJumpPower_;
+	float minJumpPower_;
+	bool onWavingMapChip_;
+
 	bool isAlive_;
 
 	bool isOnGround_;

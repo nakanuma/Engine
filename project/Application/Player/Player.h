@@ -31,9 +31,17 @@ private:
 
 	std::unique_ptr<Collider> handCollider_;
 
-	MapChipField* mapChipField_;
 
 	Float3 defaultHandOffset_;
+
+	// wave の 広さに 関係する
+	float chargePercent_;
+	
+	MapChipField* mapChipField_;
+	// Wave の広さ
+	float minWaveRange_,maxWaveRange_;
+	// Y軸速度
+	float initialYVelocity_;
 public:
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
@@ -59,5 +67,7 @@ public:
 	void SetHandRotate(const Float3& rotate) { handObject_->transform_.rotate = rotate; }
 
 	Collider* GetHandCollider()const { return handCollider_.get(); }
+
+	void SetChargePercent(float percent){chargePercent_ = percent;}
 };
 

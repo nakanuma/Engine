@@ -46,31 +46,31 @@ void MapChipField::Initialize(ModelManager::ModelData model)
 
 void MapChipField::Update()
 {
+	const float& deltaTime = DeltaTime::getInstance()->getDeltaTime();
 	// 波
 	// ブロックの更新
-	for (int i = 0; i < mapWorld_.size(); ++i)
+	for(int i = 0; i < mapWorld_.size(); ++i)
 	{
-		for (int j = 0; j < mapWorld_[i].size(); ++j) 
+		for(int j = 0; j < mapWorld_[i].size(); ++j)
 		{
 			auto& worldTransformBlock = mapWorld_[i][j];
-			if (!worldTransformBlock)
+			if(!worldTransformBlock)
 				continue;
 
 			// ウェーブが発生中の場合
-			if (worldTransformBlock->isWeve) 
+			if(worldTransformBlock->isWeve)
 			{
 				// 遅延がまだ残っている場合はカウントダウン
-				if (worldTransformBlock->waveDelay > 0) 
+				if(worldTransformBlock->waveDelay > 0)
 				{
-
 					// 速ければすぐ伝播する
-					worldTransformBlock->waveDelay -= 0.016f; // フレーム時間分減少（約60FPSの場合）
+					worldTransformBlock->waveDelay -= deltaTime; // フレーム時間分減少（約60FPSの場合）
 					continue;                                 // 遅延中なので処理をスキップ
 				}
 
 				// 重力を適用してY軸を下降させる
 				worldTransformBlock->velocity_.y -= 0.098f;
-				
+
 				// マップチップの位置情報の取得
 				Float3 pos = worldTransformBlock->GetTranslate();
 
@@ -82,13 +82,13 @@ void MapChipField::Update()
 			}
 
 			// ブロックが下まで落ちたらリセット
-			if (worldTransformBlock->GetTranslate().y <= 0)
+			if(worldTransformBlock->GetTranslate().y <= 0)
 			{
 				// マップのウェーブを止める 
 				worldTransformBlock->isWeve = false;
-
+				worldTransformBlock->addressOfWaveOrigin_ = {0,0};
 				// 座標を取得
-			    Float3 pos = worldTransformBlock->GetTranslate();
+				Float3 pos = worldTransformBlock->GetTranslate();
 
 				// Y座標を0に設定
 				pos.y = 0;
@@ -286,29 +286,11 @@ void MapChipField::CheckCollision_Collider(Collider* collider)
 	Float3 colliderPos = collider->GetPosition();
 	IndexSet colliderIndex = GetMapChipIndexSetByPosition(colliderPos);
 
-	for(int32_t row = 1; row < 2; row++)
+	for(auto& rowOfMap : mapWorld_)
 	{
-		IndexSet currentIndex;
-		currentIndex.zIndex = colliderIndex.zIndex + row;
-		if(currentIndex.zIndex < 0 || currentIndex.zIndex >= mapWorld_.size())
+		for(auto& mapObject : rowOfMap)
 		{
-			continue;
-		}
-		for(int32_t col = -1; col < 2; col++)
-		{
-			currentIndex.xIndex = colliderIndex.xIndex + row;
-			// 自分自身をスキップ
-			if(row == 0 && col == 0)
-			{
-				continue;
-			}
-			// 列が範囲外なら早期にスキップ
-			if(currentIndex.xIndex < 0 || currentIndex.xIndex >= mapWorld_[row].size())
-			{
-				continue;
-			}
-
-			auto& aabb = mapWorld_[currentIndex.zIndex][currentIndex.xIndex]->collAABB_;
+			auto& aabb = mapObject->collAABB_;
 			Float3 closestPoint = {
 				std::clamp<float>(colliderPos.x,aabb.min.x,aabb.max.x),
 				std::clamp<float>(colliderPos.y,aabb.min.y,aabb.max.y),
@@ -319,10 +301,49 @@ void MapChipField::CheckCollision_Collider(Collider* collider)
 
 			if(distance <= collider->GetRadius())
 			{
-				collider->OnCollisionMapChip(mapWorld_[currentIndex.zIndex][currentIndex.xIndex].get());
+				collider->OnCollisionMapChip(mapObject.get());
 			}
 		}
 	}
+
+
+//for(int32_t row = 1; row < 2; row++)
+//{
+//	IndexSet currentIndex;
+//	currentIndex.zIndex = colliderIndex.zIndex + row;
+//	if(currentIndex.zIndex < 0 || currentIndex.zIndex >= mapWorld_.size())
+//	{
+//		continue;
+//	}
+//	for(int32_t col = -1; col < 2; col++)
+//	{
+//		currentIndex.xIndex = colliderIndex.xIndex + row;
+//		// 自分自身をスキップ
+//		if(row == 0 && col == 0)
+//		{
+//			continue;
+//		}
+//		// 列が範囲外なら早期にスキップ
+//		if(currentIndex.xIndex < 0 || currentIndex.xIndex >= mapWorld_[row].size())
+//		{
+//			continue;
+//		}
+
+//		auto& aabb = mapWorld_[currentIndex.zIndex][currentIndex.xIndex]->collAABB_;
+//		Float3 closestPoint = {
+//			std::clamp<float>(colliderPos.x,aabb.min.x,aabb.max.x),
+//			std::clamp<float>(colliderPos.y,aabb.min.y,aabb.max.y),
+//			std::clamp<float>(colliderPos.z,aabb.min.z,aabb.max.z)
+//		};
+
+//		float distance = Float3::Length(closestPoint - colliderPos);
+
+//		if(distance <= collider->GetRadius())
+//		{
+//			collider->OnCollisionMapChip(mapWorld_[currentIndex.zIndex][currentIndex.xIndex].get());
+//		}
+//	}
+//}
 }
 
 void MapChipField::InitInstancing()
@@ -334,11 +355,11 @@ void MapChipField::InitInstancing()
 	mapObjIns_.model_ = &model_;
 
 	// 全てのブロックの情報をStructuredBufferに格納
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i)
+	for(uint32_t i = 0; i < kNumBlockVirtical; ++i)
 	{
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j)
+		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			if (GetMapChipTypeByIndex(j, i) == MapChipType::kBlock)
+			if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
 			{
 				Matrix world = Matrix::Translation(mapWorld_[i][j]->GetTranslate());
 				Matrix view = Camera::GetCurrent()->MakeViewMatrix();
@@ -356,11 +377,11 @@ void MapChipField::InitInstancing()
 void MapChipField::UpdateInstancedObjects()
 {
 	// 全てのブロックの情報をStructuredBufferに転送して更新する
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i)
+	for(uint32_t i = 0; i < kNumBlockVirtical; ++i)
 	{
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j)
+		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			if (GetMapChipTypeByIndex(j, i) == MapChipType::kBlock)
+			if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
 			{
 				Matrix world = Matrix::Translation(mapWorld_[i][j]->GetTranslate());
 				Matrix view = Camera::GetCurrent()->MakeViewMatrix();
@@ -377,56 +398,53 @@ void MapChipField::UpdateInstancedObjects()
 
 void MapChipField::MapObject::Init()
 {
-	/*worldTransformBlocks_ = std::make_unique<Object3D>();
-	worldTransformBlocks_->model_ = &host_->model_;*/
-	/*worldTransformBlocks_->*/transform_.translate = host_->GetMapChipPositionByIndex(address_.xIndex,address_.zIndex);
+	transform_.translate = host_->GetMapChipPositionByIndex(address_.xIndex,address_.zIndex);
 	collAABB_.max = Add(GetTranslate(),host_->rad_);
 	collAABB_.min = Subtract(GetTranslate(),host_->rad_);
 }
 
 void MapChipField::MapObject::Update()
 {
-	prePos_ = /*worldTransformBlocks_->*/transform_.translate;
+	prePos_ = transform_.translate;
 	//Wave();
 	// AABBのmaxとminを設定
-	collAABB_.max = Add(/*worldTransformBlocks_->*/transform_.translate,host_->rad_);
-	collAABB_.min = Subtract(/*worldTransformBlocks_->*/transform_.translate,host_->rad_);
-
-	
+	collAABB_.max = Add(transform_.translate,host_->rad_);
+	collAABB_.min = Subtract(transform_.translate,host_->rad_);
 }
 
 // 衝突時にウェーブを発生させるための関数(マップ番号、マップ番号、ウェーブ範囲、Y軸の速度)
-void MapChipField::TriggerWave(int hitX, int hitZ, float waveRange, float initialYVelocity)
+void MapChipField::TriggerWave(int hitX,int hitZ,float waveRange,float initialYVelocity)
 {
 	// 衝突した位置から円状にウェーブを広げる
-	for (int i = 0; i < mapWorld_.size(); ++i) 
+	for(int r = 0; r < mapWorld_.size(); ++r)
 	{
-		for (int j = 0; j < mapWorld_[i].size(); ++j)
+		for(int c = 0;c < mapWorld_[r].size(); ++c)
 		{
-			auto& worldTransformBlock = mapWorld_[i][j];
-			
+			auto& worldTransformBlock = mapWorld_[r][c];
+
 			// マップブロックがないなら動作させない
-			if (!worldTransformBlock)
+			if(!worldTransformBlock)
 				continue;
 
 			// 衝突位置のマップチップは動作させない
-			if (i == hitX && j == hitZ)
+			if(r == hitX &&c == hitZ)
+			{
 				continue;
+			}
 
 			// ウェーブしている物は動作させない
-			if (worldTransformBlock->isWeve)
+			if(worldTransformBlock->isWeve)
 				continue;
 
-
-
 			// マップチップのXZ座標から衝突位置までの距離を計算
-			float distanceX = static_cast<float>(i - hitX);
-			float distanceZ = static_cast<float>(j - hitZ);
+			float distanceX = static_cast<float>(c - hitX);
+			float distanceZ = static_cast<float>(r - hitZ);
 			float distance = sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
 			// 衝突位置から一定範囲内にある場合にウェーブを発生
-			if (distance < waveRange) 
+			if(distance < waveRange)
 			{
+				worldTransformBlock->addressOfWaveOrigin_ = {hitX,hitZ};
 				worldTransformBlock->isWeve = true; // ウェーブさせる
 				worldTransformBlock->velocity_.y = initialYVelocity; // y軸の速度を代入
 				worldTransformBlock->waveDelay = distance * 0.1f; // 距離に応じた遅延時間を設定
@@ -434,4 +452,3 @@ void MapChipField::TriggerWave(int hitX, int hitZ, float waveRange, float initia
 		}
 	}
 }
-

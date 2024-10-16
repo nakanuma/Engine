@@ -5,15 +5,6 @@
 #include "Float2.h"
 #include "Float3.h"
 
-
-// TODO
-// 別のフォルダーに 移す
-template <typename T>
-T Lerp(const float& t,const T& start,const T& end)
-{
-	return static_cast<T>(((1.0f - t) * static_cast<float>(start)) + (t * static_cast<float>(end)));
-}
-
 struct MoveKeys
 {
 	BYTE up[2] = {DIK_UP,DIK_W};
@@ -90,10 +81,7 @@ class AttackPlayerState
 	:public IPlayerState
 {
 public:
-	AttackPlayerState(Player* player,float chargePercent):IPlayerState(player)
-	{
-		chargePercent_ = chargePercent;
-	}
+	AttackPlayerState(Player* player,float chargePercent);
 	~AttackPlayerState()override;
 
 	void Initialize()override;
