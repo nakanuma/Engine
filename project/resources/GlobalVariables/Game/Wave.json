@@ -1,6 +1,7 @@
 {
     "Wave": {
         "initialYVelocity_": 1.0,
-        "range_": 3.799999952316284
+        "maxRange_": 4.800000190734863,
+        "minRange_": 1.600000023841858
     }
 }

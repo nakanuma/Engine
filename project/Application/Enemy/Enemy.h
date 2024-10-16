@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <list>
 
 #include <stdint.h>
 
@@ -18,30 +19,34 @@ public:
 	~Enemy();
 
 	void Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData);
-	void Update();
+	void Update(std::list<std::unique_ptr<Enemy>>& enemies);
 	void Draw();
 private:
+	void CloneInitialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData);
+	Enemy* CreateClone();
+private:
+	bool isAlive_;
 	std::unique_ptr<Object3D> object_;
 	std::unique_ptr<Collider> collider_;
 
 	Float2 moveDirection_;
 	float speed_;
-
 	Float3 velocity_;
 
+	// Wave / Jump
 	float mapObjectWaveDistance_;
 	float waveRange_;
 
-	float maxJumpPower_;
 	float minJumpPower_;
-
-	bool isAlive_;
-	// 複製体 かどうか
-	bool isClone_;
-
+	float maxJumpPower_;
+	
 	bool onWavingMapChip_;
 	bool isOnGround_;
 	bool preOnGround_;
+
+	// Clone
+	bool isClone_;
+	Float3 cloneOffset_;
 public:
 	bool IsAlive()const{return isAlive_;}
 	Collider* GetCollider()const { return collider_.get(); }

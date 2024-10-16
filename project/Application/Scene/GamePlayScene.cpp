@@ -120,7 +120,6 @@ void GamePlayScene::Update()
 	}
 #endif // _DEBUG
 
-
 	if(input->TriggerKey(DIK_1))
 	{
 		// 定数値でウェーブを起こす
@@ -130,12 +129,7 @@ void GamePlayScene::Update()
 		float initialYVelocity = 0.86f;
 		mapChip_->TriggerWave(hitX, hitZ, waveRange, initialYVelocity);
 		
-	} /*else if(input->TriggerKey(DIK_2))
-	{
-		std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>();
-		enemy->Initialize(&enemyModel);
-		enemies_.emplace_back(std::move(enemy));
-	}*/
+	}
 
 	player_->Update();
 
@@ -153,9 +147,9 @@ void GamePlayScene::Update()
 
 	for(auto& enemy : enemies_)
 	{
-		enemy->Update();
+		enemy->Update(enemies_);
 	}
-	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy){return 1 - enemy->IsAlive();});
+	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy){return enemy->IsAlive()? false : true;});
 
 	mapChip_->Update();
 

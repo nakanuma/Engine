@@ -1,7 +1,12 @@
 {
     "Enemy": {
+        "cloneOffset": [
+            2.700000047683716,
+            0.0,
+            1.399999976158142
+        ],
         "maxJumpPower": 0.6000000238418579,
         "minJumpPower": 0.5,
-        "speed": 7.5
+        "speed": 4.5
     }
 }
