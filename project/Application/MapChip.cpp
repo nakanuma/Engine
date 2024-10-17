@@ -29,8 +29,8 @@ void MapChipField::Initialize(ModelManager::ModelData model)
 	{
 		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
-			{
+			//if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
+			//{
 				// MapObjectの生成
 				auto mapObject = std::make_unique<MapObject>(this,IndexSet(j,i));
 				mapObject->Init();
@@ -38,7 +38,7 @@ void MapChipField::Initialize(ModelManager::ModelData model)
 				// マップワールドに格納
 				mapWorld_[i][j] = std::move(mapObject);
 				
-			}
+			//}
 		}
 	}
 	InitInstancing();
@@ -317,7 +317,7 @@ void MapChipField::InitInstancing()
 	{
 		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			if (GetMapChipTypeByIndex(j, i) == MapChipType::kBlock)
+			//if (GetMapChipTypeByIndex(j, i)/* == MapChipType::kBlock*/)
 			{
 				Matrix world = Matrix::Translation(mapWorld_[i][j]->GetTranslate());
 				Matrix view = Camera::GetCurrent()->MakeViewMatrix();
@@ -341,7 +341,7 @@ void MapChipField::UpdateInstancedObjects()
 	{
 		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
+			//if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
 			{
 				Matrix world = Matrix::Translation(mapWorld_[i][j]->GetTranslate());
 				Matrix view = Camera::GetCurrent()->MakeViewMatrix();
@@ -352,19 +352,12 @@ void MapChipField::UpdateInstancedObjects()
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].World = world;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WorldInverseTranspose = Matrix::Inverse(world);
 			
-			
 				if (i == 0) {
-					//mapObjIns_.materialCB_.data_[0].color = { 1,0,0,1 };
+					//mapObjIns_.materialCB_.data_->color = { 1,1,1,1 };
 				}
-				else {
-					//mapObjIns_.materialCB_.data_[j].color = { 1,1,1,1 };
-				}
-			
 			}
 		}
 	}
-	mapObjIns_.materialCB_.data_[0].color = { 1,0,0,1 };
-	mapObjIns_.materialCB_.data_[0].color = {1,0,1,1};
 }
 
 void MapChipField::MapObject::Init()
