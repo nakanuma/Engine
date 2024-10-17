@@ -69,6 +69,8 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 	variables->addValue("Game","Enemy","maxJumpPower",maxJumpPower_);
 	variables->addValue("Game","Enemy","cloneOffset",cloneOffset_);
 	variables->addValue("Game","Enemy","stealEnergy_",stealEnergy_);
+	variables->addValue("Game","Enemy","numberOfClones2Create_",numberOfClones2Create_);
+	variables->DestroyItem("Game","Enemy","numberOfClones2Create_");
 }
 
 void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
@@ -87,20 +89,26 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 		if(onWavingMapChip_)
 		{
 			onWavingMapChip_ = false;
-			velocity_.y = Lerp<float>(1.0f - (mapObjectWaveDistance_ / waveRange_),minJumpPower_,maxJumpPower_);
+			velocity_.y = Lerp<float>(mapObjectWaveDistance_ / waveRange_,minJumpPower_,maxJumpPower_);
 		}
 	} else if(!preOnGround_ && isOnGround_)
 	{// 着地した 瞬間
 		// waveRange を 複製体 の 切符として 機能させる
 		if (waveRange_ != 0.0f)
 		{
-			// 地面あたりで複製
-			if (object_->transform_.translate.y <= 1) 
+
+			stage_->ChargeEnergy(stolenEnergy_);
+			
+			isClone_ = true;
+			--numberOfClones2Create_;
+			if(numberOfClones2Create_ < 0.0f)
 			{
-				isClone_ = true;
-				enemies.emplace_back(CreateClone());
-				waveRange_ = 0.0f;
+				isAlive_ = false;
+				return;
 			}
+			enemies.emplace_back(CreateClone());
+			waveRange_ = 0.0f;
+			mapObjectWaveDistance_ = 0.0f;
 		}
 	}
 
@@ -122,7 +130,7 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 	{
 		if(!isClone_)
 		{
-			stolenEnergy_ += stage_->StealEnergy(stealEnergy_);
+			stolenEnergy_ += stage_->StealEnergy(stealEnergy_ * deltaTime);
 		}
 		// 範囲内でなければ
 		if (waveRange_ == 0.0f)
@@ -151,7 +159,7 @@ void Enemy::Draw()
 	object_->Draw();
 }
 
-void Enemy::CloneInitialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData)
+void Enemy::CloneInitialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData,int32_t numberOfClones2Create)
 {
 	isAlive_ = true;
 	isClone_ = true;
@@ -206,7 +214,7 @@ Enemy* Enemy::CreateClone()
 	// 横に出現させる
 	Float3 cloneSpawnPos = TransformMatrix(cloneOffset_,object_->transform_.MakeAffineMatrix());
 	// Clone 用の 初期化
-	clone->CloneInitialize(cloneSpawnPos,moveDirection_,object_->model_);
+	clone->CloneInitialize(cloneSpawnPos,moveDirection_,object_->model_,numberOfClones2Create_);
 	clone->SetStage(stage_);
 	return clone;
 }

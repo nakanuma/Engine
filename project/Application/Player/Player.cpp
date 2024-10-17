@@ -15,10 +15,22 @@ Player::~Player()
 
 void Player::Initialize(uint32_t uvCheckerGH)
 {
-	DirectXBase* dxBase = DirectXBase::GetInstance();
+///===========================================================================================
+/// GlobalVariables
+///===========================================================================================
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	// TODO
+	// 要対策
+	variables->addValue("Game","Wave","minRange_",minWaveRange_);
+	variables->addValue("Game","Wave","maxRange_",maxWaveRange_);
+	variables->addValue("Game","Wave","initialYVelocity_",initialYVelocity_);
+	variables->addValue("Game","Player_AttackState","minChargingEnergy_",minChargingEnergy_);
+	variables->addValue("Game","Player_AttackState","maxChargingEnergy_",maxChargingEnergy_);
+
 ///===========================================================================================
 /// Body
 ///===========================================================================================
+	DirectXBase* dxBase = DirectXBase::GetInstance();
 	bodyModelData_ = ModelManager::LoadModelFile("./resources/Models","monkey.obj",dxBase->GetDevice());
 	bodyModelData_.material.textureHandle = uvCheckerGH;
 	bodyObject_ = std::make_unique<Object3D>();
@@ -35,6 +47,7 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	// handObject_.parent = &body;
 
 	auto onCollision = []([[maybe_unused]] Collider* a) {};
+
 	auto onCollisionMapChip = [this](MapChipField::MapObject* mapObj)
 	{
 		// wave を 起こす
@@ -49,16 +62,6 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	};
 	handCollider_ = std::make_unique<Collider>();
 	handCollider_->Init(handObject_->transform_.translate,0.1f,onCollision,onCollisionMapChip);
-
-///===========================================================================================
-/// GlobalVariables
-///===========================================================================================
-	GlobalVariables* variables = GlobalVariables::getInstance();
-	// TODO
-	// 要対策
-	variables->addValue("Game","Wave","minRange_",minWaveRange_);
-	variables->addValue("Game","Wave","maxRange_",maxWaveRange_);
-	variables->addValue("Game","Wave","initialYVelocity_",initialYVelocity_);
 
 ///===========================================================================================
 /// State

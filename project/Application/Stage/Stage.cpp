@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "DirectXBase.h"
+#include "Application/DeltaTime/DeltaTime.h"
 
 void Stage::Initialize()
 {
@@ -44,15 +45,25 @@ void Stage::Initialize()
 	collisionManager_ = std::make_unique<CollisionManager>();
 
 	variables->addValue("Game","Stage","maxEnergy",maxEnergy_);
+
+	variables->addValue("Game","Stage","limitTime",limitTime_);
+	currentTime_ = limitTime_;
 }
 
 void Stage::Update(Camera* camera)
 {
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
+	currentTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	/*
 	if(chargedEnergy_ >= maxEnergy_){
 	 Clear ;
+	 return;
+	}
+	if(currentTime_ < 0.0f)
+	{
+	 gameOver;
+	 return;
 	}
 	*/
 

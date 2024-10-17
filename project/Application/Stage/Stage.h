@@ -44,7 +44,16 @@ private:
 
 	float chargedEnergy_;
 	float maxEnergy_;
+
+	float limitTime_;
+	float currentTime_;
 public:
+	float GetMaxEnergy()const{return maxEnergy_;}
+	float GetChargedEnergy()const{return chargedEnergy_;}
+
+	float GetLimitTime()const{return limitTime_;}
+	float GetCurrentTime()const{return currentTime_;}
+
 	void SetEnergy(float energy){ chargedEnergy_ = energy;}
 	/// <summary>
 	/// パワーをチャージ
