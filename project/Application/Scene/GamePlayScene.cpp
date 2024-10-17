@@ -117,11 +117,18 @@ void GamePlayScene::Draw()
 
 	ImGui::End();
 
-	ImGui::Begin("Stage Energy");
+	ImGui::Begin("Stage Information");
+	ImGui::Text("you can't input numbers");
 	float maxEnergy = stage_->GetMaxEnergy();
 	float currentEnergy = stage_->GetChargedEnergy();
 	ImGui::InputFloat("MaxEnergy",&maxEnergy,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 	ImGui::InputFloat("CurrentEnergy",&currentEnergy,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
+
+	float limitTime = stage_->GetLimitTime();
+	float currentTime = stage_->GetCurrentTime();
+	ImGui::InputFloat("LimitTime",&limitTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
+	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
+
 	ImGui::End();
 
 	// ImGuiの内部コマンドを生成する
