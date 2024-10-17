@@ -15,6 +15,8 @@
 #include "Application/MapChip.h"
 #include "Application/Player/Player.h"
 
+#include "PlayerAttackEmitter.h"
+
 class Stage
 {
 public:
@@ -24,8 +26,6 @@ public:
 	void Initialize();
 	void Update(Camera* camera);
 	void DrawModels();
-
-	Player* GetPlayer() { return player_.get(); }
 
 private:
 	void CheckAlCollisions();
@@ -64,4 +64,16 @@ public:
 		chargedEnergy_ -= stealEnergy;
 		return stealEnergy;
 	}
+
+// nakanuma追加分
+public:
+	Player* GetPlayer() { return player_.get(); }
+
+	void Debug();
+
+private:
+	// プレイヤー攻撃時パーティクルのエミッター
+	PlayerAttackEmitter playerAttackEmitter_;
+	// プレイヤー攻撃時パーティクルのモデル
+	ModelManager::ModelData modelPlayerAttackParticle_;
 };

@@ -14,6 +14,8 @@
 #include "ParticleManager.h"
 #include "ParticleEmitter.h"
 
+#include "PlayerAttackEmitter.h"
+
 #include <list>
 
 #include "Application/Stage/Stage.h"

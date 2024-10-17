@@ -139,6 +139,8 @@ void GamePlayScene::Draw()
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
+
+	stage_->Debug();
 	
 #ifdef _DEBUG // デバッグカメラ
 	ImGui::Checkbox("useDebugCamera",&useDebugCamera);
