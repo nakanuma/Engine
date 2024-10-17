@@ -10,7 +10,7 @@ void Stage::Initialize()
 	GlobalVariables* variables = GlobalVariables::getInstance();
 
 	// Texture読み込み
-	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice());
+	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/block.png",dxBase->GetDevice());
 
 	// モデルの読み込みとテクスチャの設定(マップチップ)
 	modelBlock_ = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
