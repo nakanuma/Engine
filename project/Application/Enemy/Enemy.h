@@ -12,6 +12,7 @@
 #include "Float3.h"
 
 class Collider;
+class Stage;
 class Enemy
 {
 public:
@@ -22,9 +23,14 @@ public:
 	void Update(std::list<std::unique_ptr<Enemy>>& enemies);
 	void Draw();
 private:
-	void CloneInitialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData);
+	void CloneInitialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData,int32_t numberOfClones2Create);
 	Enemy* CreateClone();
 private:
+	Stage* stage_;
+	// 奪ったエネルギー
+	float stealEnergy_;
+	float stolenEnergy_;
+
 	bool isAlive_;
 	std::unique_ptr<Object3D> object_;
 	std::unique_ptr<Collider> collider_;
@@ -46,8 +52,10 @@ private:
 
 	// Clone
 	bool isClone_;
+	int32_t numberOfClones2Create_;
 	Float3 cloneOffset_;
 public:
+	void SetStage(Stage* stage){stage_ = stage;}
 	bool IsAlive()const{return isAlive_;}
 	Collider* GetCollider()const { return collider_.get(); }
 };

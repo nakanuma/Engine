@@ -8,6 +8,9 @@
 
 #include "Application/Collision/Collider.h"
 
+class Stage;
+class MapChipField;
+
 class Player
 {
 public:
@@ -18,24 +21,27 @@ public:
 	void Update();
 	void Draw();
 private:
-	Float3 prePos_;
+	Stage* stage_;
+	float maxChargingEnergy_;
+	float minChargingEnergy_;
+
 	Float3 velocity_;
 
 	std::unique_ptr<IPlayerState> currentState_;
 
+	// body
 	ModelManager::ModelData bodyModelData_;
 	std::unique_ptr<Object3D> bodyObject_;
-
+	// hand
 	ModelManager::ModelData handModelData_;
 	std::unique_ptr<Object3D> handObject_;
-
 	std::unique_ptr<Collider> handCollider_;
 
 	Float3 defaultHandOffset_;
 
 	// wave の 広さに 関係する
 	float chargePercent_;
-	
+	// wave を 起こすため
 	MapChipField* mapChipField_;
 	// Wave の広さ
 	float minWaveRange_,maxWaveRange_;
@@ -43,6 +49,7 @@ private:
 	float initialYVelocity_;
 public:
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
+	void SetStage(Stage* stage){stage_ = stage;}
 
 	void TransitionState(IPlayerState* state);
 
@@ -68,5 +75,6 @@ public:
 	Collider* GetHandCollider()const { return handCollider_.get(); }
 
 	void SetChargePercent(float percent){chargePercent_ = percent;}
+
 };
 
