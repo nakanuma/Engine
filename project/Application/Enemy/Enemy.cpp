@@ -128,7 +128,7 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 	{
 		if(!isClone_)
 		{
-			stolenEnergy_ += stage_->StealEnergy(stealEnergy_);
+			stolenEnergy_ += stage_->StealEnergy(stealEnergy_ * deltaTime);
 		}
 		velocity_.y = 0.0f;
 	} else

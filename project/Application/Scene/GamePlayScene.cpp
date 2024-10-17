@@ -102,7 +102,7 @@ void GamePlayScene::Draw()
 	GlobalVariables::getInstance()->Update();
 #endif // _DEBUG
 
-	ImGui::Begin("window");
+	ImGui::Begin("Camera");
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
@@ -115,6 +115,13 @@ void GamePlayScene::Draw()
 
 	ImGui::Text("fps : %.1f", ImGui::GetIO().Framerate);
 
+	ImGui::End();
+
+	ImGui::Begin("Stage Energy");
+	float maxEnergy = stage_->GetMaxEnergy();
+	float currentEnergy = stage_->GetChargedEnergy();
+	ImGui::InputFloat("MaxEnergy",&maxEnergy,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
+	ImGui::InputFloat("CurrentEnergy",&currentEnergy,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 	ImGui::End();
 
 	// ImGuiの内部コマンドを生成する
