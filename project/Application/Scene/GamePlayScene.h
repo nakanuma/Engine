@@ -10,6 +10,9 @@
 #include "SoundManager.h"
 #include "Input.h"
 #include "LightManager.h"
+#include "SRVManager.h"
+#include "ParticleManager.h"
+#include "ParticleEmitter.h"
 
 #include <list>
 
@@ -44,6 +47,8 @@ private:
 	std::unique_ptr<DebugCamera> debugCamera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
+	std::unique_ptr<SRVManager> srvManager = nullptr;
+	std::unique_ptr<ParticleManager> particleManager = nullptr;
 	Input* input = nullptr;
 	LightManager* lightManager = nullptr;
 

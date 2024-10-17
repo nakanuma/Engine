@@ -32,6 +32,14 @@ void GamePlayScene::Initialize()
 	soundManager = std::make_unique<SoundManager>();
 	soundManager->Initialize();
 
+	// SRVManagerの生成と初期化
+	srvManager = std::make_unique<SRVManager>();
+	srvManager->Initialize(dxBase);
+
+	// ParticleManagerの生成と初期化
+	particleManager = std::make_unique<ParticleManager>();
+	particleManager->Initialize(dxBase, srvManager.get());
+
 	// Inputの初期化
 	input = Input::GetInstance();
 
