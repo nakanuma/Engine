@@ -69,6 +69,7 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 	variables->addValue("Game","Enemy","maxJumpPower",maxJumpPower_);
 	variables->addValue("Game","Enemy","cloneOffset",cloneOffset_);
 	variables->addValue("Game","Enemy","stealEnergy_",stealEnergy_);
+	//variables->addValue("Game", "Enemy", "WaveRange_", waveRange_);
 }
 
 void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
@@ -81,6 +82,7 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 		return;
 	}
 
+	
 	if(preOnGround_ && !isOnGround_)
 	{// 地面を離れた
 		if(onWavingMapChip_)
@@ -91,11 +93,15 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 	} else if(!preOnGround_ && isOnGround_)
 	{// 着地した 瞬間
 		// waveRange を 複製体 の 切符として 機能させる
-		if(waveRange_ != 0.0f)
+		if (waveRange_ != 0.0f)
 		{
-			isClone_ = true;
-			enemies.emplace_back(CreateClone());
-			waveRange_ = 0.0f;
+			// 地面あたりで複製
+			if (object_->transform_.translate.y <= 1) 
+			{
+				isClone_ = true;
+				enemies.emplace_back(CreateClone());
+				waveRange_ = 0.0f;
+			}
 		}
 	}
 
@@ -119,7 +125,14 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 		{
 			stolenEnergy_ += stage_->StealEnergy(stealEnergy_);
 		}
-		velocity_.y = 0.0f;
+		// 範囲内でなければ
+		if (waveRange_ == 0.0f)
+		{
+			velocity_.y = 0.0f;
+		}else 
+		{ // 範囲内なら
+			velocity_.y = 0.7f;
+		}
 	} else
 	{
 		velocity_.y -= 9.8f * deltaTime;

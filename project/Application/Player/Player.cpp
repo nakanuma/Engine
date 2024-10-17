@@ -48,7 +48,7 @@ void Player::Initialize(uint32_t uvCheckerGH)
 		chargePercent_ = 0.0f;
 	};
 	handCollider_ = std::make_unique<Collider>();
-	handCollider_->Init(handObject_->transform_.translate,2.0f,onCollision,onCollisionMapChip);
+	handCollider_->Init(handObject_->transform_.translate,0.1f,onCollision,onCollisionMapChip);
 
 ///===========================================================================================
 /// GlobalVariables
