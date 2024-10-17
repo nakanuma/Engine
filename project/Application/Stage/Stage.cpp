@@ -31,7 +31,7 @@ void Stage::Initialize()
 	player_->SetStage(this);
 
 	variables->addValue("Game","EnemySpawner_Default","spawnerValue",enemySpawnerValue_);
-	enemyModel = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
+	enemyModel = ModelManager::LoadModelFile("resources/Models","enemy.obj",dxBase->GetDevice());
 	enemyModel.material.textureHandle = monsterBallTexture;
 
 	for(size_t i = 0; i < enemySpawnerValue_; ++i)

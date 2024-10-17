@@ -9,6 +9,8 @@
 
 #include "Application/Stage/Stage.h"
 
+#include <numbers>
+
 Player::~Player()
 {
 }
@@ -40,7 +42,7 @@ void Player::Initialize(uint32_t uvCheckerGH)
 ///===========================================================================================
 /// Hand
 ///===========================================================================================
-	handModelData_ = ModelManager::LoadModelFile("./resources/Models","monkey.obj",dxBase->GetDevice());
+	handModelData_ = ModelManager::LoadModelFile("./resources/Models","player.obj",dxBase->GetDevice());
 	handModelData_.material.textureHandle = uvCheckerGH;
 	handObject_ = std::make_unique<Object3D>();
 	handObject_->model_ = &handModelData_;
@@ -73,6 +75,11 @@ void Player::Update()
 {
 	currentState_->Update();
 	bodyObject_->UpdateMatrix();
+	handObject_->transform_.rotate = {
+		bodyObject_->transform_.rotate.x,
+		bodyObject_->transform_.rotate.y + std::numbers::pi_v<float>,
+		bodyObject_->transform_.rotate.z
+	};
 	handObject_->UpdateMatrix();
 
 	handCollider_->SetPosition(handObject_->transform_.translate);
