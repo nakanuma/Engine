@@ -51,4 +51,15 @@ public:
 	/// </summary>
 	/// <param name="power">チャージ量</param>
 	void ChargeEnergy(float energy){ chargedEnergy_ += energy;}
+	float StealEnergy(float stealEnergy){
+		// 総量 が 奪われる 量より多かったら
+		if(chargedEnergy_ <= stealEnergy)
+		{
+			// 全部 奪われる
+			chargedEnergy_ = 0.0f;
+			return chargedEnergy_;
+		};
+		chargedEnergy_ -= stealEnergy;
+		return stealEnergy;
+	}
 };

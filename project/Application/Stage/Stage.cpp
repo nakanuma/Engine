@@ -90,6 +90,7 @@ void Stage::Update(Camera* camera)
 		}
 		std::unique_ptr<Enemy> enemy;
 		enemy.reset(enemySpawner->Spawn());
+		enemy->SetStage(this);
 		enemies_.emplace_back(std::move(enemy));
 	}
 
