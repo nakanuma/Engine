@@ -1,4 +1,6 @@
 #include "GamePlayScene.h" 
+#include "SceneManager.h"
+
 #include "ImguiWrapper.h" 
 #include "DirectXBase.h"
 #include "SRVManager.h"
@@ -43,8 +45,7 @@ void GamePlayScene::Initialize()
 	///	↓ ゲームシーン用 
 	///	
 
-	stage_ = std::make_unique<Stage>();
-	stage_->Initialize();
+	stage_ = SceneManager::GetInstance()->GetStage();
 }
 
 void GamePlayScene::Finalize()

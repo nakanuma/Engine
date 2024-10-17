@@ -36,6 +36,7 @@ private:
 
 	std::function<void(Sprite*)> update_;
 public:
+	Float2 GetPosition()const{return pos_;}
 	const Sprite* getSprite()const{ return sprite_.get(); }
 	void setSprite(Sprite* sprite){ sprite_.reset(sprite); }
 

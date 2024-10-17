@@ -125,17 +125,6 @@ void MapChipField::Update()
 
 void MapChipField::Draw()
 {
-	// ブロック描画
-	for(auto& worldTransformBlockLine : mapWorld_)
-	{
-		for(auto& worldTransformBlock : worldTransformBlockLine)
-		{
-			if(!worldTransformBlock)
-				continue;
-			/*worldTransformBlock->Draw();*/
-		}
-	}
-
 	mapObjIns_.InstancedDraw();
 }
 

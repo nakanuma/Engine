@@ -25,6 +25,7 @@ void UI::Init(const std::string& scene,
 	///===========================================================================================
 	sprite_ = std::make_unique<Sprite>();
 	sprite_->Initialize(spriteCommon,textureIndex);
+	sprite_->Update();
 
 	///===========================================================================================
 	/// GlobalVariables
@@ -48,13 +49,16 @@ void UI::Init(const std::string& scene,
 
 void UI::Update(){
 #ifdef _DEBUG
-	sprite_->SetPosition(pos_);
+	/*sprite_->SetPosition(pos_);
 	sprite_->SetSize(size_);
 	sprite_->SetColor(color_);
 	sprite_->SetAnchorPoint(anchor_);
 	sprite_->SetFlipX(isFlipX_);
-	sprite_->SetFlipY(isFlipY_);
+	sprite_->SetFlipY(isFlipY_);*/
 #endif // _DEBUG
+
+	sprite_->Update();
+
 	if(!update_){
 		return;
 	}

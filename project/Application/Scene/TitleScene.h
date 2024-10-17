@@ -1,13 +1,17 @@
 #pragma once
 #include "BaseScene.h"
 #include "Camera.h"
-#include "SpriteCommon.h"
-#include "TextureManager.h"
-#include "Sprite.h"
+#include "Input.h"
+#include "LightManager.h"
 #include "ModelManager.h"
 #include "Object3D.h"
 #include "SoundManager.h"
-#include "Input.h"
+#include "Sprite.h"
+#include "SpriteCommon.h"
+#include "TextureManager.h"
+
+#include "Application/Stage/Stage.h"
+#include "Application/UI/UI.h"
 
 // ゲームプレイシーン
 class TitleScene : public BaseScene
@@ -29,18 +33,17 @@ private:
 	std::unique_ptr<Camera> camera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
+	LightManager* lightManager = nullptr;
 	Input* input = nullptr;
 
 	///
 	/// ↓ ゲームシーン用
 	///
+	Stage* stage_;
 
-	// モデルデータ
-	ModelManager::ModelData model_;
-	// 3Dオブジェクト
-	std::unique_ptr<Object3D> object_;
-
-	// スプライト
-	std::unique_ptr<Sprite> sprite_;
+	uint32_t buttonTextureIndex_;
+	std::unique_ptr<UI> buttonUI_;
+	Float2 buttonUiOffset_;
+	float t_;
+	float signT_;
 };
-

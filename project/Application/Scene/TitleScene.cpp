@@ -6,6 +6,10 @@
 #include "SceneManager.h"
 //#include "GamePlayScene.h"
 
+#include <cmath>
+#include <numbers>
+#include "MyMath.h"
+
 #include "GlobalVariables.h"
 
 void TitleScene::Initialize()
@@ -30,27 +34,48 @@ void TitleScene::Initialize()
 	// Inputの初期化
 	input = Input::GetInstance();
 
+	lightManager = LightManager::GetInstance();
+	lightManager->Initialize();
+
 	///
 	///	↓ ゲームシーン用
 	///	
+	stage_ = SceneManager::GetInstance()->GetStage();
+	if(!stage_)
+	{
+		SceneManager::GetInstance()->CreateStage();
+		stage_ = SceneManager::GetInstance()->GetStage();
+	}
+	stage_->Initialize();
 
-	// Texture読み込み
-	uint32_t titleGH = TextureManager::Load("resources/Images/title.png", dxBase->GetDevice());
+	GlobalVariables* variables = GlobalVariables::getInstance();
 
-	// スプライトの生成と初期化
-	sprite_ = std::make_unique<Sprite>();
-	sprite_->Initialize(spriteCommon.get(), titleGH);
-	sprite_->SetSize({ 500.0f, 500.0f });
+	///===========================================================================================
+	/// Texture 
+	///===========================================================================================
+	buttonTextureIndex_ = TextureManager::Load("./resources/Images/white.png",dxBase->GetDevice());
 
-	// モデル読み込み
-	model_ = ModelManager::LoadModelFile("resources/Models", "plane.obj", dxBase->GetDevice());
+	///===========================================================================================
+	/// UI 
+	///===========================================================================================
+	buttonUI_ = std::make_unique<UI>();
+	buttonUI_->Init("Title","buttonUI",buttonTextureIndex_,spriteCommon.get());
+	signT_ = 1.0f;
+	auto buttonUiUpdate = [this](Sprite* sprite){
+		if(t_ >= 1.0f)
+		{
+			signT_ = -1.0f;
+		} else if(t_ <= -1.0f)
+		{
+			signT_ = 1.0f;
+		}
+		t_ += 0.1f * signT_;
 
-	// 3Dオブジェクトの生成とモデル指定
-	object_ = std::make_unique<Object3D>();
-	object_->model_ = &model_;
-	object_->transform_.rotate = { 0.0f, 3.14f, 0.0f };
-
-	
+		Float2 currentButtonOffset = Float2::Lerp(t_,-buttonUiOffset_,buttonUiOffset_);
+		sprite->SetPosition(buttonUI_->GetPosition() + currentButtonOffset);
+	};
+	buttonUI_->setUpdate(buttonUiUpdate);
+	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
 }
 
 void TitleScene::Finalize()
@@ -59,19 +84,13 @@ void TitleScene::Finalize()
 
 void TitleScene::Update()
 {
-	// スプライトの更新
-	sprite_->Update();
-
-	// 3Dオブジェクトの更新
-	object_->UpdateMatrix();
-	object_->transform_.rotate.y += 0.001f;
-
+	
 	///
 	///	シーン切り替え
 	/// 
 
 	// ENTERキーを押したら
-	if (input->TriggerKey(DIK_RETURN)) {
+	if (input->TriggerKey(DIK_SPACE)) {
 		//// ゲームプレイシーン（次シーンを生成）
 		//BaseScene* scene = new GamePlayScene();
 		//// シーン切り替え依頼
@@ -79,7 +98,9 @@ void TitleScene::Update()
 
 		// シーン切り替え
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+		return;
 	}
+	buttonUI_->Update();
 }
 
 void TitleScene::Draw()
@@ -96,12 +117,14 @@ void TitleScene::Draw()
 	ImguiWrapper::NewFrame();
 	// カメラの定数バッファを設定
 	Camera::TransferConstantBuffer();
+	// ライトの定数バッファを設定
+	lightManager->TransferContantBuffer();
 
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
 
-	object_->Draw();
+	stage_->DrawModels();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -114,8 +137,7 @@ void TitleScene::Draw()
 	/// ↓ ここからスプライトの描画コマンド
 	/// 
 
-	// スプライトの描画
-	sprite_->Draw();
+	buttonUI_->Draw();
 
 	///
 	/// ↑ ここまでスプライトの描画コマンド
