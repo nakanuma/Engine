@@ -50,5 +50,5 @@ private:
 	///
 	/// ↓ ゲームシーン用
 	///
-	std::unique_ptr<Stage> stage_;
+	Stage* stage_;
 };

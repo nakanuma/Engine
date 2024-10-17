@@ -2,6 +2,8 @@
 #include "BaseScene.h"
 #include "AbstractSceneFactory.h"
 
+#include "Application/Stage/Stage.h"
+
 // シーン管理
 class SceneManager
 {
@@ -29,5 +31,13 @@ private:
 	BaseScene* nextScene_ = nullptr;
 	// シーンファクトリー（借りてくる）
 	AbstractSceneFactory* sceneFactory_ = nullptr;
+
+	///===========================================================================================
+	/// 各シーンで 共有
+	///===========================================================================================
+	std::unique_ptr<Stage> stage_;
+public:
+	void CreateStage(){ stage_ = std::make_unique<Stage>();}
+	Stage* GetStage(){return stage_.get();}
 };
 
