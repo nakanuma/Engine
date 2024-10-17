@@ -360,6 +360,7 @@ void MapChipField::InitInstancing()
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WVP = world * view * projection;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].World = world;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WorldInverseTranspose = Matrix::Inverse(world);
+				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].color = { 1.0f, 0.0f, 0.0f, 1.0f };
 			}
 		}
 	}
@@ -382,6 +383,7 @@ void MapChipField::UpdateInstancedObjects()
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WVP = world * view * projection;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].World = world;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WorldInverseTranspose = Matrix::Inverse(world);
+				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].color = mapWorld_[i][j]->color_;
 			}
 		}
 	}

@@ -13,6 +13,6 @@ public:
 	void InstancedDraw();
 
 	// 空っぽのStructuredBufferを用意しておく
-	StructuredBuffer<Object3D::TransformationMatrix> gTransformationMatrices = StructuredBuffer<Object3D::TransformationMatrix>(0, true);
+	StructuredBuffer<Object3D::MapChipStructuredData> gTransformationMatrices = StructuredBuffer<Object3D::MapChipStructuredData>(0, true);
 };
 
