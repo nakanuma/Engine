@@ -53,6 +53,15 @@ void GamePlayScene::Initialize()
 
 	stage_ = std::make_unique<Stage>();
 	stage_->Initialize();
+
+	// パーティクルテスト
+	planeModel = ModelManager::LoadModelFile("resources/Models", "plane.obj", dxBase->GetDevice());
+	uint32_t particleGH = TextureManager::Load("resources/Images/circle.png", dxBase->GetDevice());
+
+	particleEmitter_ = std::make_unique<ParticleEmitter>(*particleManager);
+	particleManager->CreateParticleGroup("particle");
+	particleManager->SetModel("particle", &planeModel);
+	particleManager->SetTexture("particle", particleGH);
 }
 
 void GamePlayScene::Finalize()
@@ -65,6 +74,15 @@ void GamePlayScene::Update()
 	DebugCameraUpdate(input);
 #endif
 	stage_->Update(camera.get());
+
+	// パーティクルマネージャーの更新
+	particleManager->Update();
+
+	// パーティクルエミッターの更新
+	// プレイヤーが移動している最中のみ発生させる
+	particleEmitter_->Update("particle", stage_->GetPlayer()->IsMoving());
+	// エミッターの位置をプレイヤーの位置と同期させる
+	particleEmitter_->transform.translate = stage_->GetPlayer()->GetWorldPosition();
 }
 
 void GamePlayScene::Draw()
@@ -105,6 +123,13 @@ void GamePlayScene::Draw()
 	/// ↑ ここまでスプライトの描画コマンド
 	/// 
 
+	#pragma region パーティクル用PSOに変更->パーティクル描画->通常PSOに変更
+	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateParticle());
+
+	particleManager->Draw();
+
+	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineState());
+	#pragma endregion
 
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
@@ -122,6 +147,8 @@ void GamePlayScene::Draw()
 	ImGui::DragFloat3("camera.rotation",&camera->transform.rotate.x,0.01f);
 
 	ImGui::Text("fps : %.1f", ImGui::GetIO().Framerate);
+
+	ImGui::DragFloat3("emitter", &particleEmitter_->transform.translate.x, 0.1f);
 
 	ImGui::End();
 

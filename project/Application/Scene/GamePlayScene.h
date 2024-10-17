@@ -56,4 +56,7 @@ private:
 	/// ↓ ゲームシーン用
 	///
 	std::unique_ptr<Stage> stage_;
+
+	ModelManager::ModelData planeModel;
+	std::unique_ptr<ParticleEmitter> particleEmitter_;
 };

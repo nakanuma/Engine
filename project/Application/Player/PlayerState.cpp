@@ -88,6 +88,11 @@ void NeutralPlayerState::Update()
 	if(moveVal.x != 0.0f || moveVal.y != 0.0f)
 	{
 		player_->SetBodyRotate({0.0f,atan2(moveVal.x,moveVal.y),0.0f});
+		// 動いている状態
+		player_->SetIsMoving(true);
+	} else {
+		// 動いていない状態
+		player_->SetIsMoving(false);
 	}
 
 	// 後ろ に 付いてくるような感じに 
@@ -159,6 +164,11 @@ void ChargePlayerState::Update()
 	{
 		playerRotate.y = atan2(moveVal.x,moveVal.y);
 		player_->SetBodyRotate(playerRotate);
+		// 動いている状態
+		player_->SetIsMoving(true);
+	} else {
+		// 動いていない状態
+		player_->SetIsMoving(false);
 	}
 	
 	Float3 currentHandOffset = TransformMatrix(Lerp(t,beforeHandOffset_,movedHandOffset_),Matrix::RotationY(playerRotate.y));

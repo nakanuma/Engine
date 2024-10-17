@@ -25,6 +25,8 @@ public:
 	void Update(Camera* camera);
 	void DrawModels();
 
+	Player* GetPlayer() { return player_.get(); }
+
 private:
 	void CheckAlCollisions();
 private:
