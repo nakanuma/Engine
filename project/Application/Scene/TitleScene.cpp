@@ -38,6 +38,8 @@ void TitleScene::Initialize()
 	///
 	///	↓ ゲームシーン用
 	///	
+
+#ifdef _DEBUG
 	stage_ = SceneManager::GetInstance()->GetStage();
 	if(!stage_)
 	{
@@ -45,6 +47,7 @@ void TitleScene::Initialize()
 		stage_ = SceneManager::GetInstance()->GetStage();
 	}
 	stage_->Initialize();
+#endif // _DEBUG
 
 	GlobalVariables* variables = GlobalVariables::getInstance();
 

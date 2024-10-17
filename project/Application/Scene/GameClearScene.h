@@ -1,23 +1,24 @@
 #pragma once
 #include "BaseScene.h"
+
+#include <functional>
+
 #include "Camera.h"
 #include "DebugCamera.h"
-#include "SpriteCommon.h"
-#include "TextureManager.h"
-#include "Sprite.h"
+#include "Input.h"
+#include "LightManager.h"
 #include "ModelManager.h"
 #include "Object3D.h"
 #include "SoundManager.h"
-#include "Input.h"
-#include "LightManager.h"
-
-#include <memory>
-#include <list>
+#include "Sprite.h"
+#include "SpriteCommon.h"
+#include "TextureManager.h"
 
 #include "Application/Stage/Stage.h"
 
 // ゲームプレイシーン
-class GamePlayScene : public BaseScene
+class GameClearScene
+	: public BaseScene
 {
 public:
 	// 初期化
@@ -33,25 +34,27 @@ public:
 	void Draw() override;
 
 private:
-#ifdef _DEBUG // デバッグカメラ用
-	bool useDebugCamera = false;    // デバッグカメラが有効か
-	Transform savedCameraTransform; // 通常カメラのTransformを保持
-
-	void DebugCameraUpdate(Input* input);
-#endif
-
-private:
 	Camera* camera = nullptr;
-	std::unique_ptr<DebugCamera>   debugCamera = nullptr;
+	std::unique_ptr<DebugCamera> debugCamera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
 	Input* input = nullptr;
 	LightManager* lightManager = nullptr;
 
 	///
-	/// ↓ ゲームシーン用
+	/// ↓ ゲームクリア用
 	///
-	Stage* stage_;
+	std::function<void()> currentUpdate_;
+	
+	void InSceneUpdate();
+	void SceneUpdate();
+	void OutSceneUpdate();
 
-	Sprite* spaceToTitle_;
+	float leftTime_;
+
+	float inSceneMaxTime_;
+	float outSceneMaxTime_;
+
+	Stage* stage_;
+public:
 };
