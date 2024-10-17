@@ -36,10 +36,20 @@ private:
 	LightManager* lightManager = nullptr;
 	Input* input = nullptr;
 
-	///
-	/// ↓ ゲームシーン用
-	///
 	Stage* stage_;
+
+	///
+	/// ↓ タイトルシーン用
+	///
+
+	std::function<void()> currentUpdate_;
+
+	void InSceneUpdate();
+	void SceneUpdate();
+	void OutSceneUpdate();
+	float leftTime_;
+	float inSceneMaxTime_;
+	float outSceneMaxTime_;
 
 	uint32_t buttonTextureIndex_;
 	std::unique_ptr<UI> buttonUI_;

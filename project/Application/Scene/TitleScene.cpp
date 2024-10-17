@@ -38,6 +38,8 @@ void TitleScene::Initialize()
 	///
 	///	↓ ゲームシーン用
 	///	
+
+#ifdef _DEBUG
 	stage_ = SceneManager::GetInstance()->GetStage();
 	if(!stage_)
 	{
@@ -45,8 +47,12 @@ void TitleScene::Initialize()
 		stage_ = SceneManager::GetInstance()->GetStage();
 	}
 	stage_->Initialize();
+#endif // _DEBUG
 
 	GlobalVariables* variables = GlobalVariables::getInstance();
+	variables->addValue("Title","Times","inSceneMaxTime_",inSceneMaxTime_);
+	variables->addValue("Title","Times","outSceneMaxTime_",outSceneMaxTime_);
+	leftTime_ = inSceneMaxTime_;
 
 	///===========================================================================================
 	/// Texture 
@@ -158,4 +164,16 @@ void TitleScene::Draw()
 	dxBase->PostDraw();
 	// フレーム終了処理
 	dxBase->EndFrame();
+}
+
+void TitleScene::InSceneUpdate()
+{
+}
+
+void TitleScene::SceneUpdate()
+{
+}
+
+void TitleScene::OutSceneUpdate()
+{
 }

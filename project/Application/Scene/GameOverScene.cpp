@@ -1,14 +1,15 @@
-#include "GamePlayScene.h" 
+#include "GameOverScene.h"
 #include "SceneManager.h"
 
-#include "ImguiWrapper.h" 
 #include "DirectXBase.h"
-#include "SRVManager.h"
+#include "ImguiWrapper.h" 
 #include "SpriteCommon.h"
+#include "SRVManager.h"
 
 #include "GlobalVariables.h"
+#include "DeltaTime.h"
 
-void GamePlayScene::Initialize()
+void GameOverScene::Initialize()
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
@@ -48,21 +49,28 @@ void GamePlayScene::Initialize()
 	}
 	stage_->Initialize();
 #endif // _DEBUG
+
+	currentUpdate_ = [this]() { this->InSceneUpdate(); };
+
+	///===========================================================================================
+	/// GlobalVariables
+	///===========================================================================================
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	variables->addValue("GameOver","Times","inSceneMaxTime_" ,inSceneMaxTime_);
+	variables->addValue("GameOver","Times","outSceneMaxTime_",outSceneMaxTime_);
+	leftTime_ = inSceneMaxTime_;
 }
 
-void GamePlayScene::Finalize()
+void GameOverScene::Finalize()
 {
 }
 
-void GamePlayScene::Update()
+void GameOverScene::Update()
 {
-#ifdef _DEBUG // デバッグカメラ
-	DebugCameraUpdate(input);
-#endif
-	stage_->Update(camera);
+	currentUpdate_();
 }
 
-void GamePlayScene::Draw()
+void GameOverScene::Draw()
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 	SRVManager* srvManager = SRVManager::GetInstance();
@@ -109,14 +117,11 @@ void GamePlayScene::Draw()
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
-	
-#ifdef _DEBUG // デバッグカメラ
-	ImGui::Checkbox("useDebugCamera",&useDebugCamera);
-#endif
+
 
 	ImGui::DragFloat3("camera.rotation",&camera->transform.rotate.x,0.01f);
 
-	ImGui::Text("fps : %.1f", ImGui::GetIO().Framerate);
+	ImGui::Text("fps : %.1f",ImGui::GetIO().Framerate);
 
 	ImGui::End();
 
@@ -142,32 +147,29 @@ void GamePlayScene::Draw()
 	dxBase->EndFrame();
 }
 
-#ifdef _DEBUG // デバッグカメラ
-void GamePlayScene::DebugCameraUpdate(Input* input)
+void GameOverScene::InSceneUpdate()
 {
-// 前回のカメラモード状態を保持
-	static bool prevUseDebugCamera = false;
-
-	// デバッグカメラが有効になった瞬間に通常カメラのTransformを保存
-	if(useDebugCamera && !prevUseDebugCamera)
+	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
+	if(leftTime_ <= 0.0f)
 	{
-		savedCameraTransform = camera->transform;
+		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 	}
-
-	// デバッグカメラが有効の場合
-	if(useDebugCamera)
-	{
-// デバッグカメラの更新
-		debugCamera->Update(input);
-		// 通常カメラにデバッグカメラのTransformを適用
-		camera->transform = debugCamera->transform_;
-	} else if(!useDebugCamera && prevUseDebugCamera)
-	{
-// 通常カメラのTransformを再現
-		camera->transform = savedCameraTransform;
-	}
-
-	// 現在のカメラモードを保存して次のフレームで使う
-	prevUseDebugCamera = useDebugCamera;
 }
-#endif
+
+void GameOverScene::SceneUpdate()
+{
+	if(input->TriggerKey(DIK_SPACE))
+	{
+		leftTime_ = outSceneMaxTime_;
+	}
+}
+
+void GameOverScene::OutSceneUpdate()
+{
+	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
+	if(leftTime_ <= 0.0f)
+	{
+		// タイトルへ
+		return;
+	}
+}
