@@ -1,4 +1,4 @@
-#include "GameClearScene.h"
+#include "GameOverScene.h"
 #include "SceneManager.h"
 
 #include "DirectXBase.h"
@@ -9,7 +9,7 @@
 #include "GlobalVariables.h"
 #include "DeltaTime.h"
 
-void GameClearScene::Initialize()
+void GameOverScene::Initialize()
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
@@ -53,24 +53,24 @@ void GameClearScene::Initialize()
 	currentUpdate_ = [this]() { this->InSceneUpdate(); };
 
 	///===========================================================================================
-	/// GlobalBariables
+	/// GlobalVariables
 	///===========================================================================================
 	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->addValue("GameClear","Times","inSceneMaxTime_",inSceneMaxTime_);
-	variables->addValue("GameClear","Times","outSceneMaxTime_",outSceneMaxTime_);
+	variables->addValue("GameOver","Times","inSceneMaxTime_" ,inSceneMaxTime_);
+	variables->addValue("GameOver","Times","outSceneMaxTime_",outSceneMaxTime_);
 	leftTime_ = inSceneMaxTime_;
 }
 
-void GameClearScene::Finalize()
+void GameOverScene::Finalize()
 {
 }
 
-void GameClearScene::Update()
+void GameOverScene::Update()
 {
 	currentUpdate_();
 }
 
-void GameClearScene::Draw()
+void GameOverScene::Draw()
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 	SRVManager* srvManager = SRVManager::GetInstance();
@@ -147,7 +147,7 @@ void GameClearScene::Draw()
 	dxBase->EndFrame();
 }
 
-void GameClearScene::InSceneUpdate()
+void GameOverScene::InSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	if(leftTime_ <= 0.0f)
@@ -156,7 +156,7 @@ void GameClearScene::InSceneUpdate()
 	}
 }
 
-void GameClearScene::SceneUpdate()
+void GameOverScene::SceneUpdate()
 {
 	if(input->TriggerKey(DIK_SPACE))
 	{
@@ -164,9 +164,9 @@ void GameClearScene::SceneUpdate()
 	}
 }
 
-void GameClearScene::OutSceneUpdate()
+void GameOverScene::OutSceneUpdate()
 {
-	leftTime_ -= DeltaTime::getInstance()->getDeltaTime(); 
+	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	if(leftTime_ <= 0.0f)
 	{
 		// タイトルへ

@@ -41,9 +41,12 @@ private:
 	Input* input = nullptr;
 	LightManager* lightManager = nullptr;
 
+	Stage* stage_;
+
 	///
 	/// ↓ ゲームクリア用
 	///
+
 	std::function<void()> currentUpdate_;
 	
 	void InSceneUpdate();
@@ -54,7 +57,5 @@ private:
 
 	float inSceneMaxTime_;
 	float outSceneMaxTime_;
-
-	Stage* stage_;
 public:
 };

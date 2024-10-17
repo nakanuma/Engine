@@ -1,7 +1,7 @@
 #include "SceneFactory.h"
 #include "TitleScene.h"
 #include "GamePlayScene.h"
-// #include "GameOver.h"
+#include "GameOverScene.h"
 #include "GameClearScene.h"
 
 BaseScene* SceneFactory::CreateScene(const std::string& sceneName)
@@ -17,11 +17,11 @@ BaseScene* SceneFactory::CreateScene(const std::string& sceneName)
         newScene->Initialize();
     } else if(sceneName == "GAMEOVER")
     {
-        newScene = new GamePlayScene();
+        newScene = new GameOverScene();
         newScene->Initialize();
     } else if(sceneName == "GAMECLEAR")
     {
-        newScene = new GamePlayScene();
+        newScene = new GameClearScene();
         newScene->Initialize();
     }
 

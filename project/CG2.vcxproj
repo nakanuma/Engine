@@ -18,6 +18,7 @@
     <ClCompile Include="Application\Enemy\EnemySpawner.cpp" />
     <ClCompile Include="Application\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="Application\Scene\GameClearScene.cpp" />
+    <ClCompile Include="Application\Scene\GameOverScene.cpp" />
     <ClCompile Include="Application\Stage\Stage.cpp" />
     <ClCompile Include="Application\UI\UI.cpp" />
     <ClCompile Include="Engine\3D\DebugCamera.cpp" />
@@ -79,6 +80,7 @@
     <ClInclude Include="Application\Enemy\EnemySpawner.h" />
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
     <ClInclude Include="Application\Scene\GameClearScene.h" />
+    <ClInclude Include="Application\Scene\GameOverScene.h" />
     <ClInclude Include="Application\Stage\Stage.h" />
     <ClInclude Include="Application\UI\UI.h" />
     <ClInclude Include="Engine\3D\DebugCamera.h" />
