@@ -194,7 +194,7 @@ void AttackPlayerState::Initialize()
 void AttackPlayerState::Update()
 {
 	// 地面に 衝突したら
-	if(player_->GetHandTranslate().y <= 0.0f)
+	if(player_->GetHandTranslate().y <= -1.0f)
 	{
 		return player_->TransitionState(new NeutralPlayerState(player_));
 	}

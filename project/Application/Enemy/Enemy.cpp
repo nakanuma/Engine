@@ -83,6 +83,7 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 		return;
 	}
 
+	
 	if(preOnGround_ && !isOnGround_)
 	{// 地面を離れた
 		if(onWavingMapChip_)
@@ -93,8 +94,9 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 	} else if(!preOnGround_ && isOnGround_)
 	{// 着地した 瞬間
 		// waveRange を 複製体 の 切符として 機能させる
-		if(waveRange_ != 0.0f)
+		if (waveRange_ != 0.0f)
 		{
+
 			stage_->ChargeEnergy(stolenEnergy_);
 			
 			isClone_ = true;
@@ -130,7 +132,14 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 		{
 			stolenEnergy_ += stage_->StealEnergy(stealEnergy_ * deltaTime);
 		}
-		velocity_.y = 0.0f;
+		// 範囲内でなければ
+		if (waveRange_ == 0.0f)
+		{
+			velocity_.y = 0.0f;
+		}else 
+		{ // 範囲内なら
+			velocity_.y = 0.7f;
+		}
 	} else
 	{
 		velocity_.y -= 9.8f * deltaTime;
