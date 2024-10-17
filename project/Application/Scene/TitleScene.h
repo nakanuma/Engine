@@ -30,7 +30,7 @@ public:
 	void Draw() override;
 
 private:
-	std::unique_ptr<Camera> camera = nullptr;
+	Camera* camera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
 	LightManager* lightManager = nullptr;

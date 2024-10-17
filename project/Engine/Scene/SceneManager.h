@@ -12,6 +12,8 @@ public:
 
 	~SceneManager();
 
+	void CameraInitialize();
+
 	// 次シーン予約
 	/*void SetNextScene(BaseScene* nextScene) { nextScene_ = nextScene; }*/
 	void ChangeScene(const std::string& sceneName);
@@ -35,9 +37,11 @@ private:
 	///===========================================================================================
 	/// 各シーンで 共有
 	///===========================================================================================
+	std::unique_ptr<Camera> camera_ = nullptr;
 	std::unique_ptr<Stage> stage_;
 public:
 	void CreateStage(){ stage_ = std::make_unique<Stage>();}
 	Stage* GetStage(){return stage_.get();}
+	Camera* GetCamera(){return camera_.get();}
 };
 

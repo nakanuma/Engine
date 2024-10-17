@@ -19,6 +19,7 @@ void MyGame::Initialize()
 	//// シーンマネージャに最初のシーンをセット
 	//SceneManager::GetInstance()->SetNextScene(scene);
 
+	SceneManager::GetInstance()->CameraInitialize();
 	// シーンファクトリーを生成し、マネージャにセット
 	sceneFactory_ = new SceneFactory();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_);

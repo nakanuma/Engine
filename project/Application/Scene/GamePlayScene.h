@@ -40,7 +40,7 @@ private:
 #endif
 
 private:
-	std::unique_ptr<Camera> camera = nullptr;
+	Camera* camera = nullptr;
 	std::unique_ptr<DebugCamera> debugCamera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;

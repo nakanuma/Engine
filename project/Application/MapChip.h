@@ -143,7 +143,6 @@ private:
 	//AABBの半径
 	Float3 rad_ = {0.5f,0.5f,0.5f};
 
-
 	// マップのウェーブ範囲
 	float maxWaveRange_; //MAX
 	float minWaveRange_; //MIN

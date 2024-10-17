@@ -12,14 +12,6 @@ void GamePlayScene::Initialize()
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
-	// カメラのインスタンスを生成
-	camera = std::make_unique<Camera>(Float3{10.0f, 20.0f, -30.0f}, Float3{0.44f, 0.0f, 0.0f}, 0.45f);
-	Camera::Set(camera.get()); // 現在のカメラをセット
-
-	// カメラのoriginalPositionに現在のカメラのtranslateをセット（シェイク時に使用、ずれを防止するために必要）
-	camera->SetOriginalPosition(camera->transform.translate);
-
-	// デバッグカメラの生成と初期化
 	debugCamera = std::make_unique<DebugCamera>();
 	debugCamera->Initialize();
 
@@ -40,6 +32,8 @@ void GamePlayScene::Initialize()
 	// LightManagerの初期化
 	lightManager = LightManager::GetInstance();
 	lightManager->Initialize();
+
+	camera = SceneManager::GetInstance()->GetCamera();
 
 	///
 	///	↓ ゲームシーン用 
@@ -63,7 +57,7 @@ void GamePlayScene::Update()
 #ifdef _DEBUG // デバッグカメラ
 	DebugCameraUpdate(input);
 #endif
-	stage_->Update(camera.get());
+	stage_->Update(camera);
 }
 
 void GamePlayScene::Draw()
