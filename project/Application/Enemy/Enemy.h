@@ -23,7 +23,7 @@ public:
 	void Update(std::list<std::unique_ptr<Enemy>>& enemies);
 	void Draw();
 private:
-	void CloneInitialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData);
+	void CloneInitialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData,int32_t numberOfClones2Create);
 	Enemy* CreateClone();
 private:
 	Stage* stage_;
@@ -52,6 +52,7 @@ private:
 
 	// Clone
 	bool isClone_;
+	int32_t numberOfClones2Create_;
 	Float3 cloneOffset_;
 public:
 	void SetStage(Stage* stage){stage_ = stage;}
