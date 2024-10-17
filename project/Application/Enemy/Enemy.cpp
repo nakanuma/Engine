@@ -2,6 +2,7 @@
 
 #include "Application/Collision/Collider.h"
 #include "Application/myRandom/MyRandom.h"
+#include "Application/Stage/Stage.h"
 #include "DeltaTime.h"
 #include "GlobalVariables.h"
 
@@ -67,6 +68,7 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 	variables->addValue("Game","Enemy","minJumpPower",minJumpPower_);
 	variables->addValue("Game","Enemy","maxJumpPower",maxJumpPower_);
 	variables->addValue("Game","Enemy","cloneOffset",cloneOffset_);
+	variables->addValue("Game","Enemy","stealEnergy_",stealEnergy_);
 }
 
 void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
@@ -113,6 +115,10 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 
 	if(isOnGround_)
 	{
+		if(!isClone_)
+		{
+			stolenEnergy_ += stage_->StealEnergy(stealEnergy_);
+		}
 		velocity_.y = 0.0f;
 	} else
 	{
@@ -189,5 +195,6 @@ Enemy* Enemy::CreateClone()
 	Float3 cloneSpawnPos = TransformMatrix(cloneOffset_,object_->transform_.MakeAffineMatrix());
 	// Clone 用の 初期化
 	clone->CloneInitialize(cloneSpawnPos,moveDirection_,object_->model_);
+	clone->SetStage(stage_);
 	return clone;
 }

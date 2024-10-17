@@ -68,6 +68,8 @@
     <ClCompile Include="Engine\3D\DebugCamera.cpp" />
     <ClCompile Include="Engine\3D\InstancedObject.cpp" />
     <ClCompile Include="Application\Collision\CollisionManager.cpp" />
+    <ClCompile Include="Application\Enemy\EnemySpawner.cpp" />
+    <ClCompile Include="Application\Stage\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
@@ -76,6 +78,8 @@
     <ClCompile Include="Application\myRandom\MyRandom.cpp" />
     <ClInclude Include="Engine\3D\InstancedObject.h" />
     <ClInclude Include="Application\Collision\CollisionManager.h" />
+    <ClInclude Include="Application\Enemy\EnemySpawner.h" />
+    <ClInclude Include="Application\Stage\Stage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />

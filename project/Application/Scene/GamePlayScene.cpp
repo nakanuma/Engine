@@ -43,51 +43,8 @@ void GamePlayScene::Initialize()
 	///	↓ ゲームシーン用 
 	///	
 
-	// Texture読み込み
-	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice());
-
-	// モデルの読み込みとテクスチャの設定
-	model_ = ModelManager::LoadModelFile("resources/Models","plane.obj",dxBase->GetDevice());
-	model_.material.textureHandle = uvCheckerGH;
-
-	// オブジェクトの生成とモデル設定
-	object_ = std::make_unique<Object3D>();
-	object_->model_ = &model_;
-	object_->transform_.rotate = {0.0f,3.14f,0.0f};
-
-	// モデルの読み込みとテクスチャの設定(マップチップ)
-	modelBlock_ = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
-	modelBlock_.material.textureHandle = uvCheckerGH;
-
-	// マップチップ
-	mapChip_ = std::make_unique<MapChipField>();
-
-	// まずCSVファイルで読み込む
-	mapChip_->LoadMapChipCsv("resources/blocks.csv");
-	// そのあとに初期化
-	mapChip_->Initialize(modelBlock_);
-
-	object_->transform_.rotate = {0.0f, 3.14f, 0.0f};
-
-	// Texture読み込み
-	uint32_t monsterBallTexture = TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice());
-	player_ = std::make_unique<Player>();
-	player_->Initialize(monsterBallTexture);
-	player_->SetMapChipField(mapChip_.get());
-
-	GlobalVariables::getInstance()->addValue("Game","EnemySpawner_Default","spawnerValue",enemySpawnerValue_);
-	enemyModel = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
-	enemyModel.material.textureHandle = monsterBallTexture;
-
-	for(size_t i = 0; i < enemySpawnerValue_; ++i)
-	{
-		enemySpawners_.push_back(std::make_unique<EnemySpawner>());
-		enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
-		enemySpawners_.back()->SetEnemyModel(enemyModel);
-	}
-
-	// 衝突マネージャの生成
-	collisionManager_ = std::make_unique<CollisionManager>();
+	stage_ = std::make_unique<Stage>();
+	stage_->Initialize();
 }
 
 void GamePlayScene::Finalize()
@@ -96,81 +53,10 @@ void GamePlayScene::Finalize()
 
 void GamePlayScene::Update()
 {
-#ifdef _DEBUG
-	int32_t movingSpawnerValue = enemySpawnerValue_ - static_cast<int32_t>(enemySpawners_.size());
-
-	if(movingSpawnerValue > 0)  // 増加する場合
-	{
-		for(int32_t i = 0; i < movingSpawnerValue; ++i)
-		{
-			enemySpawners_.push_back(std::make_unique<EnemySpawner>());
-			enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
-			enemySpawners_.back()->SetEnemyModel(enemyModel);
-		}
-	} else if(movingSpawnerValue < 0)  // 減少する場合
-	{
-		// 減少させる数だけポップバックする
-		for(int32_t i = 0; i < abs(movingSpawnerValue); ++i)
-		{
-			if(!enemySpawners_.empty())
-			{
-				enemySpawners_.pop_back();
-			}
-		}
-	}
-#endif // _DEBUG
-
-	if(input->TriggerKey(DIK_1))
-	{
-		// 定数値でウェーブを起こす
-		int hitX = 10;
-		int hitZ = 10;
-		float waveRange = 15.0f;
-		float initialYVelocity = 0.86f;
-		mapChip_->TriggerWave(hitX, hitZ, waveRange, initialYVelocity);
-		
-	}
-
-	player_->Update();
-
-	for(auto& enemySpawner : enemySpawners_)
-	{
-		enemySpawner->Update();
-		if(!enemySpawner->IsSpawn())
-		{
-			continue;
-		}
-			std::unique_ptr<Enemy> enemy;
-			enemy.reset(enemySpawner->Spawn());
-			enemies_.emplace_back(std::move(enemy));
-	}
-
-	for(auto& enemy : enemies_)
-	{
-		enemy->Update(enemies_);
-	}
-	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy){return enemy->IsAlive()? false : true;});
-
-	mapChip_->Update();
-
-	object_->UpdateMatrix();
-
-	#pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
-
-	// プレイヤーの手が地面にめり込んだらシェイク開始
-	if (player_->GetHandTranslate().y <= 0.0f) {
-		camera->ApplyShake(1.5f, 150);
-	}
-	// カメラのシェイクを更新
-	camera->UpdateShake();
-
-	#pragma endregion
-
 #ifdef _DEBUG // デバッグカメラ
 	DebugCameraUpdate(input);
 #endif
-
-	CheckAllCollisions();
+	stage_->Update(camera.get());
 }
 
 void GamePlayScene::Draw()
@@ -194,27 +80,7 @@ void GamePlayScene::Draw()
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
 
-	// オブジェクトの描画
-	object_->Draw();
-	for(auto& enemySpawner : enemySpawners_)
-	{
-		enemySpawner->Draw();
-	}
-
-	for(auto& enemy : enemies_)
-	{
-		enemy->Draw();
-	}
-
-	player_->Draw();
-
-#pragma region マップチップ描画用PSOに変更->マップチップ描画->通常PSOに戻す
-	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateMapchip());
-	// マップチップ
-	mapChip_->Draw();
-	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineState());
-#pragma endregion
-
+	stage_->DrawModels();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -240,9 +106,7 @@ void GamePlayScene::Draw()
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
-	ImGui::DragFloat3("translation",&object_->transform_.translate.x,0.01f);
-	ImGui::DragFloat3("rotation",&object_->transform_.rotate.x,0.01f);
-
+	
 #ifdef _DEBUG // デバッグカメラ
 	ImGui::Checkbox("useDebugCamera",&useDebugCamera);
 #endif
@@ -290,39 +154,3 @@ void GamePlayScene::DebugCameraUpdate(Input* input)
 	prevUseDebugCamera = useDebugCamera;
 }
 #endif
-
-void GamePlayScene::GenerateBloks()
-{
-	// 要素数
-	uint32_t kNumBlockVirtical = mapChip_->GetNumBlockVertical();
-	uint32_t kNumBlockHorizontal = mapChip_->GetNumBlockHorizontal();
-
-	// ブロックの生成
-	objectBlocks_.resize(kNumBlockVirtical); // 垂直方向のサイズを設定
-	for(uint32_t i = 0; i < kNumBlockVirtical; ++i)
-	{
-		objectBlocks_[i].resize(kNumBlockHorizontal); // 水平方向のサイズを設定
-		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
-		{
-// ユニークポインタでObject3Dを初期化
-			objectBlocks_[i][j] = std::make_unique<Object3D>();
-
-			// モデルの設定
-			objectBlocks_[i][j]->model_ = &modelBlock_;
-
-			// 位置の設定
-			objectBlocks_[i][j]->transform_.translate = mapChip_->GetMapChipPositionByIndex(j,i);
-		}
-	}
-}
-
-void GamePlayScene::CheckAllCollisions()
-{
-	for(auto& enemy : enemies_)
-	{
-		mapChip_->CheckCollision_Collider(enemy->GetCollider());
-	}
-
-	mapChip_->CheckCollision_Collider(player_->GetHandCollider());
-
-}

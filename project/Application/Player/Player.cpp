@@ -3,7 +3,11 @@
 
 #include "DirectXBase.h"
 #include "GlobalVariables.h"
+#ifdef _DEBUG
 #include "externals/imgui/imgui.h"
+#endif // _DEBUG
+
+#include "Application/Stage/Stage.h"
 
 Player::~Player()
 {
@@ -33,9 +37,14 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	auto onCollision = []([[maybe_unused]] Collider* a) {};
 	auto onCollisionMapChip = [this](MapChipField::MapObject* mapObj)
 	{
+		// wave を 起こす
 		MapChipField::IndexSet address = mapObj->GetIndexSet();
 		float waveRange = Lerp(chargePercent_,minWaveRange_,maxWaveRange_);
 		mapChipField_->TriggerWave(address.xIndex,address.zIndex,waveRange,initialYVelocity_);
+
+		// Energy を 貯める
+		float chargingEnergy = Lerp(chargePercent_,minChargingEnergy_,maxChargingEnergy_);
+		stage_->ChargeEnergy(chargingEnergy);
 		chargePercent_ = 0.0f;
 	};
 	handCollider_ = std::make_unique<Collider>();
