@@ -46,6 +46,12 @@ void GamePlayScene::Initialize()
 	///	
 
 	stage_ = SceneManager::GetInstance()->GetStage();
+	if(!stage_)
+	{
+		SceneManager::GetInstance()->CreateStage();
+		stage_ = SceneManager::GetInstance()->GetStage();
+	}
+	stage_->Initialize();
 }
 
 void GamePlayScene::Finalize()
