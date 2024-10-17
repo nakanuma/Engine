@@ -69,7 +69,6 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 	variables->addValue("Game","Enemy","maxJumpPower",maxJumpPower_);
 	variables->addValue("Game","Enemy","cloneOffset",cloneOffset_);
 	variables->addValue("Game","Enemy","stealEnergy_",stealEnergy_);
-	//variables->addValue("Game", "Enemy", "WaveRange_", waveRange_);
 }
 
 void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
