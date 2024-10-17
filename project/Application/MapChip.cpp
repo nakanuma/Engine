@@ -16,7 +16,7 @@ namespace
 void MapChipField::Initialize(ModelManager::ModelData model)
 {
 	model_ = model;
-
+	 
 	// マップの初期化
 	mapWorld_.resize(kNumBlockVirtical);
 	for(uint32_t i = 0; i < kNumBlockVirtical; ++i)
@@ -37,15 +37,18 @@ void MapChipField::Initialize(ModelManager::ModelData model)
 
 				// マップワールドに格納
 				mapWorld_[i][j] = std::move(mapObject);
+				
 			}
 		}
 	}
-
 	InitInstancing();
 }
 
 void MapChipField::Update()
 {
+
+	
+
 	const float& deltaTime = DeltaTime::getInstance()->getDeltaTime();
 	// 波
 	// ブロックの更新
@@ -100,6 +103,7 @@ void MapChipField::Update()
 
 				// 速度を0に設定
 				worldTransformBlock->velocity_.y = 0;
+
 			}
 		}
 	}
@@ -114,11 +118,13 @@ void MapChipField::Update()
 			{
 				continue;
 			}
+		
 			worldTransformBlock->Update();
 			j++;
 		}
 		i++;
 	}
+	
 	// 描画用オブジェクトの更新
 	UpdateInstancedObjects();
 }
@@ -296,45 +302,6 @@ void MapChipField::CheckCollision_Collider(Collider* collider)
 			}
 		}
 	}
-
-
-//for(int32_t row = 1; row < 2; row++)
-//{
-//	IndexSet currentIndex;
-//	currentIndex.zIndex = colliderIndex.zIndex + row;
-//	if(currentIndex.zIndex < 0 || currentIndex.zIndex >= mapWorld_.size())
-//	{
-//		continue;
-//	}
-//	for(int32_t col = -1; col < 2; col++)
-//	{
-//		currentIndex.xIndex = colliderIndex.xIndex + row;
-//		// 自分自身をスキップ
-//		if(row == 0 && col == 0)
-//		{
-//			continue;
-//		}
-//		// 列が範囲外なら早期にスキップ
-//		if(currentIndex.xIndex < 0 || currentIndex.xIndex >= mapWorld_[row].size())
-//		{
-//			continue;
-//		}
-
-//		auto& aabb = mapWorld_[currentIndex.zIndex][currentIndex.xIndex]->collAABB_;
-//		Float3 closestPoint = {
-//			std::clamp<float>(colliderPos.x,aabb.min.x,aabb.max.x),
-//			std::clamp<float>(colliderPos.y,aabb.min.y,aabb.max.y),
-//			std::clamp<float>(colliderPos.z,aabb.min.z,aabb.max.z)
-//		};
-
-//		float distance = Float3::Length(closestPoint - colliderPos);
-
-//		if(distance <= collider->GetRadius())
-//		{
-//			collider->OnCollisionMapChip(mapWorld_[currentIndex.zIndex][currentIndex.xIndex].get());
-//		}
-//	}
-//}
 }
 
 void MapChipField::InitInstancing()
@@ -350,7 +317,7 @@ void MapChipField::InitInstancing()
 	{
 		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
+			if (GetMapChipTypeByIndex(j, i) == MapChipType::kBlock)
 			{
 				Matrix world = Matrix::Translation(mapWorld_[i][j]->GetTranslate());
 				Matrix view = Camera::GetCurrent()->MakeViewMatrix();
@@ -360,6 +327,8 @@ void MapChipField::InitInstancing()
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WVP = world * view * projection;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].World = world;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WorldInverseTranspose = Matrix::Inverse(world);
+
+				
 			}
 		}
 	}
@@ -382,9 +351,20 @@ void MapChipField::UpdateInstancedObjects()
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WVP = world * view * projection;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].World = world;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WorldInverseTranspose = Matrix::Inverse(world);
+			
+			
+				if (i == 0) {
+					//mapObjIns_.materialCB_.data_[0].color = { 1,0,0,1 };
+				}
+				else {
+					//mapObjIns_.materialCB_.data_[j].color = { 1,1,1,1 };
+				}
+			
 			}
 		}
 	}
+	mapObjIns_.materialCB_.data_[0].color = { 1,0,0,1 };
+	mapObjIns_.materialCB_.data_[0].color = {1,0,1,1};
 }
 
 void MapChipField::MapObject::Init()

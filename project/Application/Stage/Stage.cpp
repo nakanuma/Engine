@@ -112,7 +112,7 @@ void Stage::Update(Camera* camera)
 	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy) { return enemy->IsAlive() ? false : true; });
 
 	mapChip_->Update();
-
+	
 	CheckAlCollisions();
 
 #pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす

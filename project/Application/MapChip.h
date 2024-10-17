@@ -42,18 +42,20 @@ public:
 	class MapObject
 	{
 	public:
-		MapObject(MapChipField* host,IndexSet address):host_(host),address_(address) {}
+		MapObject(MapChipField* host, IndexSet address) :host_(host), address_(address) {}
 		~MapObject() = default;
 
 		void Init();
 		void Update();
-		
+
 		IndexSet addressOfWaveOrigin_;
 		float waveRange_;
 		float waveDelay;		// ウェーブの広がり遅延
 		bool isWave = false;	// ウェーブしているかどうかのフラグ
 		AABB collAABB_;			// AABB
 		Float3 velocity_;		// マップの速度
+		Float4 color;
+		
 	private:
 		Float3 prePos_;
 		IndexSet address_;
@@ -65,7 +67,7 @@ public:
 	public:
 		const AABB& GetCollider()const { return collAABB_; }
 		const Float3& GetTranslate()const { return transform_.translate; }
-		void SetTranslate(Float3 &trans) { transform_.translate = trans; } // translateの設定
+		void SetTranslate(Float3& trans) { transform_.translate = trans; } // translateの設定
 		IndexSet GetIndexSet()const { return address_; }
 	};
 
@@ -90,9 +92,9 @@ public:
 	//読み込み
 	void LoadMapChipCsv(const std::string& filePath);
 	//マップチップ種別の取得
-	MapChipType GetMapChipTypeByIndex(uint32_t xIndex,uint32_t zIndex);
+	MapChipType GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex);
 	//マップチップ座標の取得
-	Float3 GetMapChipPositionByIndex(uint32_t xIndex,uint32_t zIndex);
+	Float3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t zIndex);
 
 	//座標からマップチップ番号を計算
 	IndexSet GetMapChipIndexSetByPosition(const Float3& position);
@@ -102,18 +104,18 @@ public:
 	uint32_t GetNumBlockHorizontal() { return kNumBlockHorizontal; }
 
 	// マップチップ番号の位置との当たり判定(バグあり)
-	bool IsMapAABB(AABB& charcter,IndexSet& index);
+	bool IsMapAABB(AABB& charcter, IndexSet& index);
 
 	// マップチップ全体の当たり判定
 	bool IsMapAABB(AABB& charcter);
 
 	// マップチップ番号のY座標の押し戻し処理(バグあり)
-	void IsMapY(float& posY,float radY,IndexSet& index);
+	void IsMapY(float& posY, float radY, IndexSet& index);
 
 	// マップチップ全体のAABBと当たり判定をとり当たったAABBとY座標の押し戻し処理(isJampがtrueでonGround_がfalse)
-	void IsMapY(AABB& charcter,float& posY,float radY);
+	void IsMapY(AABB& charcter, float& posY, float radY);
 	// マップチップ全体のAABBと当たり判定をとり当たったAABBとY座標の固定処理(onGround_がtrue)のとき
-	void IsMapY2(AABB& charcter,float& posY,float radY);
+	void IsMapY2(AABB& charcter, float& posY, float radY);
 
 	void CheckCollision_Collider(Collider* collider);
 
@@ -141,7 +143,7 @@ private:
 	std::vector<std::vector<std::unique_ptr<MapObject>>> mapWorld_;
 
 	//AABBの半径
-	Float3 rad_ = {0.5f,0.5f,0.5f};
+	Float3 rad_ = { 0.5f,0.5f,0.5f };
 
 
 	// マップのウェーブ範囲
