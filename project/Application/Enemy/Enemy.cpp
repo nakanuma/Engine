@@ -96,19 +96,21 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 		// waveRange を 複製体 の 切符として 機能させる
 		if (waveRange_ != 0.0f)
 		{
-
-			stage_->ChargeEnergy(stolenEnergy_);
-			
-			isClone_ = true;
-			--numberOfClones2Create_;
-			if(numberOfClones2Create_ < 0.0f)
+			if (object_->transform_.translate.y <= 1)
 			{
-				isAlive_ = false;
-				return;
+				stage_->ChargeEnergy(stolenEnergy_);
+
+				isClone_ = true;
+				--numberOfClones2Create_;
+				if (numberOfClones2Create_ < 0.0f)
+				{
+					isAlive_ = false;
+					return;
+				}
+				enemies.emplace_back(CreateClone());
+				waveRange_ = 0.0f;
+				mapObjectWaveDistance_ = 0.0f;
 			}
-			enemies.emplace_back(CreateClone());
-			waveRange_ = 0.0f;
-			mapObjectWaveDistance_ = 0.0f;
 		}
 	}
 
