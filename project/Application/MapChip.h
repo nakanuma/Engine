@@ -54,6 +54,7 @@ public:
 		bool isWave = false;	// ウェーブしているかどうかのフラグ
 		AABB collAABB_;			// AABB
 		Float3 velocity_;		// マップの速度
+		Float4 color_;			// ブロックの色
 	private:
 		Float3 prePos_;
 		IndexSet address_;

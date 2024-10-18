@@ -1,12 +1,13 @@
 #include "Mapchip.hlsli"
 
-struct TransformationMatrix
+struct MapchipStructuredData
 {
     float32_t4x4 WVP;
     float32_t4x4 World;
     float32_t4x4 WorldInverseTranspose;
+    float32_t4 color;
 };
-StructuredBuffer<TransformationMatrix> gTransformationMatrices : register(t0);
+StructuredBuffer<MapchipStructuredData> gTransformationMatrices : register(t0);
 
 struct VertexShaderInput
 {
@@ -22,5 +23,6 @@ VertexShaderOutput main(VertexShaderInput input, uint32_t instanceId : SV_Instan
     output.texcoord = input.texcoord;
     output.normal = normalize(mul(input.normal, (float32_t3x3) gTransformationMatrices[instanceId].WorldInverseTranspose));
     output.worldPosition = mul(input.position, gTransformationMatrices[instanceId].World).xyz;
+    output.color = gTransformationMatrices[instanceId].color;
     return output;
 }

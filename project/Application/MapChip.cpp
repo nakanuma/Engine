@@ -116,6 +116,20 @@ void MapChipField::Update()
 			}
 			worldTransformBlock->Update();
 			j++;
+
+			// 列ごとの色変更テスト（要らなくなったら消して）
+			if (i == 19) {
+				worldTransformBlock->color_ = { 0.76f, 0.0f, 0.95f, 1.0f }; // 紫
+			}
+			if (i == 18) {
+				worldTransformBlock->color_ = { 0.17f, 0.0f, 0.97f, 0.93f }; // 青
+			}
+			if (i == 17) {
+				worldTransformBlock->color_ = { 0.0f, 0.83f, 1.0f, 1.0f }; // 水色
+			}
+			if (i == 16) {
+				worldTransformBlock->color_ = { 0.16f, 0.97f, 0.0f, 1.0f }; // 緑
+			}
 		}
 		i++;
 	}
@@ -360,6 +374,7 @@ void MapChipField::InitInstancing()
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WVP = world * view * projection;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].World = world;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WorldInverseTranspose = Matrix::Inverse(world);
+				/*mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].color = { 1.0f, 1.0f, 1.0f, 1.0f };*/
 			}
 		}
 	}
@@ -382,6 +397,7 @@ void MapChipField::UpdateInstancedObjects()
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WVP = world * view * projection;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].World = world;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WorldInverseTranspose = Matrix::Inverse(world);
+				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].color = mapWorld_[i][j]->color_;
 			}
 		}
 	}
@@ -392,6 +408,8 @@ void MapChipField::MapObject::Init()
 	transform_.translate = host_->GetMapChipPositionByIndex(address_.xIndex,address_.zIndex);
 	collAABB_.max = Add(GetTranslate(),host_->rad_);
 	collAABB_.min = Subtract(GetTranslate(),host_->rad_);
+	// 初期カラー（白）を一旦入れておく
+	color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 }
 
 void MapChipField::MapObject::Update()
