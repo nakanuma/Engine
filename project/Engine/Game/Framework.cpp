@@ -83,8 +83,6 @@ void Framework::Update()
 	// パーティクルマネージャの更新
 	particleManager->Update();
 
-
-
 	// SceneManagerの更新
 	SceneManager::GetInstance()->Update();
 }

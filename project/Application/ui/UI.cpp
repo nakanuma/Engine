@@ -57,13 +57,11 @@ void UI::Update(){
 	sprite_->SetFlipY(isFlipY_);*/
 #endif // _DEBUG
 
-	sprite_->Update();
-
-	if(!update_){
-		return;
+	if(update_){
+		update_(sprite_.get());
 	}
 
-	update_(sprite_.get());
+	sprite_->Update();
 }
 
 void UI::Draw(){

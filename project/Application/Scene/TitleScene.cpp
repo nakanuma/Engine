@@ -10,6 +10,7 @@
 #include <numbers>
 #include "MyMath.h"
 
+#include "DeltaTime.h"
 #include "GlobalVariables.h"
 
 void TitleScene::Initialize()
@@ -48,11 +49,26 @@ void TitleScene::Initialize()
 	}
 	stage_->Initialize();
 #endif // _DEBUG
-
+	///===========================================================================================
+	/// GlobalVariables 
+	///===========================================================================================
 	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->addValue("Title","Times","inSceneMaxTime_",inSceneMaxTime_);
+
+	// time
+	variables->addValue("Title","Times","enterSceneMaxTime_",enterSceneMaxTime_);
 	variables->addValue("Title","Times","outSceneMaxTime_",outSceneMaxTime_);
-	leftTime_ = inSceneMaxTime_;
+	leftTime_ = 0.0f;
+
+	// button
+	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
+
+	// Camera
+	variables->addValue("Title","Camera","cameraHomePosition",cameraHomePos_);
+	
+	///===========================================================================================
+	/// Camera 
+	///===========================================================================================
+	cameraPosWhenEnterScene_ = camera->transform.translate;
 
 	///===========================================================================================
 	/// Texture 
@@ -65,7 +81,15 @@ void TitleScene::Initialize()
 	buttonUI_ = std::make_unique<UI>();
 	buttonUI_->Init("Title","buttonUI",buttonTextureIndex_,spriteCommon.get());
 	signT_ = 1.0f;
-	auto buttonUiUpdate = [this](Sprite* sprite){
+
+	// 各 Update
+	buttonUpdateWhenEnterScene_ = [this](Sprite* sprite){
+		Float4 color = sprite->GetColor();
+		color.w = Lerp(t_,0.0f,1.0f);
+		color.w = std::clamp(color.w,0.0f,1.0f);
+		sprite->SetColor(color);
+	};
+	buttonUpdateWhenSceneUpdate_ = [this](Sprite* sprite){
 		if(t_ >= 1.0f)
 		{
 			signT_ = -1.0f;
@@ -73,13 +97,20 @@ void TitleScene::Initialize()
 		{
 			signT_ = 1.0f;
 		}
-		t_ += 0.1f * signT_;
 
 		Float2 currentButtonOffset = Float2::Lerp(t_,-buttonUiOffset_,buttonUiOffset_);
 		sprite->SetPosition(buttonUI_->GetPosition() + currentButtonOffset);
 	};
-	buttonUI_->setUpdate(buttonUiUpdate);
-	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
+	buttonUpdateWhenOutScene_ = [this](Sprite* sprite){
+		Float4 color = sprite->GetColor();
+		color.w = Lerp(1.0f - t_,0.0f,1.0f);
+		color.w = std::clamp(color.w,0.0f,1.0f);
+		sprite->SetColor(color);
+	};
+
+	buttonUI_->setUpdate(buttonUpdateWhenEnterScene_);
+
+	currentUpdate_ = [this](){ this->EnterSceneUpdate(); };
 }
 
 void TitleScene::Finalize()
@@ -88,22 +119,12 @@ void TitleScene::Finalize()
 
 void TitleScene::Update()
 {
-	
 	///
 	///	シーン切り替え
 	/// 
 
-	// ENTERキーを押したら
-	if (input->TriggerKey(DIK_SPACE)) {
-		//// ゲームプレイシーン（次シーンを生成）
-		//BaseScene* scene = new GamePlayScene();
-		//// シーン切り替え依頼
-		//SceneManager::GetInstance()->SetNextScene(scene);
-
-		// シーン切り替え
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
-		return;
-	}
+	currentUpdate_();
+	stage_->Update(camera);
 	buttonUI_->Update();
 }
 
@@ -166,14 +187,43 @@ void TitleScene::Draw()
 	dxBase->EndFrame();
 }
 
-void TitleScene::InSceneUpdate()
+void TitleScene::EnterSceneUpdate()
 {
+	leftTime_ += DeltaTime::getInstance()->getDeltaTime();
+	t_ = leftTime_ / enterSceneMaxTime_;
+	buttonUI_->Update();
+
+	camera->transform.translate = Float3::Lerp(cameraHomePos_,cameraPosWhenEnterScene_,t_);
+
+	if(leftTime_ >= enterSceneMaxTime_)
+	{
+		currentUpdate_ = [this](){ this->SceneUpdate(); };
+		buttonUI_->setUpdate(buttonUpdateWhenSceneUpdate_);
+		leftTime_ = 0.0f;
+		t_ = 0.0f;
+	}
 }
 
 void TitleScene::SceneUpdate()
 {
+	camera->transform.translate = cameraHomePos_;
+
+	t_ += DeltaTime::getInstance()->getDeltaTime() * signT_;
+	// 一旦 置いとく
+	if(input->TriggerKey(DIK_SPACE))
+	{
+		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
+		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
+		t_ =0.0f;
+	}
 }
 
 void TitleScene::OutSceneUpdate()
 {
+	leftTime_ += DeltaTime::getInstance()->getDeltaTime();
+	t_ = leftTime_ / outSceneMaxTime_;
+	if(leftTime_ >= outSceneMaxTime_)
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+	}
 }
