@@ -17,7 +17,7 @@ SceneManager::~SceneManager()
 void SceneManager::CameraInitialize()
 {
 	// カメラのインスタンスを生成
-	camera_ = std::make_unique<Camera>(Float3{10.0f,20.0f,-30.0f},Float3{0.44f,0.0f,0.0f},0.45f);
+	camera_ = std::make_unique<Camera>(Float3{20.0f,40.0f,-60.0f},Float3{0.44f,0.0f,0.0f},0.45f);
 	Camera::Set(camera_.get()); // 現在のカメラをセット
 
 	// カメラのoriginalPositionに現在のカメラのtranslateをセット（シェイク時に使用、ずれを防止するために必要）

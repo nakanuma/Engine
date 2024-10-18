@@ -121,7 +121,20 @@ public:
 	// 衝突時にウェーブを発生させるための関数(マップ番号、マップ番号、ウェーブ範囲、Y軸の速度)
 	void TriggerWave(int hitX, int hitZ, float waveRange, float initialYVelocity);
 
+
+	// マップのカラー指定
+	void MapColor();
+
+	// マップパワーの加算
+	void SetAddPower(float p) { mapPower += p; };
+	// マップパワー取得
+	float& GetPower() { return mapPower; };
+
+
 private:
+	// パワー
+	float mapPower = 0;
+
 
 	// モデルデータ
 	ModelManager::ModelData model_;
@@ -131,8 +144,8 @@ private:
 	static inline const float kBlockHeight = 1.0f;
 
 	// ブロックの個数
-	static inline const uint32_t kNumBlockVirtical = 20;
-	static inline const uint32_t kNumBlockHorizontal = 20;
+	static inline const uint32_t kNumBlockVirtical = 40;
+	static inline const uint32_t kNumBlockHorizontal = 40;
 
 	//
 	MapChipData mapChipData_;
