@@ -360,7 +360,7 @@ void MapChipField::InitInstancing()
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WVP = world * view * projection;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].World = world;
 				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].WorldInverseTranspose = Matrix::Inverse(world);
-				mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+				/*mapObjIns_.gTransformationMatrices.data_[i * kNumBlockHorizontal + j].color = { 1.0f, 1.0f, 1.0f, 1.0f };*/
 			}
 		}
 	}
@@ -394,6 +394,8 @@ void MapChipField::MapObject::Init()
 	transform_.translate = host_->GetMapChipPositionByIndex(address_.xIndex,address_.zIndex);
 	collAABB_.max = Add(GetTranslate(),host_->rad_);
 	collAABB_.min = Subtract(GetTranslate(),host_->rad_);
+	// 初期カラー（白）を一旦入れておく
+	color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 }
 
 void MapChipField::MapObject::Update()
