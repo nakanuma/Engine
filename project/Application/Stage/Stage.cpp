@@ -19,7 +19,7 @@ void Stage::Initialize()
 	// マップチップ
 	mapChip_ = std::make_unique<MapChipField>();
 	// まずCSVファイルで読み込む
-	mapChip_->LoadMapChipCsv("resources/blocks.csv");
+	//mapChip_->LoadMapChipCsv("resources/blocks.csv");
 	// そのあとに初期化
 	mapChip_->Initialize(modelBlock_);
 

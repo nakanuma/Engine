@@ -29,7 +29,7 @@ void MapChipField::Initialize(ModelManager::ModelData model)
 	{
 		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
+			//if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
 			{
 				// MapObjectの生成
 				auto mapObject = std::make_unique<MapObject>(this,IndexSet(j,i));
@@ -103,6 +103,11 @@ void MapChipField::Update()
 			}
 		}
 	}
+
+
+
+	MapColor();
+	
 	// ブロックの更新
 	int i = 0;
 	for(auto& worldTransformBlockLine : mapWorld_)
@@ -114,22 +119,11 @@ void MapChipField::Update()
 			{
 				continue;
 			}
+
+
+
 			worldTransformBlock->Update();
 			j++;
-
-			// 列ごとの色変更テスト（要らなくなったら消して）
-			if (i == 19) {
-				worldTransformBlock->color_ = { 0.76f, 0.0f, 0.95f, 1.0f }; // 紫
-			}
-			if (i == 18) {
-				worldTransformBlock->color_ = { 0.17f, 0.0f, 0.97f, 0.93f }; // 青
-			}
-			if (i == 17) {
-				worldTransformBlock->color_ = { 0.0f, 0.83f, 1.0f, 1.0f }; // 水色
-			}
-			if (i == 16) {
-				worldTransformBlock->color_ = { 0.16f, 0.97f, 0.0f, 1.0f }; // 緑
-			}
 		}
 		i++;
 	}
@@ -310,45 +304,6 @@ void MapChipField::CheckCollision_Collider(Collider* collider)
 			}
 		}
 	}
-
-
-//for(int32_t row = 1; row < 2; row++)
-//{
-//	IndexSet currentIndex;
-//	currentIndex.zIndex = colliderIndex.zIndex + row;
-//	if(currentIndex.zIndex < 0 || currentIndex.zIndex >= mapWorld_.size())
-//	{
-//		continue;
-//	}
-//	for(int32_t col = -1; col < 2; col++)
-//	{
-//		currentIndex.xIndex = colliderIndex.xIndex + row;
-//		// 自分自身をスキップ
-//		if(row == 0 && col == 0)
-//		{
-//			continue;
-//		}
-//		// 列が範囲外なら早期にスキップ
-//		if(currentIndex.xIndex < 0 || currentIndex.xIndex >= mapWorld_[row].size())
-//		{
-//			continue;
-//		}
-
-//		auto& aabb = mapWorld_[currentIndex.zIndex][currentIndex.xIndex]->collAABB_;
-//		Float3 closestPoint = {
-//			std::clamp<float>(colliderPos.x,aabb.min.x,aabb.max.x),
-//			std::clamp<float>(colliderPos.y,aabb.min.y,aabb.max.y),
-//			std::clamp<float>(colliderPos.z,aabb.min.z,aabb.max.z)
-//		};
-
-//		float distance = Float3::Length(closestPoint - colliderPos);
-
-//		if(distance <= collider->GetRadius())
-//		{
-//			collider->OnCollisionMapChip(mapWorld_[currentIndex.zIndex][currentIndex.xIndex].get());
-//		}
-//	}
-//}
 }
 
 void MapChipField::InitInstancing()
@@ -364,7 +319,7 @@ void MapChipField::InitInstancing()
 	{
 		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
+			//if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
 			{
 				Matrix world = Matrix::Translation(mapWorld_[i][j]->GetTranslate());
 				Matrix view = Camera::GetCurrent()->MakeViewMatrix();
@@ -387,7 +342,7 @@ void MapChipField::UpdateInstancedObjects()
 	{
 		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j)
 		{
-			if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
+			//if(GetMapChipTypeByIndex(j,i) == MapChipType::kBlock)
 			{
 				Matrix world = Matrix::Translation(mapWorld_[i][j]->GetTranslate());
 				Matrix view = Camera::GetCurrent()->MakeViewMatrix();
@@ -424,24 +379,24 @@ void MapChipField::MapObject::Update()
 void MapChipField::TriggerWave(int hitX,int hitZ,float waveRange,float initialYVelocity)
 {
 	// 衝突した位置から円状にウェーブを広げる
-	for(int r = 0; r < mapWorld_.size(); ++r)
+	for (int r = 0; r < mapWorld_.size(); ++r)
 	{
-		for(int c = 0;c < mapWorld_[r].size(); ++c)
+		for (int c = 0; c < mapWorld_[r].size(); ++c)
 		{
 			auto& worldTransformBlock = mapWorld_[r][c];
 
 			// マップブロックがないなら動作させない
-			if(!worldTransformBlock)
+			if (!worldTransformBlock)
 				continue;
 
 			// 衝突位置のマップチップは動作させない
-			if(r == hitX &&c == hitZ)
+			if (r == hitX && c == hitZ)
 			{
 				continue;
 			}
 
 			// ウェーブしている物は動作させない
-			if(worldTransformBlock->isWave)
+			if (worldTransformBlock->isWave)
 				continue;
 
 			// マップチップのXZ座標から衝突位置までの距離を計算
@@ -450,14 +405,91 @@ void MapChipField::TriggerWave(int hitX,int hitZ,float waveRange,float initialYV
 			float distance = sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
 			// 衝突位置から一定範囲内にある場合にウェーブを発生
-			if(distance < waveRange)
+			if (distance < waveRange)
 			{
-				worldTransformBlock->addressOfWaveOrigin_ = {hitX,hitZ};
+				worldTransformBlock->color_ = { 1.000f,0.000f,0.000f,1.0f };
+				worldTransformBlock->addressOfWaveOrigin_ = { hitX,hitZ };
 				worldTransformBlock->waveRange_ = waveRange;
 				worldTransformBlock->isWave = true; // ウェーブさせる
 				worldTransformBlock->velocity_.y = initialYVelocity; // y軸の速度を代入
 				worldTransformBlock->waveDelay = distance * 0.1f; // 距離に応じた遅延時間を設定
 			}
 		}
+	}
+	// パワー加算テスト(消してOK)
+	mapPower += 2.5f;
+}
+
+void MapChipField::MapColor()
+{
+	// ブロックの更新
+	int i = 0;
+	for (auto& worldTransformBlockLine : mapWorld_)
+	{
+		int j = 0;
+		for (auto& worldTransformBlock : worldTransformBlockLine)
+		{
+			if (!worldTransformBlock)
+			{
+				continue;
+			}
+			j++;
+
+			worldTransformBlock->color_ = { 1, 1, 1, 1.0f }; //白
+
+			// 列ごとの色変更テスト
+			if (i <= 39 && 35 < i && mapPower >= 10) {
+				worldTransformBlock->color_ = { 0.0f, 0.0f, 0.545f, 1.0f }; //ダーク青
+			}
+			
+			if (i <= 35 && 31 < i && mapPower >= 20) {
+				worldTransformBlock->color_ = { 0.254f,0.411f, 0.882f, 1.0f }; //青
+			}
+			
+			if (i <= 31 && 27 < i && mapPower >= 30) {
+				worldTransformBlock->color_ = { 0.117f,0.564f, 1.000f, 1.0f }; //水色
+			}
+			
+			if (i <= 27 && 23 < i && mapPower >= 40) {
+				worldTransformBlock->color_ = { 0.596f,0.984f, 0.596f, 1.0f }; //ダークグリーン
+			}
+			
+			if (i <= 23 && 19 < i && mapPower >= 50) {
+				worldTransformBlock->color_ = { 0.486f,0.988f, 0.000f, 1.0f }; //グリーン
+			}
+			
+			if (i <= 19 && 15 < i && mapPower >= 60) {
+				worldTransformBlock->color_ = { 1.000f,1.000f, 0.000f, 1.0f }; //黄色
+			}
+			
+			if (i <= 15 && 11 < i && mapPower >= 70) {
+				worldTransformBlock->color_ = { 1.000f,0.843f, 0.000f, 1.0f }; //ゴールド
+			}
+			
+			if (i <= 11 && 7 < i && mapPower >= 80) {
+				worldTransformBlock->color_ = { 1.000f,0.647f, 0.000f, 1.0f }; //オレンジ
+			}
+			
+			if (i <= 7 && 3 < i && mapPower >= 90) {
+				worldTransformBlock->color_ = { 0.780f,0.082f, 0.521f, 1.0f }; //ダークピンク
+			}
+			
+			if (i <= 3 && mapPower >= 100) {
+				worldTransformBlock->color_ = { 1.000f,0.411f, 0.705f, 1.0f }; //ピンク
+			}
+			
+			
+
+
+			// ウェーブが発生中の場合
+			if (worldTransformBlock->isWave && worldTransformBlock->waveDelay >= 0) {
+				worldTransformBlock->color_ = { 1.000f,0.270f,0.000f,1.0f }; //オレンジ
+			}
+			else if (worldTransformBlock->isWave && worldTransformBlock->waveDelay < 0) {
+				worldTransformBlock->color_ = { 1.000f,0.000f,0.000f,1.0f }; //赤
+			}
+			
+		}
+		i++;
 	}
 }
