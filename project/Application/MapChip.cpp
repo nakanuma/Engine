@@ -116,6 +116,20 @@ void MapChipField::Update()
 			}
 			worldTransformBlock->Update();
 			j++;
+
+			// 列ごとの色変更テスト（要らなくなったら消して）
+			if (i == 19) {
+				worldTransformBlock->color_ = { 0.76f, 0.0f, 0.95f, 1.0f }; // 紫
+			}
+			if (i == 18) {
+				worldTransformBlock->color_ = { 0.17f, 0.0f, 0.97f, 0.93f }; // 青
+			}
+			if (i == 17) {
+				worldTransformBlock->color_ = { 0.0f, 0.83f, 1.0f, 1.0f }; // 水色
+			}
+			if (i == 16) {
+				worldTransformBlock->color_ = { 0.16f, 0.97f, 0.0f, 1.0f }; // 緑
+			}
 		}
 		i++;
 	}
