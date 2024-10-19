@@ -77,6 +77,10 @@ void GameClearScene::Initialize()
 	/// Camera
 	///===========================================================================================
 	cameraPosWhenInScene_ = camera->transform.translate;
+
+	variables->addValue("GameClear","ClearText","scale",clearTextPlane_->transform_.scale);
+	variables->addValue("GameClear","ClearText","rotate",clearTextPlane_->transform_.rotate);
+	variables->addValue("GameClear","ClearText","position",clearTextPlane_->transform_.translate);
 }
 
 void GameClearScene::Finalize()
@@ -85,8 +89,8 @@ void GameClearScene::Finalize()
 
 void GameClearScene::Update()
 {
-	currentUpdate_();
 	stage_->Update(camera);
+	currentUpdate_();
 }
 
 void GameClearScene::Draw()
@@ -111,6 +115,7 @@ void GameClearScene::Draw()
 	/// 
 
 	stage_->DrawModels();
+	clearTextPlane_->UpdateMatrix();
 	clearTextPlane_->Draw();
 
 	///
