@@ -70,8 +70,8 @@
     <ClCompile Include="Application\Collision\CollisionManager.cpp" />
     <ClCompile Include="Application\Enemy\EnemySpawner.cpp" />
     <ClCompile Include="Application\Stage\Stage.cpp" />
-    <ClCompile Include="Application\Effect\PlayerAttack\PlayerAttackParticle.cpp" />
-    <ClCompile Include="Application\Effect\PlayerAttack\PlayerAttackEmitter.cpp" />
+    <ClCompile Include="Application\Effect\EnemyLanding\EnemyLandingParticle.cpp" />
+    <ClCompile Include="Application\Effect\EnemyLanding\EnemyLandingEmitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
@@ -82,8 +82,8 @@
     <ClInclude Include="Application\Collision\CollisionManager.h" />
     <ClInclude Include="Application\Enemy\EnemySpawner.h" />
     <ClInclude Include="Application\Stage\Stage.h" />
-    <ClInclude Include="Application\Effect\PlayerAttack\PlayerAttackParticle.h" />
-    <ClInclude Include="Application\Effect\PlayerAttack\PlayerAttackEmitter.h" />
+    <ClInclude Include="Application\Effect\EnemyLanding\EnemyLandingParticle.h" />
+    <ClInclude Include="Application\Effect\EnemyLanding\EnemyLandingEmitter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />

@@ -2,10 +2,10 @@
 #include "ModelManager.h"
 #include "Object3D.h"
 
-class PlayerAttackParticle {
+class EnemyLandingParticle {
 public:
-	PlayerAttackParticle(ModelManager::ModelData* model, uint32_t textureHandle, Float3 translation, Float3 velocity);
-	~PlayerAttackParticle();
+	EnemyLandingParticle(ModelManager::ModelData* model, uint32_t textureHandle, Float3 translation, Float3 velocity, Float3 rotateSpeed);
+	~EnemyLandingParticle();
 
 	void Update();
 	void Draw();
@@ -19,6 +19,8 @@ private:
 	Object3D object_;
 	// 速度
 	Float3 velocity_;
+	// 回転速度
+	Float3 rotateSpeed_;
 	float acceleratorY = 0.01f;
 	// 削除フラグ
 	bool del_ = false;

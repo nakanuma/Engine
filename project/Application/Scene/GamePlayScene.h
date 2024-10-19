@@ -14,8 +14,6 @@
 #include "ParticleManager.h"
 #include "ParticleEmitter.h"
 
-#include "PlayerAttackEmitter.h"
-
 #include <list>
 
 #include "Application/Stage/Stage.h"
@@ -60,5 +58,4 @@ private:
 	std::unique_ptr<Stage> stage_;
 
 	ModelManager::ModelData planeModel;
-	std::unique_ptr<ParticleEmitter> particleEmitter_;
 };

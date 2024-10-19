@@ -15,7 +15,7 @@
 #include "Application/MapChip.h"
 #include "Application/Player/Player.h"
 
-#include "PlayerAttackEmitter.h"
+#include "EnemyLandingEmitter.h"
 
 class Stage
 {
@@ -72,8 +72,8 @@ public:
 	void Debug();
 
 private:
-	// プレイヤー攻撃時パーティクルのエミッター
-	PlayerAttackEmitter playerAttackEmitter_;
-	// プレイヤー攻撃時パーティクルのモデル
-	ModelManager::ModelData modelPlayerAttackParticle_;
+	// エネミー着地時パーティクルのエミッター
+	EnemyLandingEmitter enemyLandingEmitter_;
+	// エネミー着地時パーティクルのモデル
+	ModelManager::ModelData modelEnemyLandingParticle_;
 };

@@ -1,11 +1,11 @@
 #pragma once
-#include "PlayerAttackParticle.h"
+#include "EnemyLandingParticle.h"
 #include <list>
 
-class PlayerAttackEmitter {
+class EnemyLandingEmitter {
 public:
-	PlayerAttackEmitter();
-	~PlayerAttackEmitter();
+	EnemyLandingEmitter();
+	~EnemyLandingEmitter();
 
 	void Initialize(ModelManager::ModelData* model, uint32_t textureHandle);
 	void Update();
@@ -18,7 +18,7 @@ private:
 	// モデルのテクスチャ
 	uint32_t textureHandle_;
 	// パーティクルリスト
-	std::list<std::unique_ptr<PlayerAttackParticle>> particleList_;
+	std::list<std::unique_ptr<EnemyLandingParticle>> particleList_;
 	// 一度の発生パーティクル数
-	const uint32_t kParticleNum = 5;
+	const uint32_t kParticleNum = 4;
 };

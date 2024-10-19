@@ -48,10 +48,10 @@ void Stage::Initialize()
 
 	/* パーティクル関連 */
 	
-	modelPlayerAttackParticle_ = ModelManager::LoadModelFile("resources/Models", "block.obj", dxBase->GetDevice());
-	uint32_t playerAttackParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
+	modelEnemyLandingParticle_ = ModelManager::LoadModelFile("resources/Models", "star.obj", dxBase->GetDevice());
+	uint32_t enemyLandingParticleGH = TextureManager::Load("resources/Images/star.png", dxBase->GetDevice());
 
-	playerAttackEmitter_.Initialize(&modelPlayerAttackParticle_, playerAttackParticleGH);
+	enemyLandingEmitter_.Initialize(&modelEnemyLandingParticle_, enemyLandingParticleGH);
 }
 
 void Stage::Update(Camera* camera)
@@ -114,19 +114,15 @@ void Stage::Update(Camera* camera)
 
 #pragma region パーティクル関連更新
 
-	// プレイヤー攻撃時に手の位置からパーティクルを発生させる
-	if (player_->GetHandTranslate().y <= 0.0f) {
-		playerAttackEmitter_.Emit(
-			{
-			player_->GetHandTranslate().x, 
-			player_->GetHandTranslate().y + 2.5f, // ちょっと手の上部から生成
-			player_->GetHandTranslate().z
-			}
-		);
+	// 敵着地時にパーティクルを発生させる
+	for (auto& enemy : enemies_) {
+		if (enemy->GetLanding()) {
+			enemyLandingEmitter_.Emit(enemy->GetTranslate());
+		}
 	}
 
-	// プレイヤー攻撃時のパーティクルを更新
-	playerAttackEmitter_.Update();
+	// 敵着地時のパーティクルを更新
+	enemyLandingEmitter_.Update();
 
 #pragma endregion
 
@@ -163,7 +159,7 @@ void Stage::DrawModels()
 	/* パーティクル関連描画 */
 
 	// プレイヤー攻撃時パーティクルを描画
-	playerAttackEmitter_.Draw();
+	enemyLandingEmitter_.Draw();
 
 #pragma region マップチップ描画用PSOに変更->マップチップ描画->通常PSOに戻す
 	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateMapchip());
@@ -187,7 +183,7 @@ void Stage::Debug() {
 	ImGui::Begin("stage");
 
 	if (ImGui::Button("emit")) {
-		playerAttackEmitter_.Emit({0.0f, 10.0f, 0.0f});
+		enemyLandingEmitter_.Emit({0.0f, 10.0f, 0.0f});
 	}
 
 	ImGui::End();
