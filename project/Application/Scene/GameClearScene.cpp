@@ -75,14 +75,14 @@ void GameClearScene::Initialize()
 	clearTextPlane_->materialCB_.data_->color ={0.0f,0.0f,0.0f,1.0f};
 	clearTextPlane_->model_ = &planeModel_;
 
+	variables->addValue("GameClear","ClearText","scale",clearTextPlane_->transform_.scale);
+	variables->addValue("GameClear","ClearText","rotate",clearTextPlane_->transform_.rotate);
+	variables->addValue("GameClear","ClearText","position",clearTextPlane_->transform_.translate);
 	///===========================================================================================
 	/// Camera
 	///===========================================================================================
 	cameraPosWhenEnterScene_ = camera->transform.translate;
 
-	variables->addValue("GameClear","ClearText","scale",clearTextPlane_->transform_.scale);
-	variables->addValue("GameClear","ClearText","rotate",clearTextPlane_->transform_.rotate);
-	variables->addValue("GameClear","ClearText","position",clearTextPlane_->transform_.translate);
 }
 
 void GameClearScene::Finalize()
@@ -174,8 +174,12 @@ void GameClearScene::Draw()
 void GameClearScene::EnterSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
+	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
+	clearTextPlane_->materialCB_.data_->color.w = Lerp(t,0.0f,1.0f);
+
 	if(leftTime_ <= 0.0f)
 	{
+		clearTextPlane_->materialCB_.data_->color.w = 1.0f;
 		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
 }

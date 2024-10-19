@@ -52,21 +52,36 @@ void GameOverScene::Initialize()
 
 	currentUpdate_ = [this]() { this->EnterSceneUpdate(); };
 
-	///===========================================================================================
-	/// GlobalBariables
-	///===========================================================================================
-	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->addValue("GameClear","Times","enterSceneMaxTime_",enterSceneMaxTime_);
-	variables->addValue("GameClear","Times","outSceneMaxTime_",outSceneMaxTime_);
-	leftTime_ = enterSceneMaxTime_;
-
-	variables->addValue("GameClear","Camera","cameraPosWhenOutScene_",cameraPosWhenOutScene_);
 
 	///===========================================================================================
 	/// Camera
 	///===========================================================================================
 	cameraPosWhenEnterScene_ = camera->transform.translate;
 
+	///===========================================================================================
+	/// ClearTextPlane
+	///===========================================================================================
+	planeModel_ = ModelManager::LoadModelFile("resources/Models","plane.obj",dxBase->GetDevice());
+	gameOverTextTextureIndex_ = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
+
+	planeModel_.material.textureHandle = gameOverTextTextureIndex_;
+
+	gameOverTextPlane_ = std::make_unique<Object3D>();
+	gameOverTextPlane_->materialCB_.data_->color = {0.0f,0.0f,0.0f,1.0f};
+	gameOverTextPlane_->model_ = &planeModel_;
+
+	///===========================================================================================
+	/// GlobalBariables
+	///===========================================================================================
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	variables->addValue("GameOver","Times","enterSceneMaxTime_",enterSceneMaxTime_);
+	variables->addValue("GameOver","Times","outSceneMaxTime_"  ,outSceneMaxTime_);
+	leftTime_ = enterSceneMaxTime_;
+
+	variables->addValue("GameOver","Camera","cameraPosWhenOutScene_",cameraPosWhenOutScene_);
+	variables->addValue("GameOver","GameOverText","scale"   ,gameOverTextPlane_->transform_.scale);
+	variables->addValue("GameOver","GameOverText","rotate"  ,gameOverTextPlane_->transform_.rotate);
+	variables->addValue("GameOver","GameOverText","position",gameOverTextPlane_->transform_.translate);
 }
 
 void GameOverScene::Finalize()
@@ -75,6 +90,7 @@ void GameOverScene::Finalize()
 
 void GameOverScene::Update()
 {
+	
 	stage_->Update(camera);
 	currentUpdate_();
 }
@@ -101,6 +117,8 @@ void GameOverScene::Draw()
 	/// 
 
 	stage_->DrawModels();
+	gameOverTextPlane_->UpdateMatrix();
+	gameOverTextPlane_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -156,8 +174,13 @@ void GameOverScene::Draw()
 void GameOverScene::EnterSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
+	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
+	gameOverTextPlane_->materialCB_.data_->color.w = Lerp(t,0.0f,1.0f);
+
 	if(leftTime_ <= 0.0f)
 	{
+		gameOverTextPlane_->materialCB_.data_->color.w = 1.0f;
+
 		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
 }
@@ -175,6 +198,8 @@ void GameOverScene::OutSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
+
+	camera->transform.translate = Float3::Lerp(cameraPosWhenEnterScene_,cameraPosWhenOutScene_,t);
 
 	if(leftTime_ <= 0.0f)
 	{
