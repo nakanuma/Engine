@@ -118,9 +118,6 @@ void GameOverScene::Draw()
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
 
-
-	ImGui::DragFloat3("camera.rotation",&camera->transform.rotate.x,0.01f);
-
 	ImGui::Text("fps : %.1f",ImGui::GetIO().Framerate);
 
 	ImGui::End();

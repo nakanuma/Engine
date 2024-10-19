@@ -50,15 +50,33 @@ void GameClearScene::Initialize()
 	stage_->Initialize();
 #endif // _DEBUG
 
-	currentUpdate_ = [this]() { this->InSceneUpdate(); };
+	currentUpdate_ = [this]() { this->EnterSceneUpdate(); };
 
 	///===========================================================================================
 	/// GlobalBariables
 	///===========================================================================================
 	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->addValue("GameClear","Times","inSceneMaxTime_",inSceneMaxTime_);
+	variables->addValue("GameClear","Times","enterSceneMaxTime_",enterSceneMaxTime_);
 	variables->addValue("GameClear","Times","outSceneMaxTime_",outSceneMaxTime_);
-	leftTime_ = inSceneMaxTime_;
+	leftTime_ = enterSceneMaxTime_;
+
+	variables->addValue("GameClear","Camera","cameraPosWhenOutScene_",cameraPosWhenOutScene_);
+
+	///===========================================================================================
+	/// ClearTextPlane
+	///===========================================================================================
+	planeModel_ = ModelManager::LoadModelFile("resources/Models","plane.obj",dxBase->GetDevice());
+	clearTextTextureIndex_ = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
+
+	planeModel_.material.textureHandle = clearTextTextureIndex_;
+
+	clearTextPlane_ = std::make_unique<Object3D>();
+	clearTextPlane_->model_ = &planeModel_;
+
+	///===========================================================================================
+	/// Camera
+	///===========================================================================================
+	cameraPosWhenInScene_ = camera->transform.translate;
 }
 
 void GameClearScene::Finalize()
@@ -68,6 +86,7 @@ void GameClearScene::Finalize()
 void GameClearScene::Update()
 {
 	currentUpdate_();
+	stage_->Update(camera);
 }
 
 void GameClearScene::Draw()
@@ -92,6 +111,7 @@ void GameClearScene::Draw()
 	/// 
 
 	stage_->DrawModels();
+	clearTextPlane_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -117,9 +137,6 @@ void GameClearScene::Draw()
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
-
-
-	ImGui::DragFloat3("camera.rotation",&camera->transform.rotate.x,0.01f);
 
 	ImGui::Text("fps : %.1f",ImGui::GetIO().Framerate);
 
@@ -147,12 +164,12 @@ void GameClearScene::Draw()
 	dxBase->EndFrame();
 }
 
-void GameClearScene::InSceneUpdate()
+void GameClearScene::EnterSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	if(leftTime_ <= 0.0f)
 	{
-		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
+		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
 }
 
@@ -161,15 +178,21 @@ void GameClearScene::SceneUpdate()
 	if(input->TriggerKey(DIK_SPACE))
 	{
 		leftTime_ = outSceneMaxTime_;
+		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 	}
 }
 
 void GameClearScene::OutSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime(); 
+	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
+
+	camera->transform.translate = Float3::Lerp(cameraPosWhenInScene_,cameraPosWhenOutScene_,t);
+
 	if(leftTime_ <= 0.0f)
-	{
-		// タイトルへ
+	{ 
+		SceneManager::GetInstance()->ChangeScene("TITLE");
+		camera->transform.translate = cameraPosWhenOutScene_;
 		return;
 	}
 }

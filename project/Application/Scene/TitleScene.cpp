@@ -123,8 +123,8 @@ void TitleScene::Update()
 	///	シーン切り替え
 	/// 
 
-	currentUpdate_();
 	stage_->Update(camera);
+	currentUpdate_();
 	buttonUI_->Update();
 }
 
@@ -169,13 +169,30 @@ void TitleScene::Draw()
 	/// 
 
 
+
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
 #endif // _DEBUG
 
-	ImGui::Begin("window");
+	ImGui::Begin("Camera");
 
-	ImGui::Text("Trigger ENTER key to GamePlayScene");
+	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
+	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
+	ImGui::Text("fps : %.1f",ImGui::GetIO().Framerate);
+
+	ImGui::End();
+
+	ImGui::Begin("Stage Information");
+	ImGui::Text("you can't input numbers");
+	float maxEnergy = stage_->GetMaxEnergy();
+	float currentEnergy = stage_->GetChargedEnergy();
+	ImGui::InputFloat("MaxEnergy",&maxEnergy,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
+	ImGui::InputFloat("CurrentEnergy",&currentEnergy,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
+
+	float limitTime = stage_->GetLimitTime();
+	float currentTime = stage_->GetCurrentTime();
+	ImGui::InputFloat("LimitTime",&limitTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
+	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
 
@@ -193,21 +210,20 @@ void TitleScene::EnterSceneUpdate()
 	t_ = leftTime_ / enterSceneMaxTime_;
 	buttonUI_->Update();
 
-	camera->transform.translate = Float3::Lerp(cameraHomePos_,cameraPosWhenEnterScene_,t_);
+	camera->transform.translate = Float3::Lerp(cameraPosWhenEnterScene_,cameraHomePos_,t_);
 
 	if(leftTime_ >= enterSceneMaxTime_)
 	{
+		camera->transform.translate = cameraHomePos_;
 		currentUpdate_ = [this](){ this->SceneUpdate(); };
 		buttonUI_->setUpdate(buttonUpdateWhenSceneUpdate_);
 		leftTime_ = 0.0f;
-		t_ = 0.0f;
+		t_        = 0.5f;
 	}
 }
 
 void TitleScene::SceneUpdate()
 {
-	camera->transform.translate = cameraHomePos_;
-
 	t_ += DeltaTime::getInstance()->getDeltaTime() * signT_;
 	// 一旦 置いとく
 	if(input->TriggerKey(DIK_SPACE))
