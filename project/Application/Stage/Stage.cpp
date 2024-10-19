@@ -122,6 +122,7 @@ void Stage::Update(Camera* camera)
 	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy) { return enemy->IsAlive() ? false : true; });
 
 	mapChip_->Update();
+	mapChip_->SetPower(chargedEnergy_);
 
 	CheckAlCollisions();
 
