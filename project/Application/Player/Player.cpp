@@ -9,16 +9,30 @@
 
 #include "Application/Stage/Stage.h"
 
+#include <numbers>
+
 Player::~Player()
 {
 }
 
 void Player::Initialize(uint32_t uvCheckerGH)
 {
-	DirectXBase* dxBase = DirectXBase::GetInstance();
+///===========================================================================================
+/// GlobalVariables
+///===========================================================================================
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	// TODO
+	// 要対策
+	variables->addValue("Game","Wave","minRange_",minWaveRange_);
+	variables->addValue("Game","Wave","maxRange_",maxWaveRange_);
+	variables->addValue("Game","Wave","initialYVelocity_",initialYVelocity_);
+	variables->addValue("Game","Player_AttackState","minChargingEnergy_",minChargingEnergy_);
+	variables->addValue("Game","Player_AttackState","maxChargingEnergy_",maxChargingEnergy_);
+
 ///===========================================================================================
 /// Body
 ///===========================================================================================
+	DirectXBase* dxBase = DirectXBase::GetInstance();
 	bodyModelData_ = ModelManager::LoadModelFile("./resources/Models","monkey.obj",dxBase->GetDevice());
 	bodyModelData_.material.textureHandle = uvCheckerGH;
 	bodyObject_ = std::make_unique<Object3D>();
@@ -28,13 +42,14 @@ void Player::Initialize(uint32_t uvCheckerGH)
 ///===========================================================================================
 /// Hand
 ///===========================================================================================
-	handModelData_ = ModelManager::LoadModelFile("./resources/Models","monkey.obj",dxBase->GetDevice());
+	handModelData_ = ModelManager::LoadModelFile("./resources/Models","player.obj",dxBase->GetDevice());
 	handModelData_.material.textureHandle = uvCheckerGH;
 	handObject_ = std::make_unique<Object3D>();
 	handObject_->model_ = &handModelData_;
 	// handObject_.parent = &body;
 
 	auto onCollision = []([[maybe_unused]] Collider* a) {};
+
 	auto onCollisionMapChip = [this](MapChipField::MapObject* mapObj)
 	{
 		// wave を 起こす
@@ -48,17 +63,7 @@ void Player::Initialize(uint32_t uvCheckerGH)
 		chargePercent_ = 0.0f;
 	};
 	handCollider_ = std::make_unique<Collider>();
-	handCollider_->Init(handObject_->transform_.translate,2.0f,onCollision,onCollisionMapChip);
-
-///===========================================================================================
-/// GlobalVariables
-///===========================================================================================
-	GlobalVariables* variables = GlobalVariables::getInstance();
-	// TODO
-	// 要対策
-	variables->addValue("Game","Wave","minRange_",minWaveRange_);
-	variables->addValue("Game","Wave","maxRange_",maxWaveRange_);
-	variables->addValue("Game","Wave","initialYVelocity_",initialYVelocity_);
+	handCollider_->Init(handObject_->transform_.translate,0.3f,onCollision,onCollisionMapChip);
 
 ///===========================================================================================
 /// State
@@ -70,6 +75,11 @@ void Player::Update()
 {
 	currentState_->Update();
 	bodyObject_->UpdateMatrix();
+	handObject_->transform_.rotate = {
+		bodyObject_->transform_.rotate.x,
+		bodyObject_->transform_.rotate.y + std::numbers::pi_v<float>,
+		bodyObject_->transform_.rotate.z
+	};
 	handObject_->UpdateMatrix();
 
 	handCollider_->SetPosition(handObject_->transform_.translate);

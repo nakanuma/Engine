@@ -14,6 +14,7 @@
 #include "ParticleManager.h"
 #include "ParticleEmitter.h"
 
+#include <memory>
 #include <list>
 
 #include "Application/Stage/Stage.h"
@@ -43,8 +44,8 @@ private:
 #endif
 
 private:
-	std::unique_ptr<Camera> camera = nullptr;
-	std::unique_ptr<DebugCamera> debugCamera = nullptr;
+	Camera* camera = nullptr;
+	std::unique_ptr<DebugCamera>   debugCamera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
 	std::unique_ptr<SRVManager> srvManager = nullptr;
@@ -52,10 +53,14 @@ private:
 	Input* input = nullptr;
 	LightManager* lightManager = nullptr;
 
+	Stage* stage_;
+
 	///
 	/// ↓ ゲームシーン用
 	///
 	std::unique_ptr<Stage> stage_;
 
 	ModelManager::ModelData planeModel;
+
+	Sprite* spaceToTitle_;
 };

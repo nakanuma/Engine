@@ -12,4 +12,3 @@ public:
 	/// <returns>生成したシーン</returns>
 	BaseScene* CreateScene(const std::string& sceneName) override;
 };
-

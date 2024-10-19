@@ -1,6 +1,10 @@
 #pragma once
 #include "BaseScene.h"
+
+#include <functional>
+
 #include "Camera.h"
+#include "DebugCamera.h"
 #include "Input.h"
 #include "LightManager.h"
 #include "ModelManager.h"
@@ -11,10 +15,10 @@
 #include "TextureManager.h"
 
 #include "Application/Stage/Stage.h"
-#include "Application/UI/UI.h"
 
 // ゲームプレイシーン
-class TitleScene : public BaseScene
+class GameClearScene
+	: public BaseScene
 {
 public:
 	// 初期化
@@ -31,29 +35,27 @@ public:
 
 private:
 	Camera* camera = nullptr;
+	std::unique_ptr<DebugCamera> debugCamera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
-	LightManager* lightManager = nullptr;
 	Input* input = nullptr;
+	LightManager* lightManager = nullptr;
 
 	Stage* stage_;
 
 	///
-	/// ↓ タイトルシーン用
+	/// ↓ ゲームクリア用
 	///
 
 	std::function<void()> currentUpdate_;
-
+	
 	void InSceneUpdate();
 	void SceneUpdate();
 	void OutSceneUpdate();
+
 	float leftTime_;
+
 	float inSceneMaxTime_;
 	float outSceneMaxTime_;
-
-	uint32_t buttonTextureIndex_;
-	std::unique_ptr<UI> buttonUI_;
-	Float2 buttonUiOffset_;
-	float t_;
-	float signT_;
+public:
 };

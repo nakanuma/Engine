@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "DirectXBase.h"
 #include "ImguiWrapper.h"
+#include "Application/DeltaTime/DeltaTime.h"
 
 void Stage::Initialize()
 {
@@ -10,7 +11,7 @@ void Stage::Initialize()
 	GlobalVariables* variables = GlobalVariables::getInstance();
 
 	// Texture読み込み
-	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice());
+	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/block.png",dxBase->GetDevice());
 
 	// モデルの読み込みとテクスチャの設定(マップチップ)
 	modelBlock_ = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
@@ -19,7 +20,7 @@ void Stage::Initialize()
 	// マップチップ
 	mapChip_ = std::make_unique<MapChipField>();
 	// まずCSVファイルで読み込む
-	mapChip_->LoadMapChipCsv("resources/blocks.csv");
+	//mapChip_->LoadMapChipCsv("resources/blocks.csv");
 	// そのあとに初期化
 	mapChip_->Initialize(modelBlock_);
 
@@ -31,7 +32,7 @@ void Stage::Initialize()
 	player_->SetStage(this);
 
 	variables->addValue("Game","EnemySpawner_Default","spawnerValue",enemySpawnerValue_);
-	enemyModel = ModelManager::LoadModelFile("resources/Models","block.obj",dxBase->GetDevice());
+	enemyModel = ModelManager::LoadModelFile("resources/Models","enemy.obj",dxBase->GetDevice());
 	enemyModel.material.textureHandle = monsterBallTexture;
 
 	for(size_t i = 0; i < enemySpawnerValue_; ++i)
@@ -46,21 +47,33 @@ void Stage::Initialize()
 
 	variables->addValue("Game","Stage","maxEnergy",maxEnergy_);
 
+
 	/* パーティクル関連 */
 	
 	modelEnemyLandingParticle_ = ModelManager::LoadModelFile("resources/Models", "star.obj", dxBase->GetDevice());
 	uint32_t enemyLandingParticleGH = TextureManager::Load("resources/Images/star.png", dxBase->GetDevice());
 
 	enemyLandingEmitter_.Initialize(&modelEnemyLandingParticle_, enemyLandingParticleGH);
+
+	variables->addValue("Game","Stage","limitTime",limitTime_);
+	currentTime_ = limitTime_;
+
 }
 
 void Stage::Update(Camera* camera)
 {
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
+	currentTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	/*
 	if(chargedEnergy_ >= maxEnergy_){
 	 Clear ;
+	 return;
+	}
+	if(currentTime_ < 0.0f)
+	{
+	 gameOver;
+	 return;
 	}
 	*/
 

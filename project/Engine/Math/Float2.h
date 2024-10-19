@@ -90,6 +90,9 @@ struct Float2
 
     // ベクトルを正規化する関数
     static Float2 Normalize(const Float2& f);
+
+    //ベクトルの 線形補間
+    static Float2 Lerp(float t,const Float2& start,const Float2& end);
 };
 
 // スカラー乗算（左辺がスカラーの場合）

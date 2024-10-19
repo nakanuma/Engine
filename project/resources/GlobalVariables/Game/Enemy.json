@@ -7,6 +7,8 @@
         ],
         "maxJumpPower": 0.6000000238418579,
         "minJumpPower": 0.5,
-        "speed": 4.5
+        "numberOfClones2Create_": 3,
+        "speed": 4.5,
+        "stealEnergy_": 0.4000000059604645
     }
 }
