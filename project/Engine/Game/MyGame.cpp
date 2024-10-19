@@ -24,7 +24,7 @@ void MyGame::Initialize()
 	sceneFactory_ = new SceneFactory();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_);
 	// シーンマネージャに最初のシーンをセット
-	SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 }
 
 void MyGame::Finalize()

@@ -59,6 +59,11 @@ void GamePlayScene::Update()
 #ifdef _DEBUG // デバッグカメラ
 	DebugCameraUpdate(input);
 #endif
+	if(stage_->GetIsClear())
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		return;
+	}
 	stage_->Update(camera);
 }
 
