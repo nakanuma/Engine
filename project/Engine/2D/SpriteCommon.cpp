@@ -15,7 +15,7 @@ void SpriteCommon::Initialize(DirectXBase* dxBase)
 	// DXC初期化
 	InitializeDXC();
 	// Shaderのコンパイル
-	ShaderCompile();
+	/*ShaderCompile();*/
 	// RasterizerStateの設定
 	SetRasterizerState();
 	// 深度バッファ生成
@@ -116,8 +116,16 @@ void SpriteCommon::CreateGraphicsPipeline()
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 	graphicsPipelineStateDesc.pRootSignature = rootSignature_.Get(); // RootSignature
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc_; // InputLayout
-	graphicsPipelineStateDesc.VS = { vertexShaderBlob_->GetBufferPointer(), vertexShaderBlob_->GetBufferSize() }; // VertexShader
-	graphicsPipelineStateDesc.PS = { pixelShaderBlob_->GetBufferPointer(), pixelShaderBlob_->GetBufferSize() }; // PixelShader
+	//graphicsPipelineStateDesc.VS = { vertexShaderBlob_->GetBufferPointer(), vertexShaderBlob_->GetBufferSize() }; // VertexShader
+	//graphicsPipelineStateDesc.PS = { pixelShaderBlob_->GetBufferPointer(), pixelShaderBlob_->GetBufferSize() }; // PixelShader
+
+	graphicsPipelineStateDesc.VS = {
+		dxBase_->GetSpriteVertexShaderBlob()->GetBufferPointer(), dxBase_->GetSpriteVertexShaderBlob()->GetBufferSize()
+	};
+	graphicsPipelineStateDesc.PS = {
+		dxBase_->GetSpritePixelShaderBlob()->GetBufferPointer(), dxBase_->GetSpritePixelShaderBlob()->GetBufferSize()
+	};
+
 	graphicsPipelineStateDesc.BlendState = blendDesc_; // BlendState
 	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc_; // RasterizerState
 	// 書き込むRTVの情報
@@ -198,15 +206,15 @@ void SpriteCommon::InitializeDXC()
 	assert(SUCCEEDED(result));
 }
 
-void SpriteCommon::ShaderCompile()
-{
-	// Shaderをコンパイルする
-	vertexShaderBlob_ = CompileShader(L"resources/Shaders/Sprite.VS.hlsl", L"vs_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
-	assert(vertexShaderBlob_ != nullptr);
-
-	pixelShaderBlob_ = CompileShader(L"resources/Shaders/Sprite.PS.hlsl", L"ps_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
-	assert(pixelShaderBlob_ != nullptr);
-}
+//void SpriteCommon::ShaderCompile()
+//{
+//	// Shaderをコンパイルする
+//	vertexShaderBlob_ = CompileShader(L"resources/Shaders/Sprite.VS.hlsl", L"vs_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
+//	assert(vertexShaderBlob_ != nullptr);
+//
+//	pixelShaderBlob_ = CompileShader(L"resources/Shaders/Sprite.PS.hlsl", L"ps_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
+//	assert(pixelShaderBlob_ != nullptr);
+//}
 
 D3D12_RASTERIZER_DESC SpriteCommon::SetRasterizerState()
 {
