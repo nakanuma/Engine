@@ -15,6 +15,7 @@
 #include "TextureManager.h"
 
 #include "Application/Stage/Stage.h"
+#include "Application/UI/UI.h"
 
 // ゲームプレイシーン
 class GameClearScene
@@ -49,13 +50,22 @@ private:
 
 	std::function<void()> currentUpdate_;
 	
-	void InSceneUpdate();
+	void EnterSceneUpdate();
 	void SceneUpdate();
 	void OutSceneUpdate();
 
 	float leftTime_;
 
-	float inSceneMaxTime_;
+	float enterSceneMaxTime_;
 	float outSceneMaxTime_;
+
+	// Camera
+	Float3 cameraPosWhenOutScene_;
+	Float3 cameraPosWhenEnterScene_;
+
+	// clearText
+	ModelManager::ModelData planeModel_;
+	uint32_t clearTextTextureIndex_;
+	std::unique_ptr<Object3D> clearTextPlane_;
 public:
 };

@@ -35,6 +35,7 @@ void GameClearScene::Initialize()
 	lightManager->Initialize();
 
 	camera = SceneManager::GetInstance()->GetCamera();
+	Camera::Set(camera);
 
 	///
 	///	↓ ゲームシーン用 
@@ -50,15 +51,38 @@ void GameClearScene::Initialize()
 	stage_->Initialize();
 #endif // _DEBUG
 
-	currentUpdate_ = [this]() { this->InSceneUpdate(); };
+	currentUpdate_ = [this]() { this->EnterSceneUpdate(); };
 
 	///===========================================================================================
 	/// GlobalBariables
 	///===========================================================================================
 	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->addValue("GameClear","Times","inSceneMaxTime_",inSceneMaxTime_);
+	variables->addValue("GameClear","Times","enterSceneMaxTime_",enterSceneMaxTime_);
 	variables->addValue("GameClear","Times","outSceneMaxTime_",outSceneMaxTime_);
-	leftTime_ = inSceneMaxTime_;
+	leftTime_ = enterSceneMaxTime_;
+
+	variables->addValue("GameClear","Camera","cameraPosWhenOutScene_",cameraPosWhenOutScene_);
+
+	///===========================================================================================
+	/// ClearTextPlane
+	///===========================================================================================
+	planeModel_ = ModelManager::LoadModelFile("resources/Models","plane.obj",dxBase->GetDevice());
+	clearTextTextureIndex_ = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
+
+	planeModel_.material.textureHandle = clearTextTextureIndex_;
+
+	clearTextPlane_ = std::make_unique<Object3D>();
+	clearTextPlane_->materialCB_.data_->color ={0.0f,0.0f,0.0f,1.0f};
+	clearTextPlane_->model_ = &planeModel_;
+
+	///===========================================================================================
+	/// Camera
+	///===========================================================================================
+	cameraPosWhenEnterScene_ = camera->transform.translate;
+
+	variables->addValue("GameClear","ClearText","scale",clearTextPlane_->transform_.scale);
+	variables->addValue("GameClear","ClearText","rotate",clearTextPlane_->transform_.rotate);
+	variables->addValue("GameClear","ClearText","position",clearTextPlane_->transform_.translate);
 }
 
 void GameClearScene::Finalize()
@@ -67,6 +91,7 @@ void GameClearScene::Finalize()
 
 void GameClearScene::Update()
 {
+	stage_->Update(camera);
 	currentUpdate_();
 }
 
@@ -92,6 +117,8 @@ void GameClearScene::Draw()
 	/// 
 
 	stage_->DrawModels();
+	clearTextPlane_->UpdateMatrix();
+	clearTextPlane_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -117,9 +144,6 @@ void GameClearScene::Draw()
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
-
-
-	ImGui::DragFloat3("camera.rotation",&camera->transform.rotate.x,0.01f);
 
 	ImGui::Text("fps : %.1f",ImGui::GetIO().Framerate);
 
@@ -147,12 +171,12 @@ void GameClearScene::Draw()
 	dxBase->EndFrame();
 }
 
-void GameClearScene::InSceneUpdate()
+void GameClearScene::EnterSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	if(leftTime_ <= 0.0f)
 	{
-		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
+		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
 }
 
@@ -161,15 +185,21 @@ void GameClearScene::SceneUpdate()
 	if(input->TriggerKey(DIK_SPACE))
 	{
 		leftTime_ = outSceneMaxTime_;
+		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 	}
 }
 
 void GameClearScene::OutSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime(); 
+	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
+
+	camera->transform.translate = Float3::Lerp(cameraPosWhenEnterScene_,cameraPosWhenOutScene_,t);
+
 	if(leftTime_ <= 0.0f)
-	{
-		// タイトルへ
+	{ 
+		SceneManager::GetInstance()->ChangeScene("TITLE");
+		camera->transform.translate = cameraPosWhenOutScene_;
 		return;
 	}
 }

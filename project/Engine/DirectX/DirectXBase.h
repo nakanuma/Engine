@@ -186,6 +186,10 @@ public:
 	// Mapchip用PSOを取得
 	ID3D12PipelineState* GetPipelineStateMapchip() { return graphicsPipelineStateMapchip_.Get(); }
 
+	// SpriteShaderBlobの取得
+	IDxcBlob* GetSpriteVertexShaderBlob()const { return vertexShaderBlobSprite_; }
+	IDxcBlob* GetSpritePixelShaderBlob()const { return pixelShaderBlobSprite_; }
+
 	friend RTVManager;
 private:
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
@@ -236,6 +240,9 @@ private:
 	// 通常
 	IDxcBlob* vertexShaderBlob_;
 	IDxcBlob* pixelShaderBlob_;
+	// スプライト用
+	IDxcBlob* vertexShaderBlobSprite_;
+	IDxcBlob* pixelShaderBlobSprite_;
 	// パーティクル用
 	IDxcBlob* vertexShaderBlobParticle_;
 	IDxcBlob* pixelShaderBlobParticle_;

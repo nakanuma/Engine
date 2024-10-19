@@ -50,15 +50,23 @@ void GameOverScene::Initialize()
 	stage_->Initialize();
 #endif // _DEBUG
 
-	currentUpdate_ = [this]() { this->InSceneUpdate(); };
+	currentUpdate_ = [this]() { this->EnterSceneUpdate(); };
 
 	///===========================================================================================
-	/// GlobalVariables
+	/// GlobalBariables
 	///===========================================================================================
 	GlobalVariables* variables = GlobalVariables::getInstance();
-	variables->addValue("GameOver","Times","inSceneMaxTime_" ,inSceneMaxTime_);
-	variables->addValue("GameOver","Times","outSceneMaxTime_",outSceneMaxTime_);
-	leftTime_ = inSceneMaxTime_;
+	variables->addValue("GameClear","Times","enterSceneMaxTime_",enterSceneMaxTime_);
+	variables->addValue("GameClear","Times","outSceneMaxTime_",outSceneMaxTime_);
+	leftTime_ = enterSceneMaxTime_;
+
+	variables->addValue("GameClear","Camera","cameraPosWhenOutScene_",cameraPosWhenOutScene_);
+
+	///===========================================================================================
+	/// Camera
+	///===========================================================================================
+	cameraPosWhenEnterScene_ = camera->transform.translate;
+
 }
 
 void GameOverScene::Finalize()
@@ -67,6 +75,7 @@ void GameOverScene::Finalize()
 
 void GameOverScene::Update()
 {
+	stage_->Update(camera);
 	currentUpdate_();
 }
 
@@ -118,9 +127,6 @@ void GameOverScene::Draw()
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
 
-
-	ImGui::DragFloat3("camera.rotation",&camera->transform.rotate.x,0.01f);
-
 	ImGui::Text("fps : %.1f",ImGui::GetIO().Framerate);
 
 	ImGui::End();
@@ -147,12 +153,12 @@ void GameOverScene::Draw()
 	dxBase->EndFrame();
 }
 
-void GameOverScene::InSceneUpdate()
+void GameOverScene::EnterSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	if(leftTime_ <= 0.0f)
 	{
-		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
+		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
 }
 
@@ -161,15 +167,19 @@ void GameOverScene::SceneUpdate()
 	if(input->TriggerKey(DIK_SPACE))
 	{
 		leftTime_ = outSceneMaxTime_;
+		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 	}
 }
 
 void GameOverScene::OutSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
+	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
+
 	if(leftTime_ <= 0.0f)
 	{
-		// タイトルへ
+		SceneManager::GetInstance()->ChangeScene("TITLE");
+		camera->transform.translate = cameraPosWhenOutScene_;
 		return;
 	}
 }

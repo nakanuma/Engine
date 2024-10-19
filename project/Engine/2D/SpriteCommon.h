@@ -29,7 +29,7 @@ private:
 	// DXC初期化
 	void InitializeDXC();
 	// Shaderのコンパイル
-	void ShaderCompile();
+	/*void ShaderCompile();*/
 	// RasterizerStateの設定
 	D3D12_RASTERIZER_DESC SetRasterizerState();
 	// 深度バッファ生成
@@ -51,8 +51,8 @@ private:
 	IDxcUtils* dxcUtils_;
 	IDxcCompiler3* dxcCompiler_;
 	IDxcIncludeHandler* includeHandler_;
-	IDxcBlob* vertexShaderBlob_;
-	IDxcBlob* pixelShaderBlob_;
+	/*IDxcBlob* vertexShaderBlob_;
+	IDxcBlob* pixelShaderBlob_;*/
 
 	D3D12_RASTERIZER_DESC rasterizerDesc_;
 

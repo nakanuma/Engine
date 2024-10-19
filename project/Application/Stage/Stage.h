@@ -50,7 +50,11 @@ private:
 
 	float limitTime_;
 	float currentTime_;
+
+	bool isClear_;
 public:
+	bool GetIsClear()const{return isClear_;}
+
 	float GetMaxEnergy()const{return maxEnergy_;}
 	float GetChargedEnergy()const{return chargedEnergy_;}
 

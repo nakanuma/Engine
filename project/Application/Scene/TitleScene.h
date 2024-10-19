@@ -44,16 +44,23 @@ private:
 
 	std::function<void()> currentUpdate_;
 
-	void InSceneUpdate();
+	void EnterSceneUpdate();
 	void SceneUpdate();
 	void OutSceneUpdate();
+	float t_;
 	float leftTime_;
-	float inSceneMaxTime_;
+	float enterSceneMaxTime_;
 	float outSceneMaxTime_;
+
+	Float3 cameraPosWhenEnterScene_;
+	Float3 cameraHomePos_;
 
 	uint32_t buttonTextureIndex_;
 	std::unique_ptr<UI> buttonUI_;
+	std::function<void(Sprite*)> buttonUpdateWhenEnterScene_;
+	std::function<void(Sprite*)> buttonUpdateWhenSceneUpdate_;
+	std::function<void(Sprite*)> buttonUpdateWhenOutScene_;
+
 	Float2 buttonUiOffset_;
-	float t_;
 	float signT_;
 };

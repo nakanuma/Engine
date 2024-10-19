@@ -65,17 +65,18 @@ void Stage::Initialize()
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
 
+	isClear_ = false;
 }
 
 void Stage::Update(Camera* camera)
 {
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	currentTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	/*
+	currentTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	if(chargedEnergy_ >= maxEnergy_){
-	 Clear ;
-	 return;
+		isClear_ = true;
+		return;
 	}
 	if(currentTime_ < 0.0f)
 	{
