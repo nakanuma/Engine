@@ -164,12 +164,10 @@ void ChargePlayerState::Update()
 	{
 		playerRotate.y = atan2(moveVal.x,moveVal.y);
 		player_->SetBodyRotate(playerRotate);
-		// 動いている状態
-		player_->SetIsMoving(true);
-	} else {
-		// 動いていない状態
-		player_->SetIsMoving(false);
-	}
+	} 
+	
+	// チャージ状態では常に動いてないことにする
+	player_->SetIsMoving(false);
 	
 	Float3 currentHandOffset = TransformMatrix(Lerp(t,beforeHandOffset_,movedHandOffset_),Matrix::RotationY(playerRotate.y));
 	// 手の位置更新

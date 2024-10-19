@@ -50,10 +50,17 @@ void Stage::Initialize()
 
 	/* パーティクル関連 */
 	
+	// エネミー着地時パーティクル関連初期化
 	modelEnemyLandingParticle_ = ModelManager::LoadModelFile("resources/Models", "star.obj", dxBase->GetDevice());
 	uint32_t enemyLandingParticleGH = TextureManager::Load("resources/Images/star.png", dxBase->GetDevice());
 
 	enemyLandingEmitter_.Initialize(&modelEnemyLandingParticle_, enemyLandingParticleGH);
+
+	// プレイヤー移動時パーティクル関連初期化
+	modelPlayerMoveParticle_ = ModelManager::LoadModelFile("resources/Models", "cube.obj", dxBase->GetDevice());
+	uint32_t playerMoveParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
+
+	playerMoveEmitter_.Initialize(&modelPlayerMoveParticle_, playerMoveParticleGH);
 
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
@@ -125,12 +132,30 @@ void Stage::Update(Camera* camera)
 
 	CheckAlCollisions();
 
-#pragma region パーティクル関連更新
+#pragma region パーティクルの発生と更新
+	/*--------------------------*/
+	/* プレイヤー移動時パーティクル */
+	/*--------------------------*/
+	
+	// プレイヤー移動時にパーティクルを発生させる
+	if (player_->IsMoving()) {
+		playerMoveEmitter_.Emit(player_->GetBodyTranslate());
+	}
+
+	// プレイヤー移動時パーティクルを更新
+	playerMoveEmitter_.Update();
+
+	/*--------------------------*/
+	/*     敵着地パーティクル      */
+	/*--------------------------*/
 
 	// 敵着地時にパーティクルを発生させる
 	for (auto& enemy : enemies_) {
 		if (enemy->GetLanding()) {
-			enemyLandingEmitter_.Emit(enemy->GetTranslate());
+			// ウェーブ中のブロックと衝突して大量にパーティクルが出てしまうのをゴリ押しで防ぐ
+			if (enemy->GetTranslate().y <= 2.0f && enemy->GetTranslate().y >= 0.0f) {
+				enemyLandingEmitter_.Emit(enemy->GetTranslate());
+			}
 		}
 	}
 
@@ -171,7 +196,10 @@ void Stage::DrawModels()
 
 	/* パーティクル関連描画 */
 
-	// プレイヤー攻撃時パーティクルを描画
+	// プレイヤー移動時パーティクルを描画
+	playerMoveEmitter_.Draw();
+
+	// 敵落下時パーティクルを描画
 	enemyLandingEmitter_.Draw();
 
 #pragma region マップチップ描画用PSOに変更->マップチップ描画->通常PSOに戻す

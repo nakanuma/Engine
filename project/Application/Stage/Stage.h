@@ -16,6 +16,7 @@
 #include "Application/Player/Player.h"
 
 #include "EnemyLandingEmitter.h"
+#include "PlayerMoveEmitter.h"
 
 class Stage
 {
@@ -85,4 +86,9 @@ private:
 	EnemyLandingEmitter enemyLandingEmitter_;
 	// エネミー着地時パーティクルのモデル
 	ModelManager::ModelData modelEnemyLandingParticle_;
+
+	// プレイヤー移動時パーティクルのエミッター
+	PlayerMoveEmitter playerMoveEmitter_;
+	// プレイヤー移動時パーティクルのモデル
+	ModelManager::ModelData modelPlayerMoveParticle_;
 };
