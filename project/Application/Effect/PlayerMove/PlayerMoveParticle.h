@@ -19,6 +19,6 @@ private:
 	Float3 velocity_;
 	bool del_ = false;
 	int32_t timer_;
-	const int32_t kTotalTime = 60;
+	const int32_t kTotalTime = 90;
 };
 

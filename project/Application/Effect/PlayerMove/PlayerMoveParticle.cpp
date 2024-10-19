@@ -1,13 +1,12 @@
 #include "PlayerMoveParticle.h"
 #include <cassert>
+#include "Easing.h"
 
 PlayerMoveParticle::PlayerMoveParticle(ModelManager::ModelData* model, uint32_t textureHandle, Float3 translation, Float3 velocity)
 {
 	assert(model);
 	model_ = model;
 	object_.transform_.translate = translation;
-	const float kScale = 0.2f;
-	object_.transform_.scale = { kScale, kScale, kScale };
 	object_.model_ = model_;
 	object_.model_->material.textureHandle = textureHandle;
 	velocity_ = velocity;
@@ -33,6 +32,14 @@ void PlayerMoveParticle::Update()
 	// 移動
 	object_.transform_.translate += velocity_;
 
+	// 経過時間に応じてスケールを変更
+	float t = static_cast<float>(timer_) / kTotalTime;
+	t = (t > 1.0f) ? 1.0f : t;
+
+	float scale = Easing::Lerp(0.2f, 0.0f, Easing::EaseInQuart(t));
+	object_.transform_.scale = { scale, scale, scale };
+
+	// 更新
 	object_.UpdateMatrix();
 }
 

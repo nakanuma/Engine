@@ -77,6 +77,7 @@
     <ClCompile Include="Application\Scene\GameOverScene.cpp" />
     <ClCompile Include="Application\Effect\PlayerMove\PlayerMoveParticle.cpp" />
     <ClCompile Include="Application\Effect\PlayerMove\PlayerMoveEmitter.cpp" />
+    <ClCompile Include="Engine\Math\Easing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
@@ -94,6 +95,7 @@
     <ClInclude Include="Application\Scene\GameOverScene.h" />
     <ClInclude Include="Application\Effect\PlayerMove\PlayerMoveParticle.h" />
     <ClInclude Include="Application\Effect\PlayerMove\PlayerMoveEmitter.h" />
+    <ClInclude Include="Engine\Math\Easing.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />
