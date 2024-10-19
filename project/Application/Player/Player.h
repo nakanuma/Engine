@@ -76,5 +76,15 @@ public:
 
 	void SetChargePercent(float percent){chargePercent_ = percent;}
 
+// nakanuma追加分
+public:
+	// 動いている最中かどうかを返す
+	bool IsMoving() const { return isMoving_; }
+	// 動いている最中かどうか設定
+	void SetIsMoving(bool flag) { isMoving_ = flag; }
+
+private:
+	// プレイヤーが動いているかどうか
+	bool isMoving_ = false;
 };
 

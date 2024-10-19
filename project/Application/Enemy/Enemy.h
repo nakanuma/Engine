@@ -58,4 +58,11 @@ public:
 	void SetStage(Stage* stage){stage_ = stage;}
 	bool IsAlive()const{return isAlive_;}
 	Collider* GetCollider()const { return collider_.get(); }
+
+// nakanuma追加分
+public:
+	// 着地した瞬間を取得
+	bool GetLanding() { return !preOnGround_ && isOnGround_; }
+	// 位置を取得
+	Float3 GetTranslate() { return object_->transform_.translate; }
 };

@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "DirectXBase.h"
+#include "ImguiWrapper.h"
 #include "Application/DeltaTime/DeltaTime.h"
 
 void Stage::Initialize()
@@ -46,8 +47,17 @@ void Stage::Initialize()
 
 	variables->addValue("Game","Stage","maxEnergy",maxEnergy_);
 
+
+	/* パーティクル関連 */
+	
+	modelEnemyLandingParticle_ = ModelManager::LoadModelFile("resources/Models", "star.obj", dxBase->GetDevice());
+	uint32_t enemyLandingParticleGH = TextureManager::Load("resources/Images/star.png", dxBase->GetDevice());
+
+	enemyLandingEmitter_.Initialize(&modelEnemyLandingParticle_, enemyLandingParticleGH);
+
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
+
 }
 
 void Stage::Update(Camera* camera)
@@ -115,12 +125,26 @@ void Stage::Update(Camera* camera)
 
 	CheckAlCollisions();
 
+#pragma region パーティクル関連更新
+
+	// 敵着地時にパーティクルを発生させる
+	for (auto& enemy : enemies_) {
+		if (enemy->GetLanding()) {
+			enemyLandingEmitter_.Emit(enemy->GetTranslate());
+		}
+	}
+
+	// 敵着地時のパーティクルを更新
+	enemyLandingEmitter_.Update();
+
+#pragma endregion
+
 #pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
 
-// プレイヤーの手が地面にめり込んだらシェイク開始
+	// プレイヤーの手が地面にめり込んだらシェイク開始
 	if(player_->GetHandTranslate().y <= 0.0f)
 	{
-		camera->ApplyShake(1.5f,150);
+		camera->ApplyShake(0.5f, 120);
 	}
 	// カメラのシェイクを更新
 	camera->UpdateShake();
@@ -145,6 +169,11 @@ void Stage::DrawModels()
 
 	player_->Draw();
 
+	/* パーティクル関連描画 */
+
+	// プレイヤー攻撃時パーティクルを描画
+	enemyLandingEmitter_.Draw();
+
 #pragma region マップチップ描画用PSOに変更->マップチップ描画->通常PSOに戻す
 	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateMapchip());
 	// マップチップ
@@ -161,4 +190,14 @@ void Stage::CheckAlCollisions()
 	}
 
 	mapChip_->CheckCollision_Collider(player_->GetHandCollider());
+}
+
+void Stage::Debug() { 
+	ImGui::Begin("stage");
+
+	if (ImGui::Button("emit")) {
+		enemyLandingEmitter_.Emit({0.0f, 10.0f, 0.0f});
+	}
+
+	ImGui::End();
 }
