@@ -610,6 +610,13 @@ void DirectXBase::ShaderCompile()
 	pixelShaderBlob_ = CompileShader(L"resources/Shaders/Object3D.PS.hlsl", L"ps_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
 	assert(pixelShaderBlob_ != nullptr);
 
+	// Sprite用Shader
+	vertexShaderBlobSprite_ = CompileShader(L"resources/Shaders/Sprite.VS.hlsl", L"vs_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
+	assert(vertexShaderBlobSprite_ != nullptr);
+
+	pixelShaderBlobSprite_ = CompileShader(L"resources/Shaders/Sprite.PS.hlsl", L"ps_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
+	assert(pixelShaderBlobSprite_ != nullptr);
+
 	// Particle用Shader
 	vertexShaderBlobParticle_ = CompileShader(L"resources/Shaders/Particle.VS.hlsl", L"vs_6_0", dxcUtils_, dxcCompiler_, includeHandler_);
 	assert(vertexShaderBlobParticle_ != nullptr);
