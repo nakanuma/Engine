@@ -58,8 +58,7 @@ private:
 	///
 	/// ↓ ゲームシーン用
 	///
-	std::unique_ptr<Stage> stage_;
-
+	
 	ModelManager::ModelData planeModel;
 
 	Sprite* spaceToTitle_;

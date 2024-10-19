@@ -70,8 +70,6 @@ void GamePlayScene::Update()
 	DebugCameraUpdate(input);
 #endif
 
-	stage_->Update(camera.get());
-
 	// パーティクルマネージャーの更新
 	particleManager->Update();
 
