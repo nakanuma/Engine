@@ -35,6 +35,7 @@ void GameClearScene::Initialize()
 	lightManager->Initialize();
 
 	camera = SceneManager::GetInstance()->GetCamera();
+	Camera::Set(camera);
 
 	///
 	///	↓ ゲームシーン用 

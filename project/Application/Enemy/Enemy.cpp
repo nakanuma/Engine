@@ -153,11 +153,13 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 
 	preOnGround_ = isOnGround_;
 	isOnGround_ = false;
+
+	object_->UpdateMatrix();
 }
 
 void Enemy::Draw()
 {
-	object_->UpdateMatrix();
+	/*object_->UpdateMatrix();*/
 	object_->Draw();
 }
 
