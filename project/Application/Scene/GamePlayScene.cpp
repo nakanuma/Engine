@@ -26,12 +26,23 @@ void GamePlayScene::Initialize()
 	soundManager = std::make_unique<SoundManager>();
 	soundManager->Initialize();
 
+	// SRVManagerの生成と初期化
+	srvManager = std::make_unique<SRVManager>();
+	srvManager->Initialize(dxBase);
+
+	// ParticleManagerの生成と初期化
+	particleManager = std::make_unique<ParticleManager>();
+	particleManager->Initialize(dxBase, srvManager.get());
+
 	// Inputの初期化
 	input = Input::GetInstance();
 
 	// LightManagerの初期化
 	lightManager = LightManager::GetInstance();
 	lightManager->Initialize();
+	// プレイヤーの手に割り当てる丸影を有効化
+	lightManager->spotLightsCB_.data_->spotLights[0].isActive = true;
+	lightManager->spotLightsCB_.data_->spotLights[0].intensity = 6.0f;
 
 	camera = SceneManager::GetInstance()->GetCamera();
 
@@ -47,7 +58,9 @@ void GamePlayScene::Initialize()
 		stage_ = SceneManager::GetInstance()->GetStage();
 	}
 	stage_->Initialize();
+
 #endif // _DEBUG
+
 }
 
 void GamePlayScene::Finalize()
@@ -64,6 +77,10 @@ void GamePlayScene::Update()
 		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
 		return;
 	}
+
+	// パーティクルマネージャーの更新
+	particleManager->Update();
+  
 	stage_->Update(camera);
 }
 
@@ -105,6 +122,20 @@ void GamePlayScene::Draw()
 	/// ↑ ここまでスプライトの描画コマンド
 	/// 
 
+	#pragma region パーティクル用PSOに変更->パーティクル描画->通常PSOに変更
+	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateParticle());
+
+	particleManager->Draw();
+
+	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineState());
+	#pragma endregion
+
+#pragma region 丸影の設定
+
+	// spotLight[0]の位置をプレイヤーの手と同期
+	lightManager->spotLightsCB_.data_->spotLights[0].position = stage_->GetPlayer()->GetHandTranslate();
+
+#pragma endregion
 
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
@@ -114,6 +145,8 @@ void GamePlayScene::Draw()
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
+
+	stage_->Debug();
 	
 #ifdef _DEBUG // デバッグカメラ
 	ImGui::Checkbox("useDebugCamera",&useDebugCamera);

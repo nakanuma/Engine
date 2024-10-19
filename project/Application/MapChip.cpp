@@ -417,7 +417,7 @@ void MapChipField::TriggerWave(int hitX,int hitZ,float waveRange,float initialYV
 		}
 	}
 	// パワー加算テスト(消してOK)
-	mapPower += 2.5f;
+	//mapPower += 2.5f;
 }
 
 void MapChipField::MapColor()

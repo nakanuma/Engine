@@ -122,5 +122,5 @@ void Object3D::DrawInstancing(StructuredBuffer<ParticleForGPU>& structuredBuffer
 	// SRVのDescriptorTableの先頭を設定（Textureの設定）
 	TextureManager::SetDescriptorTable(2, dxBase->GetCommandList(), TextureHandle); // 引数で指定したテクスチャを使用する
 	// 描画を行う（DrawCall/ドローコール）
-	dxBase->GetCommandList()->DrawInstanced(UINT(model_->vertices.size()), numInstance, 0, 0);
+	dxBase->GetCommandList()->DrawIndexedInstanced(UINT(model_->vertices.size()), numInstance, 0, 0, 0);
 }

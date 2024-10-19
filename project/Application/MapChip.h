@@ -130,6 +130,7 @@ public:
 	// マップパワー取得
 	float& GetPower() { return mapPower; };
 
+	void SetPower(float p) { mapPower = p; };
 
 private:
 	// パワー

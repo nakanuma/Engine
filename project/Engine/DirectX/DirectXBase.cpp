@@ -658,6 +658,7 @@ void DirectXBase::CreatePipelineStateObject()
 	// どのように画面に色を打ち込むかの設定
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+
 	// DepthStencilの設定
 	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc_;
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -713,6 +714,17 @@ void DirectXBase::CreatePipelineStateObject()
 	graphicsPipelineStateParticleDesc.pRootSignature = rootSignatureParticle_.Get(); // RootSignature
 	graphicsPipelineStateParticleDesc.VS = { vertexShaderBlobParticle_->GetBufferPointer(), vertexShaderBlobParticle_->GetBufferSize() }; // VertexShader
 	graphicsPipelineStateParticleDesc.PS = { pixelShaderBlobParticle_->GetBufferPointer(), pixelShaderBlobParticle_->GetBufferSize() }; // PixelShader
+	
+	// 通常DepthStencilを保持しておく
+	D3D12_DEPTH_STENCIL_DESC depthStencilDescDefault = depthStencilDesc_;
+	// Particle用DepthStencilに通常DepthStencilを保存
+	D3D12_DEPTH_STENCIL_DESC depthStencilDescParticle = depthStencilDescDefault;
+	// Depthの書き込みを行わない
+	depthStencilDescParticle.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+
+	// パーティクル用PSOのDepthScencilを設定
+	graphicsPipelineStateParticleDesc.DepthStencilState = depthStencilDescParticle;
+	
 	// 生成
 	graphicsPipelineStateParticle_ = nullptr;
 	result = device_->CreateGraphicsPipelineState(&graphicsPipelineStateParticleDesc, IID_PPV_ARGS(&graphicsPipelineStateParticle_));

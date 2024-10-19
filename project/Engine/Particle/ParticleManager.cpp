@@ -19,9 +19,6 @@ void ParticleManager::Initialize(DirectXBase* dxBase, SRVManager* srvManager)
 	// ランダムエンジンの初期化
 	randomEngine.seed(seedGenerator());
 
-	// 反対側に回す回転行列
-	backToFrontMatrix = Matrix::RotationY(std::numbers::pi_v<float>);
-
 	// 全てのパーティクルグループのObjectを初期化
 	for (auto& [name, groupPtr] : particleGroups) {
 		auto& group = *groupPtr;
@@ -65,7 +62,7 @@ void ParticleManager::Update()
 	Matrix projectionMatrix = Camera::GetCurrent()->MakePerspectiveFovMatrix();
 
 	// ビルボード行列の計算
-	billboardMatrix = backToFrontMatrix * viewMatrix;
+	billboardMatrix = Matrix::Inverse(viewMatrix);
 	billboardMatrix.r[3][0] = 0.0f;
 	billboardMatrix.r[3][1] = 0.0f;
 	billboardMatrix.r[3][2] = 0.0f;
@@ -84,9 +81,14 @@ void ParticleManager::Update()
 				continue;
 			}
 
-			Matrix worldMatrix = particleIterator->transform.MakeAffineMatrix();
+			Matrix worldMatrix = 
+			    {
+			    Matrix::Scaling({-particleIterator->transform.scale.x, particleIterator->transform.scale.y, particleIterator->transform.scale.z}) * 
+				billboardMatrix * // ビルボード行列を適用
+			    Matrix::Translation(particleIterator->transform.translate)
+				};
 			Matrix viewProjectionMatrix = viewMatrix * projectionMatrix;
-			Matrix worldViewProjectionMatrix = worldMatrix * billboardMatrix * viewProjectionMatrix;
+			Matrix worldViewProjectionMatrix = worldMatrix * viewProjectionMatrix;
 
 			if (numInstance < group.instancingBuffer.numMaxInstance_) { // パーティクルのインスタンス数がバッファのサイズを超えないようにする
 				group.instancingBuffer.data_[numInstance].WVP = worldViewProjectionMatrix;
@@ -99,10 +101,10 @@ void ParticleManager::Update()
 				++numInstance; // 生きているParticleの数を1つカウントする
 			}
 
-			// Fieldの範囲内のParticleには加速度を適用する
-			if (IsCollision(accelerationField.area, particleIterator->transform.translate)) {
-				particleIterator->velocity += accelerationField.acceleration * kDeltaTime;
-			}
+			//// Fieldの範囲内のParticleには加速度を適用する
+			//if (IsCollision(accelerationField.area, particleIterator->transform.translate)) {
+			//	particleIterator->velocity += accelerationField.acceleration * kDeltaTime;
+			//}
 
 			// Particleの更新処理
 			particleIterator->transform.translate += particleIterator->velocity * kDeltaTime;

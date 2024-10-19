@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "DirectXBase.h"
+#include "ImguiWrapper.h"
 #include "Application/DeltaTime/DeltaTime.h"
 
 void Stage::Initialize()
@@ -45,6 +46,21 @@ void Stage::Initialize()
 	collisionManager_ = std::make_unique<CollisionManager>();
 
 	variables->addValue("Game","Stage","maxEnergy",maxEnergy_);
+
+
+	/* パーティクル関連 */
+	
+	// エネミー着地時パーティクル関連初期化
+	modelEnemyLandingParticle_ = ModelManager::LoadModelFile("resources/Models", "star.obj", dxBase->GetDevice());
+	uint32_t enemyLandingParticleGH = TextureManager::Load("resources/Images/star.png", dxBase->GetDevice());
+
+	enemyLandingEmitter_.Initialize(&modelEnemyLandingParticle_, enemyLandingParticleGH);
+
+	// プレイヤー移動時パーティクル関連初期化
+	modelPlayerMoveParticle_ = ModelManager::LoadModelFile("resources/Models", "cube.obj", dxBase->GetDevice());
+	uint32_t playerMoveParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
+
+	playerMoveEmitter_.Initialize(&modelPlayerMoveParticle_, playerMoveParticleGH);
 
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
@@ -114,15 +130,48 @@ void Stage::Update(Camera* camera)
 	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy) { return enemy->IsAlive() ? false : true; });
 
 	mapChip_->Update();
+	mapChip_->SetPower(chargedEnergy_);
 
 	CheckAlCollisions();
 
+#pragma region パーティクルの発生と更新
+	/*--------------------------*/
+	/* プレイヤー移動時パーティクル */
+	/*--------------------------*/
+	
+	// プレイヤー移動時にパーティクルを発生させる
+	if (player_->IsMoving()) {
+		playerMoveEmitter_.Emit(player_->GetBodyTranslate());
+	}
+
+	// プレイヤー移動時パーティクルを更新
+	playerMoveEmitter_.Update();
+
+	/*--------------------------*/
+	/*     敵着地パーティクル      */
+	/*--------------------------*/
+
+	// 敵着地時にパーティクルを発生させる
+	for (auto& enemy : enemies_) {
+		if (enemy->GetLanding()) {
+			// ウェーブ中のブロックと衝突して大量にパーティクルが出てしまうのをゴリ押しで防ぐ
+			if (enemy->GetTranslate().y <= 2.0f && enemy->GetTranslate().y >= 0.0f) {
+				enemyLandingEmitter_.Emit(enemy->GetTranslate());
+			}
+		}
+	}
+
+	// 敵着地時のパーティクルを更新
+	enemyLandingEmitter_.Update();
+
+#pragma endregion
+
 #pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
 
-// プレイヤーの手が地面にめり込んだらシェイク開始
+	// プレイヤーの手が地面にめり込んだらシェイク開始
 	if(player_->GetHandTranslate().y <= 0.0f)
 	{
-		camera->ApplyShake(1.5f,150);
+		camera->ApplyShake(0.5f, 120);
 	}
 	// カメラのシェイクを更新
 	camera->UpdateShake();
@@ -147,6 +196,14 @@ void Stage::DrawModels()
 
 	player_->Draw();
 
+	/* パーティクル関連描画 */
+
+	// プレイヤー移動時パーティクルを描画
+	playerMoveEmitter_.Draw();
+
+	// 敵落下時パーティクルを描画
+	enemyLandingEmitter_.Draw();
+
 #pragma region マップチップ描画用PSOに変更->マップチップ描画->通常PSOに戻す
 	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateMapchip());
 	// マップチップ
@@ -163,4 +220,14 @@ void Stage::CheckAlCollisions()
 	}
 
 	mapChip_->CheckCollision_Collider(player_->GetHandCollider());
+}
+
+void Stage::Debug() { 
+	ImGui::Begin("stage");
+
+	if (ImGui::Button("emit")) {
+		enemyLandingEmitter_.Emit({0.0f, 10.0f, 0.0f});
+	}
+
+	ImGui::End();
 }

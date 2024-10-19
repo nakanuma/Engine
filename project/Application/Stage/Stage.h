@@ -15,6 +15,9 @@
 #include "Application/MapChip.h"
 #include "Application/Player/Player.h"
 
+#include "EnemyLandingEmitter.h"
+#include "PlayerMoveEmitter.h"
+
 class Stage
 {
 public:
@@ -75,4 +78,21 @@ public:
 		chargedEnergy_ -= stealEnergy;
 		return stealEnergy;
 	}
+
+// nakanuma追加分
+public:
+	Player* GetPlayer() { return player_.get(); }
+
+	void Debug();
+
+private:
+	// エネミー着地時パーティクルのエミッター
+	EnemyLandingEmitter enemyLandingEmitter_;
+	// エネミー着地時パーティクルのモデル
+	ModelManager::ModelData modelEnemyLandingParticle_;
+
+	// プレイヤー移動時パーティクルのエミッター
+	PlayerMoveEmitter playerMoveEmitter_;
+	// プレイヤー移動時パーティクルのモデル
+	ModelManager::ModelData modelPlayerMoveParticle_;
 };

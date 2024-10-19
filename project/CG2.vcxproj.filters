@@ -70,9 +70,14 @@
     <ClCompile Include="Application\Collision\CollisionManager.cpp" />
     <ClCompile Include="Application\Enemy\EnemySpawner.cpp" />
     <ClCompile Include="Application\Stage\Stage.cpp" />
+    <ClCompile Include="Application\Effect\EnemyLanding\EnemyLandingParticle.cpp" />
+    <ClCompile Include="Application\Effect\EnemyLanding\EnemyLandingEmitter.cpp" />
     <ClCompile Include="Application\UI\UI.cpp" />
     <ClCompile Include="Application\Scene\GameClearScene.cpp" />
     <ClCompile Include="Application\Scene\GameOverScene.cpp" />
+    <ClCompile Include="Application\Effect\PlayerMove\PlayerMoveParticle.cpp" />
+    <ClCompile Include="Application\Effect\PlayerMove\PlayerMoveEmitter.cpp" />
+    <ClCompile Include="Engine\Math\Easing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
@@ -83,9 +88,14 @@
     <ClInclude Include="Application\Collision\CollisionManager.h" />
     <ClInclude Include="Application\Enemy\EnemySpawner.h" />
     <ClInclude Include="Application\Stage\Stage.h" />
+    <ClInclude Include="Application\Effect\EnemyLanding\EnemyLandingParticle.h" />
+    <ClInclude Include="Application\Effect\EnemyLanding\EnemyLandingEmitter.h" />
     <ClInclude Include="Application\UI\UI.h" />
     <ClInclude Include="Application\Scene\GameClearScene.h" />
     <ClInclude Include="Application\Scene\GameOverScene.h" />
+    <ClInclude Include="Application\Effect\PlayerMove\PlayerMoveParticle.h" />
+    <ClInclude Include="Application\Effect\PlayerMove\PlayerMoveEmitter.h" />
+    <ClInclude Include="Engine\Math\Easing.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />
