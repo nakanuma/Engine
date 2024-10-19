@@ -49,13 +49,16 @@ private:
 
 	std::function<void()> currentUpdate_;
 
-	void InSceneUpdate();
+	void EnterSceneUpdate();
 	void SceneUpdate();
 	void OutSceneUpdate();
 
+	Float3 cameraPosWhenEnterScene_;
+	Float3 cameraPosWhenOutScene_;
+
 	float leftTime_;
 
-	float inSceneMaxTime_;
+	float enterSceneMaxTime_;
 	float outSceneMaxTime_;
 public:
 };

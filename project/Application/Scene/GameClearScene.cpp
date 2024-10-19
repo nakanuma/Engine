@@ -71,12 +71,13 @@ void GameClearScene::Initialize()
 	planeModel_.material.textureHandle = clearTextTextureIndex_;
 
 	clearTextPlane_ = std::make_unique<Object3D>();
+	clearTextPlane_->materialCB_.data_->color ={0.0f,0.0f,0.0f,1.0f};
 	clearTextPlane_->model_ = &planeModel_;
 
 	///===========================================================================================
 	/// Camera
 	///===========================================================================================
-	cameraPosWhenInScene_ = camera->transform.translate;
+	cameraPosWhenEnterScene_ = camera->transform.translate;
 
 	variables->addValue("GameClear","ClearText","scale",clearTextPlane_->transform_.scale);
 	variables->addValue("GameClear","ClearText","rotate",clearTextPlane_->transform_.rotate);
@@ -192,7 +193,7 @@ void GameClearScene::OutSceneUpdate()
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime(); 
 	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
 
-	camera->transform.translate = Float3::Lerp(cameraPosWhenInScene_,cameraPosWhenOutScene_,t);
+	camera->transform.translate = Float3::Lerp(cameraPosWhenEnterScene_,cameraPosWhenOutScene_,t);
 
 	if(leftTime_ <= 0.0f)
 	{ 

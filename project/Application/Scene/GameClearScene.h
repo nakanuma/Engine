@@ -61,7 +61,7 @@ private:
 
 	// Camera
 	Float3 cameraPosWhenOutScene_;
-	Float3 cameraPosWhenInScene_;
+	Float3 cameraPosWhenEnterScene_;
 
 	// clearText
 	ModelManager::ModelData planeModel_;
