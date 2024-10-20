@@ -79,8 +79,8 @@ public:
 
 	void SetChargePercent(float percent){chargePercent_ = percent;}
 
-	bool GetIsAttack()const{return isAttack_};
-	bool SetIsAttack(bool isAttack){isAttack_ = isAttack;}
+	bool GetIsAttack()const{return isAttack_;}
+	void SetIsAttack(bool isAttack){isAttack_ = isAttack;}
 // nakanuma追加分
 public:
 	// 動いている最中かどうかを返す
