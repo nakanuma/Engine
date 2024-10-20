@@ -43,12 +43,16 @@ void Stage::Initialize()
 	}
 
 	// hand
-	sideHandModel_  = ModelManager::LoadModelFile("resources/Models","bighand.obj",dxBase->GetDevice());
-	sideHandModel_.material.textureHandle = TextureManager::Load("resources/Images/bighand.png",dxBase->GetDevice());
+	sideHandModel_[0]  = ModelManager::LoadModelFile("resources/Models","bighand.obj",dxBase->GetDevice());
+	sideHandModel_[0].material.textureHandle = TextureManager::Load("resources/Images/bighand.png",dxBase->GetDevice());
+	sideHandModel_[1] = ModelManager::LoadModelFile("resources/Models","bighand_left.obj",dxBase->GetDevice());
+	sideHandModel_[1].material.textureHandle = TextureManager::Load("resources/Images/bighand.png",dxBase->GetDevice());
+
+
 	sideHandObject_[0] = std::make_unique<Object3D>();
 	sideHandObject_[1] = std::make_unique<Object3D>();
-	sideHandObject_[0]->model_ = &sideHandModel_;
-	sideHandObject_[1]->model_ = &sideHandModel_;
+	sideHandObject_[0]->model_ = &sideHandModel_[0];
+	sideHandObject_[1]->model_ = &sideHandModel_[1];
 
 	// timer
 	timerModel_       = ModelManager::LoadModelFile("resources/Models","timer.obj",dxBase->GetDevice());

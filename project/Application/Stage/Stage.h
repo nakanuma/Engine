@@ -53,7 +53,7 @@ private:
 	std::unique_ptr<Player> player_;
 
 	// hand
-	ModelManager::ModelData sideHandModel_;
+	std::array<ModelManager::ModelData,2> sideHandModel_;
 	std::array<std::unique_ptr<Object3D>,2> sideHandObject_;
 
 	// timer

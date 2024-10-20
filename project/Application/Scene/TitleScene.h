@@ -61,6 +61,8 @@ private:
 	std::function<void(Sprite*)> buttonUpdateWhenSceneUpdate_;
 	std::function<void(Sprite*)> buttonUpdateWhenOutScene_;
 
+	std::array<std::unique_ptr<UI>,2> cloudSprite_;
+
 	ModelManager::ModelData titleTextModel_;
 	std::unique_ptr<Object3D> titleTextObject_;
 
