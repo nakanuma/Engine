@@ -43,7 +43,7 @@ void Player::Initialize(uint32_t uvCheckerGH)
 /// Hand
 ///===========================================================================================
 	handModelData_ = ModelManager::LoadModelFile("./resources/Models","player.obj",dxBase->GetDevice());
-	handModelData_.material.textureHandle = uvCheckerGH;
+	handModelData_.material.textureHandle = TextureManager::Load("resources/Images/player.png",dxBase->GetDevice());
 	handObject_ = std::make_unique<Object3D>();
 	handObject_->model_ = &handModelData_;
 	// handObject_.parent = &body;

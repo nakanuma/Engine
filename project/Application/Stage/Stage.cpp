@@ -42,12 +42,45 @@ void Stage::Initialize()
 		enemySpawners_.back()->SetEnemyModel(enemyModel);
 	}
 
+	// hand
+	sideHandModel_  = ModelManager::LoadModelFile("resources/Models","bighand.obj",dxBase->GetDevice());
+	sideHandModel_.material.textureHandle = TextureManager::Load("resources/Images/bighand.png",dxBase->GetDevice());
+	sideHandObject_[0] = std::make_unique<Object3D>();
+	sideHandObject_[1] = std::make_unique<Object3D>();
+	sideHandObject_[0]->model_ = &sideHandModel_;
+	sideHandObject_[1]->model_ = &sideHandModel_;
+
+	// timer
+	timerModel_       = ModelManager::LoadModelFile("resources/Models","timer.obj",dxBase->GetDevice());
+	timerModel_.material.textureHandle = TextureManager::Load("resources/Images/timer.png",dxBase->GetDevice());
+
+	timerNeedleModel_ = ModelManager::LoadModelFile("resources/Models","timer_needle.obj",dxBase->GetDevice());
+	timerNeedleModel_.material.textureHandle = TextureManager::Load("resources/Images/timer_needle.png",dxBase->GetDevice());
+
+	timerObject_        = std::make_unique<Object3D>();
+	timerObject_->model_ = &timerModel_;
+	timerNeedleObject_  = std::make_unique<Object3D>();
+	timerNeedleObject_->SetParent(timerObject_.get());
+	timerNeedleObject_->model_ = &timerNeedleModel_;
+
+	variables->addValue("Game","Timer","scale",timerObject_->transform_.scale);
+	variables->addValue("Game","Timer","rotate",timerObject_->transform_.rotate);
+	variables->addValue("Game","Timer","translate",timerObject_->transform_.translate);
+	variables->addValue("Game","Timer","needle_scale",timerNeedleObject_->transform_.scale);
+	variables->addValue("Game","Timer","needle_rotate",timerNeedleObject_->transform_.rotate);
+	variables->addValue("Game","Timer","needle_translate",timerNeedleObject_->transform_.translate);
+
+	variables->addValue("Game","Hand","LeftHand_scale",sideHandObject_[0]->transform_.scale);
+	variables->addValue("Game","Hand","LeftHand_rotate",sideHandObject_[0]->transform_.rotate);
+	variables->addValue("Game","Hand","LeftHand_Translate",sideHandObject_[0]->transform_.translate);
+	variables->addValue("Game","Hand","RightHand_scale",sideHandObject_[1]->transform_.scale);
+	variables->addValue("Game","Hand","RightHand_rotate",sideHandObject_[1]->transform_.rotate);
+	variables->addValue("Game","Hand","RightHand_Translate",sideHandObject_[1]->transform_.translate);
+
 	// 衝突マネージャの生成
 	collisionManager_ = std::make_unique<CollisionManager>();
 
 	variables->addValue("Game","Stage","maxEnergy",maxEnergy_);
-
-
 	/* パーティクル関連 */
 	
 	// エネミー着地時パーティクル関連初期化
@@ -210,6 +243,17 @@ void Stage::DrawModels()
 	mapChip_->Draw();
 	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineState());
 #pragma endregion
+
+	for(size_t i = 0; i < 2; i++)
+	{
+		sideHandObject_[i]->UpdateMatrix();
+		sideHandObject_[i]->Draw();
+	}
+
+	timerObject_->UpdateMatrix();
+	timerNeedleObject_->UpdateMatrix();
+	timerObject_->Draw();
+	timerNeedleObject_->Draw();
 }
 
 void Stage::CheckAlCollisions()

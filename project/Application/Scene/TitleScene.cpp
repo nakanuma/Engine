@@ -49,22 +49,7 @@ void TitleScene::Initialize()
 	}
 	stage_->Initialize();
 #endif // _DEBUG
-	///===========================================================================================
-	/// GlobalVariables 
-	///===========================================================================================
-	GlobalVariables* variables = GlobalVariables::getInstance();
 
-	// time
-	variables->addValue("Title","Times","enterSceneMaxTime_",enterSceneMaxTime_);
-	variables->addValue("Title","Times","outSceneMaxTime_",outSceneMaxTime_);
-	leftTime_ = 0.0f;
-
-	// button
-	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
-
-	// Camera
-	variables->addValue("Title","Camera","cameraHomePosition",cameraHomePos_);
-	
 	///===========================================================================================
 	/// Camera 
 	///===========================================================================================
@@ -74,6 +59,15 @@ void TitleScene::Initialize()
 	/// Texture 
 	///===========================================================================================
 	buttonTextureIndex_ = TextureManager::Load("./resources/Images/white.png",dxBase->GetDevice());
+
+	///===========================================================================================
+	/// Title 
+	///===========================================================================================
+	titleTextModel_ = ModelManager::LoadModelFile("resources/Models","Title.obj",dxBase->GetDevice());
+	titleTextModel_.material.textureHandle = TextureManager::Load("resources/Images/title_color.png",dxBase->GetDevice());
+
+	titleTextObject_ = std::make_unique<Object3D>();
+	titleTextObject_->model_ = &titleTextModel_;
 
 	///===========================================================================================
 	/// UI 
@@ -109,6 +103,31 @@ void TitleScene::Initialize()
 	};
 
 	buttonUI_->setUpdate(buttonUpdateWhenEnterScene_);
+
+	///===========================================================================================
+	/// GlobalVariables 
+	///===========================================================================================
+	GlobalVariables* variables = GlobalVariables::getInstance();
+
+	// time
+	variables->addValue("Title","Times","enterSceneMaxTime_",enterSceneMaxTime_);
+	variables->addValue("Title","Times","outSceneMaxTime_",outSceneMaxTime_);
+	leftTime_ = 0.0f;
+
+	// button
+	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
+
+	// Camera
+	variables->addValue("Title","Camera","cameraHomePosition",cameraHomePos_);
+
+	// text Model
+	variables->addValue("Title","Text","Scale",titleTextObject_->transform_.scale);
+	variables->addValue("Title","Text","Rotate",titleTextObject_->transform_.rotate);
+	variables->addValue("Title","Text","Translate",titleTextObject_->transform_.translate);
+
+	///===========================================================================================
+	/// Update State 
+	///===========================================================================================
 
 	currentUpdate_ = [this](){ this->EnterSceneUpdate(); };
 }
@@ -149,6 +168,8 @@ void TitleScene::Draw()
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
 
+	titleTextObject_->UpdateMatrix();
+	titleTextObject_->Draw();
 	stage_->DrawModels();
 
 	///

@@ -61,6 +61,9 @@ private:
 	std::function<void(Sprite*)> buttonUpdateWhenSceneUpdate_;
 	std::function<void(Sprite*)> buttonUpdateWhenOutScene_;
 
+	ModelManager::ModelData titleTextModel_;
+	std::unique_ptr<Object3D> titleTextObject_;
+
 	Float2 buttonUiOffset_;
 	float signT_;
 };

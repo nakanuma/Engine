@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <array>
 #include <list>
+#include <memory>
 
 #include "ModelManager.h"
 
@@ -35,13 +36,25 @@ private:
 	ModelManager::ModelData modelBlock_;
 	std::unique_ptr<MapChipField> mapChip_;
 
+	// enemy
 	ModelManager::ModelData enemyModel;
 	int32_t enemySpawnerValue_;
 	std::vector<std::unique_ptr<EnemySpawner>> enemySpawners_;
 
 	std::list<std::unique_ptr<Enemy>> enemies_;
 
+	// player
 	std::unique_ptr<Player> player_;
+
+	// hand
+	ModelManager::ModelData sideHandModel_;
+	std::array<std::unique_ptr<Object3D>,2> sideHandObject_;
+
+	// timer
+	ModelManager::ModelData timerModel_;
+	ModelManager::ModelData timerNeedleModel_;
+	std::unique_ptr<Object3D> timerObject_;
+	std::unique_ptr<Object3D> timerNeedleObject_;
 
 	std::unique_ptr<CollisionManager> collisionManager_;
 
