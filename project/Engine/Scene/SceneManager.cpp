@@ -65,3 +65,9 @@ void SceneManager::Draw()
 	// 実行中シーンの描画
 	scene_->Draw();
 }
+
+void SceneManager::CreateStage()
+{
+	stage_ = std::make_unique<Stage>();
+	stage_->Initialize();
+}

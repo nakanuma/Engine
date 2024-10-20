@@ -179,10 +179,12 @@ AttackPlayerState::AttackPlayerState(Player* player,float chargePercent):IPlayer
 {
 	chargePercent_ = chargePercent;
 	player_->SetChargePercent(chargePercent);
+	player_->SetIsAttack(true);
 }
 
 AttackPlayerState::~AttackPlayerState()
 {
+	player_->SetIsAttack(false);
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->DestroyItem("Game","Player_AttackState","accel");
 	variables->DestroyItem("Game","Player_AttackState","maxSpeed");

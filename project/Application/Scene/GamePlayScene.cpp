@@ -49,17 +49,7 @@ void GamePlayScene::Initialize()
 	///
 	///	↓ ゲームシーン用 
 	///	
-
-#ifdef _DEBUG
 	stage_ = SceneManager::GetInstance()->GetStage();
-	if(!stage_)
-	{
-		SceneManager::GetInstance()->CreateStage();
-		stage_ = SceneManager::GetInstance()->GetStage();
-	}
-	stage_->Initialize();
-
-#endif // _DEBUG
 
 }
 
@@ -75,6 +65,10 @@ void GamePlayScene::Update()
 	if(stage_->GetIsClear())
 	{
 		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		return;
+	} else if(stage_->GetIsGameOver())
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 		return;
 	}
 

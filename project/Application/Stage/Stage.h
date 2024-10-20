@@ -29,6 +29,12 @@ public:
 	void Update(Camera* camera);
 	void DrawModels();
 
+	void UpdatePlayerAndMapChip(Camera* camera);
+
+	/// <summary>
+	/// ステータスの初期化 (model の読み込み などをしない初期化)
+	/// </summary>
+	void InitializeStatus();
 private:
 	void CheckAlCollisions();
 private:
@@ -65,8 +71,10 @@ private:
 	float currentTime_;
 
 	bool isClear_;
+	bool isGameOver_;
 public:
 	bool GetIsClear()const{return isClear_;}
+	bool GetIsGameOver()const{return isGameOver_;}
 
 	float GetMaxEnergy()const{return maxEnergy_;}
 	float GetChargedEnergy()const{return chargedEnergy_;}

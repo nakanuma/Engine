@@ -40,16 +40,7 @@ void GameClearScene::Initialize()
 	///
 	///	↓ ゲームシーン用 
 	///	
-
-#ifdef _DEBUG
 	stage_ = SceneManager::GetInstance()->GetStage();
-	if(!stage_)
-	{
-		SceneManager::GetInstance()->CreateStage();
-		stage_ = SceneManager::GetInstance()->GetStage();
-	}
-	stage_->Initialize();
-#endif // _DEBUG
 
 	currentUpdate_ = [this]() { this->EnterSceneUpdate(); };
 
@@ -91,7 +82,7 @@ void GameClearScene::Finalize()
 
 void GameClearScene::Update()
 {
-	stage_->Update(camera);
+	stage_->UpdatePlayerAndMapChip(camera);
 	currentUpdate_();
 }
 
