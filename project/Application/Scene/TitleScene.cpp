@@ -220,10 +220,10 @@ void TitleScene::Draw()
 
 #pragma endregion
 #ifdef _DEBUG
-	/*GlobalVariables::getInstance()->Update();*/
+	GlobalVariables::getInstance()->Update();
 #endif // _DEBUG
 
-	/*ImGui::Begin("Camera");
+	ImGui::Begin("Camera");
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
@@ -243,7 +243,7 @@ void TitleScene::Draw()
 	ImGui::InputFloat("LimitTime",&limitTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
-	ImGui::End();*/
+	ImGui::End();
 
 	// ImGuiの内部コマンドを生成する
 	ImguiWrapper::Render(dxBase->GetCommandList());
