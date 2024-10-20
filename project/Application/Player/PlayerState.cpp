@@ -50,7 +50,7 @@ NeutralPlayerState::~NeutralPlayerState()
 {
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->DestroyItem("Game","Player_NeutralState","speed_");
-	variables->DestroyItem("Game","Player_NeutralState","defaultHandOffset");
+	variables->DestroyItem("Game","Player_NeutralState","defaultPosY_");
 }
 //=====================================================
 /// Neutral 
@@ -58,7 +58,7 @@ void NeutralPlayerState::Initialize()
 {
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->addValue("Game","Player_NeutralState","speed_",speed_);
-	variables->addValue("Game","Player_NeutralState","defaultHandOffset",defaultHandOffset_);
+	variables->addValue("Game","Player_NeutralState","defaultPosY_",defaultPosY_);
 }
 
 void NeutralPlayerState::Update()
@@ -68,7 +68,7 @@ void NeutralPlayerState::Update()
 		player_->TransitionState(
 			new ChargePlayerState(
 				player_,
-				player_->GetHandTranslate() - player_->GetBodyTranslate() // offset を 計算
+				player_->GetTranslate() // offset を 計算
 			)
 		);
 		return;
@@ -83,27 +83,28 @@ void NeutralPlayerState::Update()
 		};
 	}
 	moveVal = Float2::Normalize(moveVal);
-	Float3 bodyTranslate = player_->GetBodyTranslate() + (Float3(moveVal.x,0.0f,moveVal.y) * speed_) * DeltaTime::getInstance()->getDeltaTime();
-	player_->SetBodyTranslate(bodyTranslate);
+
+	Float3 translate = player_->GetTranslate();
+	translate += Float3(moveVal.x,0.0f,moveVal.y) * (speed_ * DeltaTime::getInstance()->getDeltaTime());
+	translate.y = Lerp(0.1f,defaultPosY_,translate.y);
+
+	player_->SetTranslate(translate);
 	if(moveVal.x != 0.0f || moveVal.y != 0.0f)
 	{
-		player_->SetBodyRotate({0.0f,atan2(moveVal.x,moveVal.y),0.0f});
+		player_->SetRotate({0.0f,atan2(moveVal.x,moveVal.y),0.0f});
 		// 動いている状態
 		player_->SetIsMoving(true);
 	} else {
 		// 動いていない状態
 		player_->SetIsMoving(false);
 	}
-
-	// 後ろ に 付いてくるような感じに 
-	player_->SetHandTranslate(Lerp(0.27f,player_->GetHandTranslate(),defaultHandOffset_ + bodyTranslate));
 }
 //=====================================================
 
 //=====================================================
 /// Charge 
-ChargePlayerState::ChargePlayerState(Player* player,const Float3& beforeHandOffset)
-	:IPlayerState(player),beforeHandOffset_(beforeHandOffset)
+ChargePlayerState::ChargePlayerState(Player* player,const Float3& beforePos)
+	:IPlayerState(player),beforePos_(beforePos)
 {
 
 }
@@ -112,7 +113,7 @@ ChargePlayerState::~ChargePlayerState()
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->DestroyItem("Game","Player_ChargeState","maxTime");
 	variables->DestroyItem("Game","Player_ChargeState","minTime");
-	variables->DestroyItem("Game","Player_ChargeState","movedHandOffset_");
+	variables->addValue("Game","Player_ChargeState","movedPosY",movedPosY_);
 }
 
 void ChargePlayerState::Initialize()
@@ -121,7 +122,7 @@ void ChargePlayerState::Initialize()
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->addValue("Game","Player_ChargeState","maxTime",maxTime_);
 	variables->addValue("Game","Player_ChargeState","minTime",minTime_);
-	variables->addValue("Game","Player_ChargeState","movedHandOffset_",movedHandOffset_);
+	variables->addValue("Game","Player_ChargeState","movedPosY",movedPosY_);
 	currentTime_ = 0.0f;
 }
 
@@ -159,19 +160,15 @@ void ChargePlayerState::Update()
 	}
 	moveVal = Float2::Normalize(moveVal);
 
-	Float3 playerRotate = player_->GetBodyRotate();
+	Float3 playerRotate = player_->GetRotate();
 	if(moveVal.x != 0.0f || moveVal.y != 0.0f)
 	{
 		playerRotate.y = atan2(moveVal.x,moveVal.y);
-		player_->SetBodyRotate(playerRotate);
+		player_->SetRotate(playerRotate);
 	} 
-	
+	player_->SetTranslate({beforePos_.x,Lerp(t,beforePos_.y,movedPosY_),beforePos_.z});
 	// チャージ状態では常に動いてないことにする
 	player_->SetIsMoving(false);
-	
-	Float3 currentHandOffset = TransformMatrix(Lerp(t,beforeHandOffset_,movedHandOffset_),Matrix::RotationY(playerRotate.y));
-	// 手の位置更新
-	player_->SetHandTranslate(player_->GetBodyTranslate() + currentHandOffset);
 }
 //=====================================================
 
@@ -204,7 +201,7 @@ void AttackPlayerState::Initialize()
 void AttackPlayerState::Update()
 {
 	// 地面に 衝突したら
-	if(player_->GetHandTranslate().y <= -1.5f)
+	if(player_->GetTranslate().y <= -1.5f)
 	{
 		return player_->TransitionState(new NeutralPlayerState(player_));
 	}
@@ -213,21 +210,8 @@ void AttackPlayerState::Update()
 	speed_ += accel_ * deltaTime;
 	speed_ = (std::max)(speed_,chargedMaxSpeed_);
 
-	Float3 playerHandTranslate = player_->GetHandTranslate();
-	playerHandTranslate.y -= speed_;
-	player_->SetHandTranslate(playerHandTranslate);
+	Float3 playerTranslate = player_->GetTranslate();
+	playerTranslate.y -= speed_;
+	player_->SetTranslate(playerTranslate);
 }
 //=====================================================
-
-//=====================================================
-/// KnockBack
-void KnockBackPlayerState::Initialize()
-{
-}
-
-void KnockBackPlayerState::Update()
-{
-}
-
-//=====================================================
-

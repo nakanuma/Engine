@@ -46,7 +46,7 @@ public:
 	void Initialize()override;
 	void Update()    override;
 private:
-	Float3 defaultHandOffset_;
+	float defaultPosY_;
 	float speed_;
 };
 
@@ -57,7 +57,7 @@ class ChargePlayerState
 	:public IPlayerState
 {
 public:
-	ChargePlayerState(Player* player,const Float3& beforeHandOffset);
+	ChargePlayerState(Player* player,const Float3& beforePos);
 	~ChargePlayerState()override;
 
 	void Initialize()override;
@@ -70,8 +70,8 @@ private:
 
 	float currentTime_;
 
-	Float3 movedHandOffset_;
-	Float3 beforeHandOffset_;
+	float movedPosY_;
+	Float3 beforePos_;
 };
 
 ///======================================================
@@ -98,26 +98,4 @@ private:
 	// chargePercent で 決まった Max Speed
 	float chargedMaxSpeed_;
 	float speed_;
-};
-
-///======================================================
-/// ノックバック 状態
-///======================================================
-class KnockBackPlayerState
-	:public IPlayerState
-{
-public:
-	KnockBackPlayerState(Player* player,Float2 moveVal):IPlayerState(player) {}
-	~KnockBackPlayerState()override;
-
-	void Initialize()override;
-	void Update()override;
-private:
-	Float2 fromAddress_; // 移動前 の アドレス
-	Float2 forAddress_;  // 移動後 の アドレス
-
-	float maxTime_;
-	float currentTime_;
-
-	float jumpHeight_;
 };

@@ -191,8 +191,6 @@ void TitleScene::Draw()
 	/// ↑ ここまでスプライトの描画コマンド
 	/// 
 
-
-
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
 #endif // _DEBUG
