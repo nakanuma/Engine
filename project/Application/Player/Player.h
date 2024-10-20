@@ -18,6 +18,7 @@ public:
 	~Player();
 
 	void Initialize(uint32_t uvCheckerGH);
+	void InitializeStatus();
 	void Update();
 	void Draw();
 private:

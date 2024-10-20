@@ -46,8 +46,10 @@ void TitleScene::Initialize()
 	{
 		SceneManager::GetInstance()->CreateStage();
 		stage_ = SceneManager::GetInstance()->GetStage();
+	} else
+	{
+		stage_->InitializeStatus();
 	}
-	stage_->Initialize();
 #endif // _DEBUG
 	///===========================================================================================
 	/// GlobalVariables 
@@ -123,9 +125,9 @@ void TitleScene::Update()
 	///	シーン切り替え
 	/// 
 
-	stage_->Update(camera);
-	currentUpdate_();
+	stage_->UpdatePlayerAndMapChip(camera);
 	buttonUI_->Update();
+	currentUpdate_();
 }
 
 void TitleScene::Draw()
