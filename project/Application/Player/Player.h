@@ -18,6 +18,7 @@ public:
 	~Player();
 
 	void Initialize(uint32_t uvCheckerGH);
+	void InitializeStatus();
 	void Update();
 	void Draw();
 private:
@@ -47,6 +48,8 @@ private:
 	float minWaveRange_,maxWaveRange_;
 	// Y軸速度
 	float initialYVelocity_;
+
+	bool isAttack_;
 public:
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 	void SetStage(Stage* stage){stage_ = stage;}
@@ -76,6 +79,8 @@ public:
 
 	void SetChargePercent(float percent){chargePercent_ = percent;}
 
+	bool GetIsAttack()const{return isAttack_;}
+	void SetIsAttack(bool isAttack){isAttack_ = isAttack;}
 // nakanuma追加分
 public:
 	// 動いている最中かどうかを返す

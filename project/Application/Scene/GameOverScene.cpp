@@ -39,16 +39,7 @@ void GameOverScene::Initialize()
 	///
 	///	↓ ゲームシーン用 
 	///	
-
-#ifdef _DEBUG
 	stage_ = SceneManager::GetInstance()->GetStage();
-	if(!stage_)
-	{
-		SceneManager::GetInstance()->CreateStage();
-		stage_ = SceneManager::GetInstance()->GetStage();
-	}
-	stage_->Initialize();
-#endif // _DEBUG
 
 	currentUpdate_ = [this]() { this->EnterSceneUpdate(); };
 
@@ -71,7 +62,7 @@ void GameOverScene::Initialize()
 	gameOverTextPlane_->model_ = &planeModel_;
 
 	///===========================================================================================
-	/// GlobalBariables
+	/// GlobalVariables
 	///===========================================================================================
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->addValue("GameOver","Times","enterSceneMaxTime_",enterSceneMaxTime_);
@@ -90,8 +81,7 @@ void GameOverScene::Finalize()
 
 void GameOverScene::Update()
 {
-	
-	stage_->Update(camera);
+	stage_->UpdatePlayerAndMapChip(camera);
 	currentUpdate_();
 }
 

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <array>
 #include <list>
+#include <memory>
 
 #include "ModelManager.h"
 
@@ -28,6 +29,12 @@ public:
 	void Update(Camera* camera);
 	void DrawModels();
 
+	void UpdatePlayerAndMapChip(Camera* camera);
+
+	/// <summary>
+	/// ステータスの初期化 (model の読み込み などをしない初期化)
+	/// </summary>
+	void InitializeStatus();
 private:
 	void CheckAlCollisions();
 private:
@@ -35,13 +42,25 @@ private:
 	ModelManager::ModelData modelBlock_;
 	std::unique_ptr<MapChipField> mapChip_;
 
+	// enemy
 	ModelManager::ModelData enemyModel;
 	int32_t enemySpawnerValue_;
 	std::vector<std::unique_ptr<EnemySpawner>> enemySpawners_;
 
 	std::list<std::unique_ptr<Enemy>> enemies_;
 
+	// player
 	std::unique_ptr<Player> player_;
+
+	// hand
+	ModelManager::ModelData sideHandModel_;
+	std::array<std::unique_ptr<Object3D>,2> sideHandObject_;
+
+	// timer
+	ModelManager::ModelData timerModel_;
+	ModelManager::ModelData timerNeedleModel_;
+	std::unique_ptr<Object3D> timerObject_;
+	std::unique_ptr<Object3D> timerNeedleObject_;
 
 	std::unique_ptr<CollisionManager> collisionManager_;
 
@@ -52,8 +71,10 @@ private:
 	float currentTime_;
 
 	bool isClear_;
+	bool isGameOver_;
 public:
 	bool GetIsClear()const{return isClear_;}
+	bool GetIsGameOver()const{return isGameOver_;}
 
 	float GetMaxEnergy()const{return maxEnergy_;}
 	float GetChargedEnergy()const{return chargedEnergy_;}
