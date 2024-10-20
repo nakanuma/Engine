@@ -171,6 +171,9 @@ void GameClearScene::EnterSceneUpdate()
 	if(leftTime_ <= 0.0f)
 	{
 		clearTextPlane_->materialCB_.data_->color.w = 1.0f;
+
+		stage_->ClearEnemies();
+
 		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
 }

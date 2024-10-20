@@ -171,6 +171,8 @@ void GameOverScene::EnterSceneUpdate()
 	{
 		gameOverTextPlane_->materialCB_.data_->color.w = 1.0f;
 
+		stage_->ClearEnemies();
+
 		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
 }

@@ -98,6 +98,8 @@ void Stage::Initialize()
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
 
+	chargedEnergy_ = 0.0f;
+
 	isClear_ = false;
 	isGameOver_ = false;
 }
@@ -270,6 +272,9 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 
 	// プレイヤー移動時パーティクルを更新
 	playerMoveEmitter_.Update();
+
+	// 敵着地時のパーティクルを更新
+	enemyLandingEmitter_.Update();
 	
 #pragma endregion
 
@@ -314,6 +319,8 @@ void Stage::InitializeStatus()
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
 
+	chargedEnergy_ = 0.0f;
+
 	isClear_ = false;
 	isGameOver_ = false;
 }
@@ -328,7 +335,13 @@ void Stage::CheckAlCollisions()
 	mapChip_->CheckCollision_Collider(player_->GetHandCollider());
 }
 
-void Stage::Debug() { 
+void Stage::ClearEnemies()
+{
+	enemies_.clear();
+	enemyLandingEmitter_.ClearParticles();
+}
+
+void Stage::Debug() {
 	ImGui::Begin("stage");
 
 	if (ImGui::Button("emit")) {

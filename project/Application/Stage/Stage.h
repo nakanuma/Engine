@@ -83,6 +83,9 @@ public:
 	float GetCurrentTime()const{return currentTime_;}
 
 	void SetEnergy(float energy){ chargedEnergy_ = energy;}
+
+	void ClearEnemies();
+
 	/// <summary>
 	/// パワーをチャージ
 	/// </summary>

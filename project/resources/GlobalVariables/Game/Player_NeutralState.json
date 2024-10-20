@@ -1,5 +1,6 @@
 {
     "Player_NeutralState": {
+        "defaultPosY_": 4.900000095367432,
         "speed_": 2.9000000953674316,
         "startPos_": [
             0.0,
