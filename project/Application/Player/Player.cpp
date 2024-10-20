@@ -117,8 +117,6 @@ void Player::Update()
 
 void Player::Draw()
 {
-	ImGui::DragFloat3("Hand.Translate", &handObject_->transform_.translate.x, 0.1f);
-	
 	handObject_->Draw();
 }
 

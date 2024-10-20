@@ -65,7 +65,7 @@ void TitleScene::Initialize()
 	///===========================================================================================
 	/// Texture 
 	///===========================================================================================
-	buttonTextureIndex_ = TextureManager::Load("./resources/Images/white.png",dxBase->GetDevice());
+	buttonTextureIndex_ = TextureManager::Load("./resources/Images/push_space.png",dxBase->GetDevice());
 
 	///===========================================================================================
 	/// Title 
@@ -110,6 +110,19 @@ void TitleScene::Initialize()
 	};
 
 	buttonUI_->setUpdate(buttonUpdateWhenEnterScene_);
+
+	///===========================================================================================
+	/// cloudPlane_ 
+	///===========================================================================================
+	uint32_t cloudTexture[3];
+	cloudTexture[0] = TextureManager::Load("resources/Images/cloud_1.png",dxBase->GetDevice());
+	cloudTexture[1] = TextureManager::Load("resources/Images/cloud_2.png",dxBase->GetDevice());
+	
+	cloudSprite_[0] = std::make_unique<UI>();
+	cloudSprite_[0]->Init("Title","Cloud1",cloudTexture[0],spriteCommon.get());
+
+	cloudSprite_[1] = std::make_unique<UI>();
+	cloudSprite_[1]->Init("Title","Cloud2",cloudTexture[1],spriteCommon.get());
 
 	///===========================================================================================
 	/// GlobalVariables 
@@ -170,7 +183,6 @@ void TitleScene::Draw()
 	Camera::TransferConstantBuffer();
 	// ライトの定数バッファを設定
 	lightManager->TransferContantBuffer();
-
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
@@ -178,6 +190,8 @@ void TitleScene::Draw()
 	titleTextObject_->UpdateMatrix();
 	titleTextObject_->Draw();
 	stage_->DrawModels();
+
+	
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -189,7 +203,10 @@ void TitleScene::Draw()
 	///
 	/// ↓ ここからスプライトの描画コマンド
 	/// 
-
+	cloudSprite_[0]->Update();
+	cloudSprite_[0]->Draw();
+	cloudSprite_[1]->Update();
+	cloudSprite_[1]->Draw();
 	buttonUI_->Draw();
 
 	///
