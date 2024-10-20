@@ -36,7 +36,8 @@ void TitleScene::Initialize()
 	lightManager->Initialize();
 	// プレイヤーの手に割り当てる丸影を有効化
 	lightManager->spotLightsCB_.data_->spotLights[0].isActive = true;
-	lightManager->spotLightsCB_.data_->spotLights[0].intensity = 6.0f;
+	lightManager->spotLightsCB_.data_->spotLights[0].decay = 0.5f;
+	lightManager->spotLightsCB_.data_->spotLights[0].distance = 60;
 
 	camera = SceneManager::GetInstance()->GetCamera();
 
