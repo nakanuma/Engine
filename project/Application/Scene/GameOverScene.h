@@ -53,6 +53,7 @@ private:
 	void SceneUpdate();
 	void OutSceneUpdate();
 
+	// Camera
 	Float3 cameraPosWhenEnterScene_;
 	Float3 cameraPosWhenOutScene_;
 
@@ -60,5 +61,9 @@ private:
 
 	float enterSceneMaxTime_;
 	float outSceneMaxTime_;
+	// Text
+	ModelManager::ModelData   planeModel_;
+	uint32_t                  gameOverTextTextureIndex_;
+	std::unique_ptr<Object3D> gameOverTextPlane_;
 public:
 };
