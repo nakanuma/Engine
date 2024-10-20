@@ -127,7 +127,7 @@ void GamePlayScene::Draw()
 #pragma region 丸影の設定
 
 	// spotLight[0]の位置をプレイヤーの手と同期
-	lightManager->spotLightsCB_.data_->spotLights[0].position = stage_->GetPlayer()->GetHandTranslate();
+	lightManager->spotLightsCB_.data_->spotLights[0].position = stage_->GetPlayer()->GetTranslate();
 
 #pragma endregion
 

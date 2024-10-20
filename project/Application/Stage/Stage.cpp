@@ -98,6 +98,8 @@ void Stage::Initialize()
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
 
+	chargedEnergy_ = 0.0f;
+
 	isClear_ = false;
 	isGameOver_ = false;
 }
@@ -172,7 +174,7 @@ void Stage::Update(Camera* camera)
 	
 	// プレイヤー移動時にパーティクルを発生させる
 	if (player_->IsMoving()) {
-		playerMoveEmitter_.Emit(player_->GetBodyTranslate());
+		playerMoveEmitter_.Emit(player_->GetTranslate());
 	}
 
 	// プレイヤー移動時パーティクルを更新
@@ -200,7 +202,7 @@ void Stage::Update(Camera* camera)
 #pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
 
 	// プレイヤーの手が地面にめり込んだらシェイク開始
-	if(player_->GetHandTranslate().y <= 0.0f)
+	if(player_->GetTranslate().y <= 0.0f)
 	{
 		camera->ApplyShake(0.5f, 120);
 	}
@@ -265,18 +267,21 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 	// プレイヤー移動時にパーティクルを発生させる
 	if(player_->IsMoving())
 	{
-		playerMoveEmitter_.Emit(player_->GetBodyTranslate());
+		playerMoveEmitter_.Emit(player_->GetTranslate());
 	}
 
 	// プレイヤー移動時パーティクルを更新
 	playerMoveEmitter_.Update();
+
+	// 敵着地時のパーティクルを更新
+	enemyLandingEmitter_.Update();
 	
 #pragma endregion
 
 #pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
 
 	// プレイヤーの手が地面にめり込んだらシェイク開始
-	if(player_->GetHandTranslate().y <= 0.0f)
+	if(player_->GetTranslate().y <= 0.0f)
 	{
 		camera->ApplyShake(0.5f,120);
 	}
@@ -314,6 +319,8 @@ void Stage::InitializeStatus()
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
 
+	chargedEnergy_ = 0.0f;
+
 	isClear_ = false;
 	isGameOver_ = false;
 }
@@ -328,7 +335,13 @@ void Stage::CheckAlCollisions()
 	mapChip_->CheckCollision_Collider(player_->GetHandCollider());
 }
 
-void Stage::Debug() { 
+void Stage::ClearEnemies()
+{
+	enemies_.clear();
+	enemyLandingEmitter_.ClearParticles();
+}
+
+void Stage::Debug() {
 	ImGui::Begin("stage");
 
 	if (ImGui::Button("emit")) {

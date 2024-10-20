@@ -62,3 +62,8 @@ void EnemyLandingEmitter::Emit(Float3 translation) {
 		particleList_.push_back(std::move(newParticle));
 	}
 }
+
+void EnemyLandingEmitter::ClearParticles()
+{
+	particleList_.clear();
+}
