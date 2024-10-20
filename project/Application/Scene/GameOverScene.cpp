@@ -33,6 +33,9 @@ void GameOverScene::Initialize()
 	// LightManagerの初期化
 	lightManager = LightManager::GetInstance();
 	lightManager->Initialize();
+	// プレイヤーの手に割り当てる丸影を有効化
+	lightManager->spotLightsCB_.data_->spotLights[0].isActive = true;
+	lightManager->spotLightsCB_.data_->spotLights[0].intensity = 6.0f;
 
 	camera = SceneManager::GetInstance()->GetCamera();
 
@@ -125,7 +128,12 @@ void GameOverScene::Draw()
 	/// ↑ ここまでスプライトの描画コマンド
 	/// 
 
+#pragma region 丸影の設定
 
+// spotLight[0]の位置をプレイヤーの手と同期
+	lightManager->spotLightsCB_.data_->spotLights[0].position = stage_->GetPlayer()->GetTranslate();
+
+#pragma endregion
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
 #endif // _DEBUG
