@@ -58,9 +58,15 @@ void Stage::Initialize()
 
 	// プレイヤー移動時パーティクル関連初期化
 	modelPlayerMoveParticle_ = ModelManager::LoadModelFile("resources/Models", "cube.obj", dxBase->GetDevice());
-	uint32_t playerMoveParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
+	uint32_t playerMoveParticleGH = TextureManager::Load("resources/Images/playerMove.png", dxBase->GetDevice());
 
 	playerMoveEmitter_.Initialize(&modelPlayerMoveParticle_, playerMoveParticleGH);
+
+	// エネミー分裂時パーティクル関連初期化
+	modelEnemyDivideParticle_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
+	uint32_t enemyDivideParticleGH = TextureManager::Load("resources/Images/enemyDivide.png", dxBase->GetDevice());
+
+	enemyDivideEmitter_.Initialize(&modelEnemyDivideParticle_, enemyDivideParticleGH);
 
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
@@ -141,7 +147,13 @@ void Stage::Update(Camera* camera)
 	
 	// プレイヤー移動時にパーティクルを発生させる
 	if (player_->IsMoving()) {
-		playerMoveEmitter_.Emit(player_->GetBodyTranslate());
+		playerMoveEmitter_.Emit(
+			{
+				player_->GetBodyTranslate().x,
+				player_->GetBodyTranslate().y - 1.0f,
+				player_->GetBodyTranslate().z
+			}
+		);
 	}
 
 	// プレイヤー移動時パーティクルを更新
@@ -163,6 +175,20 @@ void Stage::Update(Camera* camera)
 
 	// 敵着地時のパーティクルを更新
 	enemyLandingEmitter_.Update();
+
+	/*--------------------------*/
+	/*     敵分裂パーティクル      */
+	/*--------------------------*/
+
+	// 敵分裂時にパーティクルを発生させる
+	for (auto& enemy : enemies_) {
+		if (enemy->GetIsCloneThisFrame()) {
+			enemyDivideEmitter_.Emit(enemy->GetTranslate());
+		}
+	}
+
+	// 敵分裂時のパーティクルを更新
+	enemyDivideEmitter_.Update();
 
 #pragma endregion
 
@@ -204,6 +230,9 @@ void Stage::DrawModels()
 	// 敵落下時パーティクルを描画
 	enemyLandingEmitter_.Draw();
 
+	// 敵分裂時パーティクルを描画
+	enemyDivideEmitter_.Draw();
+
 #pragma region マップチップ描画用PSOに変更->マップチップ描画->通常PSOに戻す
 	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateMapchip());
 	// マップチップ
@@ -226,7 +255,7 @@ void Stage::Debug() {
 	ImGui::Begin("stage");
 
 	if (ImGui::Button("emit")) {
-		enemyLandingEmitter_.Emit({0.0f, 10.0f, 0.0f});
+		enemyDivideEmitter_.Emit({0.0f, 10.0f, 0.0f});
 	}
 
 	ImGui::End();

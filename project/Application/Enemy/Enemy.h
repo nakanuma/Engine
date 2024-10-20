@@ -65,4 +65,9 @@ public:
 	bool GetLanding() { return !preOnGround_ && isOnGround_; }
 	// 位置を取得
 	Float3 GetTranslate() { return object_->transform_.translate; }
+
+	// クローンを生成したフレームのみtrueになるフラグ
+	bool isCloneThisFrame_ = false;
+	// クローンを生成した瞬間を取得
+	bool GetIsCloneThisFrame() { return isCloneThisFrame_; }
 };

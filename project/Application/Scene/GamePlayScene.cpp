@@ -42,7 +42,6 @@ void GamePlayScene::Initialize()
 	lightManager->Initialize();
 	// プレイヤーの手に割り当てる丸影を有効化
 	lightManager->spotLightsCB_.data_->spotLights[0].isActive = true;
-	lightManager->spotLightsCB_.data_->spotLights[0].intensity = 6.0f;
 
 	camera = SceneManager::GetInstance()->GetCamera();
 
@@ -171,6 +170,18 @@ void GamePlayScene::Draw()
 	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
+
+	/*ImGui::Begin("Light");
+
+	ImGui::DragFloat3("position", &lightManager->spotLightsCB_.data_->spotLights[0].position.x);
+	ImGui::DragFloat("intensity", &lightManager->spotLightsCB_.data_->spotLights[0].intensity);
+	ImGui::DragFloat3("direction", &lightManager->spotLightsCB_.data_->spotLights[0].direction.x);
+	ImGui::DragFloat("distance", &lightManager->spotLightsCB_.data_->spotLights[0].distance);
+	ImGui::DragFloat("decay", &lightManager->spotLightsCB_.data_->spotLights[0].decay);
+	ImGui::DragFloat("cosAngle", &lightManager->spotLightsCB_.data_->spotLights[0].cosAngle);
+	ImGui::DragFloat("cosFalloffStart", &lightManager->spotLightsCB_.data_->spotLights[0].cosFalloffStart);
+
+	ImGui::End();*/
 
 	// ImGuiの内部コマンドを生成する
 	ImguiWrapper::Render(dxBase->GetCommandList());
