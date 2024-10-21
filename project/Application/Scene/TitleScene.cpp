@@ -274,7 +274,6 @@ void TitleScene::EnterSceneUpdate()
 void TitleScene::SceneUpdate()
 {
 	t_ += DeltaTime::getInstance()->getDeltaTime() * signT_;
-	stage_->UpdatePlayerAndMapChip(camera);
 	if(stage_->GetIsClear())
 	{
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };

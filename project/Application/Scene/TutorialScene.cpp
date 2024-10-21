@@ -17,7 +17,7 @@
 
 void TutorialScene::Initialize()
 {
-	DirectXBase* dxBase = DirectXBase::GetInstance();
+  	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// SpriteCommonの生成と初期化
 	spriteCommon = std::make_unique<SpriteCommon>();
@@ -54,14 +54,28 @@ void TutorialScene::Initialize()
 	///===========================================================================================
 	/// Textures 
 	///===========================================================================================
-	for(int32_t i = 0; i < 10; i++)
+	for(int32_t i = 0; i < 4; i++)
+	{
+		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/white.png",dxBase->GetDevice()));
+	}
+	for(int32_t i = 0; i < 2; i++)
 	{
 		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice()));
 	}
-	for(size_t i = 0; i < 4; i++)
+	for(int32_t i = 0; i < 2; i++)
 	{
-		tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice()));
+		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/grass.png",dxBase->GetDevice()));
 	}
+	for(int32_t i = 0; i < 2; i++)
+	{
+		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice()));
+	}
+
+	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/white.png",dxBase->GetDevice()));
+	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice()));
+	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/grass.png",dxBase->GetDevice()));
+	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice()));
+	
 	currentTextTextureIndex_ = 0;
 
 	currentTextTexture_ = std::make_unique<Sprite>();
@@ -82,9 +96,12 @@ void TutorialScene::Initialize()
 	
 	// この順番で 実行される
 	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(4); });
+
 	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
+
 	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
-	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
+
+ 	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
 
 	 ///=============================///
 	///    tutorial Task Updates    ///
@@ -150,6 +167,7 @@ void TutorialScene::Initialize()
 
 void TutorialScene::Finalize()
 {
+	stage_->GetEnemies().clear();
 }
 
 void TutorialScene::Update()
@@ -263,17 +281,25 @@ void TutorialScene::TextTextureUpdate(uint32_t textureSum)
 
 			for(size_t i = 0; i < textureSum; i++)
 			{
-				tutorialTextTextures_.pop_front();
+				if(!tutorialTextTextures_.empty())
+				{  // 安全に pop_front()
+					tutorialTextTextures_.pop_front();
+				}
 			}
-			tutorialTextUpdate_.pop_front();
+			if(!tutorialTextUpdate_.empty())
+			{  // 安全に pop_front()
+				tutorialTextUpdate_.pop_front();
+			}
 
-		} else if(input->TriggerKey(DIK_S)|| input->TriggerKey(DIK_A))
+		} else if(input->TriggerKey(DIK_S) || input->TriggerKey(DIK_A))
 		{
-			currentTextTextureIndex_ -= 1;
-
-			currentTextTextureIndex_ = (std::max)(static_cast<int32_t>(currentTextTextureIndex_),0);
+			currentTextTextureIndex_ = std::clamp(static_cast<int32_t>(currentTextTextureIndex_ - 1),0,static_cast<int32_t>(textureSum) - 1);
 		}
-		currentTextTexture_->SetTextureIndex(tutorialTextTextures_[currentTextTextureIndex_]);
+
+		if(!tutorialTextTextures_.empty())
+		{  // チェックを追加
+			currentTextTexture_->SetTextureIndex(tutorialTextTextures_[currentTextTextureIndex_]);
+		}
 	}
 }
 
@@ -290,22 +316,30 @@ void TutorialScene::EnterSceneUpdate()
 
 void TutorialScene::SceneUpdate()
 {
+	if(tutorialTask_.empty() && tutorialTextUpdate_.empty()) // 修正
+	{
+		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
+		return;
+	}
+
 	if(doTask_)
 	{
-		if(tutorialTask_.front()())
+		if(tutorialTask_.front()())  // taskの実行
 		{
 			tutorialTask_.pop_front();
 			tutorialTaskGuidTextures_.pop_front();
-			currentTaskGuidTexture_->SetTextureIndex(tutorialTaskGuidTextures_.front());
+			if(!tutorialTaskGuidTextures_.empty())
+			{  // チェックを追加
+				currentTaskGuidTexture_->SetTextureIndex(tutorialTaskGuidTextures_.front());
+			}
 			doTask_ = false;
 		}
 	} else
 	{
- 		tutorialTextUpdate_.front()();
-	}
-	if(tutorialTask_.empty() && tutorialTextUpdate_.empty())
-	{
-
+		if(!tutorialTextUpdate_.empty())
+		{  // 安全に呼び出し
+			tutorialTextUpdate_.front()();
+		}
 	}
 }
 
