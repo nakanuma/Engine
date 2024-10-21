@@ -51,14 +51,16 @@ private:
 	bool preOnGround_;
 
 	// Clone
+	bool isHurt_;
 	bool isClone_;
 	int32_t numberOfClones2Create_;
 	Float3 cloneOffset_;
 public:
 	void SetStage(Stage* stage){stage_ = stage;}
 	bool IsAlive()const{return isAlive_;}
-	Collider* GetCollider()const { return collider_.get(); }
+	bool IsHurt()const{return isHurt_;}
 
+	Collider* GetCollider()const { return collider_.get(); }
 // nakanuma追加分
 public:
 	// 着地した瞬間を取得

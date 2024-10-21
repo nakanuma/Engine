@@ -29,7 +29,10 @@ public:
 	void Update(Camera* camera);
 	void DrawModels();
 
+	void Debug();
+
 	void UpdatePlayerAndMapChip(Camera* camera);
+	void UpdateEnemies();
 
 	/// <summary>
 	/// ステータスの初期化 (model の読み込み などをしない初期化)
@@ -84,6 +87,9 @@ public:
 
 	void SetEnergy(float energy){ chargedEnergy_ = energy;}
 
+	Player* GetPlayer(){return player_.get();}
+	std::list<std::unique_ptr<Enemy>>& GetEnemies(){ return enemies_; }
+
 	void ClearEnemies();
 
 	/// <summary>
@@ -102,12 +108,6 @@ public:
 		chargedEnergy_ -= stealEnergy;
 		return stealEnergy;
 	}
-
-// nakanuma追加分
-public:
-	Player* GetPlayer() { return player_.get(); }
-
-	void Debug();
 
 private:
 	// エネミー着地時パーティクルのエミッター

@@ -290,6 +290,6 @@ void TitleScene::OutSceneUpdate()
 	t_ = leftTime_ / outSceneMaxTime_;
 	if(leftTime_ >= outSceneMaxTime_)
 	{
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+		SceneManager::GetInstance()->ChangeScene("TUTORIAL");
 	}
 }
