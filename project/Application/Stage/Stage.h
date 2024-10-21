@@ -21,6 +21,7 @@
 #include "EnemyLandingEmitter.h"
 #include "PlayerMoveEmitter.h"
 #include "EnemyDivideEmitter.h"
+#include "BackGroundStarEmitter.h"
 
 class Stage
 {
@@ -31,6 +32,7 @@ public:
 	void Initialize();
 	void Update(Camera* camera);
 	void DrawModels();
+
 	void DrawBackGround();
 
 	void UpdatePlayerAndMapChip(Camera* camera);
@@ -129,9 +131,15 @@ private:
 	// エネミー分裂時パーティクルのモデル
 	ModelManager::ModelData modelEnemyDivideParticle_;
 
+	// 背景の星パーティクル(2D)
+	BackGroundStarEmitter backGroundStarEmitter_;
+
 private:
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 
 	// 背景スプライト
 	std::unique_ptr<Sprite> backGroundSprite_;
+
+	// パーティクルの発生に使用するタイマー
+	int32_t emitTimer_;
 };
