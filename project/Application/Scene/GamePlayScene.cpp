@@ -54,6 +54,57 @@ void GamePlayScene::Initialize()
 	stage_->InitializeStatus("Game");
 
 	soundData1 = soundManager->LoadWave("resources/Sounds/yay.wav");
+
+
+	buttonUpdate_[0] = [this](Sprite* sprite) {
+		bool isActive = Input::GetInstance()->PushKey(DIK_UP) || Input::GetInstance()->PushKey(DIK_W);
+		// 各ボタンの位置とサイズを個別に指定
+		Float2 position = { 400, 600 };
+		Float2 size = { 50, 50 };
+		BottonSpriteUI(sprite, isActive, position, size);
+		};
+
+	buttonUpdate_[1] = [this](Sprite* sprite) {
+		bool isActive = Input::GetInstance()->PushKey(DIK_LEFT) || Input::GetInstance()->PushKey(DIK_A);
+		Float2 position = { 350, 650 };
+		Float2 size = { 50, 50 };
+		BottonSpriteUI(sprite, isActive, position, size);
+		};
+
+	buttonUpdate_[2] = [this](Sprite* sprite) {
+		bool isActive = Input::GetInstance()->PushKey(DIK_DOWN) || Input::GetInstance()->PushKey(DIK_S);
+		Float2 position = { 400, 650 };
+		Float2 size = { 50, 50 };
+		BottonSpriteUI(sprite, isActive, position, size);
+		};
+
+	buttonUpdate_[3] = [this](Sprite* sprite) {
+		bool isActive = Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_D);
+		Float2 position = { 450, 650 };
+		Float2 size = { 50, 50 };
+		BottonSpriteUI(sprite, isActive, position, size);
+		};
+
+	buttonUpdate_[4] = [this](Sprite* sprite) {
+		bool isActive = Input::GetInstance()->PushKey(DIK_SPACE);
+		Float2 position = { 600, 650 };
+		Float2 size = { 120, 50 };
+		BottonSpriteUI(sprite, isActive, position, size);
+		};
+
+	uint32_t bottonTexture[5];
+	bottonTexture[0] = TextureManager::Load("resources/Images/up.png", dxBase->GetDevice());
+	bottonTexture[1] = TextureManager::Load("resources/Images/left.png", dxBase->GetDevice());
+	bottonTexture[2] = TextureManager::Load("resources/Images/down.png", dxBase->GetDevice());
+	bottonTexture[3] = TextureManager::Load("resources/Images/right.png", dxBase->GetDevice());
+	bottonTexture[4] = TextureManager::Load("resources/Images/space.png", dxBase->GetDevice());
+	///スプライト
+	for (int i = 0; i < 5; i++) {
+		bottonSprite_[i] = std::make_unique<UI>();
+		bottonSprite_[i]->Init("Game", "Botton", bottonTexture[i], spriteCommon.get());
+		bottonSprite_[i]->setUpdate(buttonUpdate_[i]);
+	}
+	
 }
 
 void GamePlayScene::Finalize()
@@ -79,6 +130,10 @@ void GamePlayScene::Update()
 	particleManager->Update();
   
 	stage_->Update(camera);
+
+	for (int i = 0; i < 5; i++) {
+		bottonSprite_[i]->Update();
+	}
 }
 
 void GamePlayScene::Draw()
@@ -132,6 +187,10 @@ void GamePlayScene::Draw()
 	///
 	/// ↓ ここから前景スプライトの描画コマンド
 	/// 
+	 
+	for (int i = 0; i < 5; i++) {
+		bottonSprite_[i]->Draw();
+	}
 
 	///
 	/// ↑ ここまで前景スプライトの描画コマンド
@@ -244,4 +303,18 @@ void GamePlayScene::DebugCameraUpdate(Input* input)
 	// 現在のカメラモードを保存して次のフレームで使う
 	prevUseDebugCamera = useDebugCamera;
 }
+
 #endif
+
+void GamePlayScene::BottonSpriteUI(Sprite* sprite, bool isActive, const Float2& position, const Float2& size)
+{
+	// 色を設定
+	Float4 color = isActive ? Float4{ 0.81f, 0.81f, 0.81f, 1 } : Float4{ 1, 1, 1, 1 };
+	sprite->SetColor(color);
+
+	// 位置を設定
+	sprite->SetPosition(position);
+
+	// サイズを設定
+	sprite->SetSize(size);
+}
