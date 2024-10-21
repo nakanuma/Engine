@@ -42,7 +42,7 @@ private:
 
 	void DebugCameraUpdate(Input* input);
 
-	void BottonSpriteUI(Sprite* sprite, bool isActive, const Float2& position, const Float2& size);
+	void ButtonSpriteUI(Sprite* sprite, bool isActive, const Float2& position, const Float2& size);
 #endif
 
 private:
@@ -65,7 +65,7 @@ private:
 
 	Sprite* spaceToTitle_;
 
-	std::array<std::unique_ptr<UI>, 5> bottonSprite_;
+	std::array<std::unique_ptr<UI>, 5> buttonSprite_;
 
 	std::function<void(Sprite*)> buttonUpdate_[5];
 
