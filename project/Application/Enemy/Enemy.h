@@ -66,8 +66,9 @@ public:
 	// 位置を取得
 	Float3 GetTranslate() { return object_->transform_.translate; }
 
-	// クローンを生成したフレームのみtrueになるフラグ
+	// クローンを生成したフレームのみ立てるフラグ（分裂時パーティクル発生のトリガーに使用）
 	bool isCloneThisFrame_ = false;
 	// クローンを生成した瞬間を取得
 	bool GetIsCloneThisFrame() { return isCloneThisFrame_; }
+	void SetIsCloneThisFrame(bool flag) { isCloneThisFrame_ = flag; }
 };

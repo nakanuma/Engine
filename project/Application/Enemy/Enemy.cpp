@@ -75,9 +75,6 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 
 void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 {
-	// 毎フレームリセット
-	isCloneThisFrame_ = false;
-
 	// 死んだら スキップ
 	if(!isAlive_) { return; }
 	if(object_->transform_.translate.y <= -6.0f)
@@ -224,8 +221,8 @@ Enemy* Enemy::CreateClone()
 	clone->CloneInitialize(cloneSpawnPos,moveDirection_,object_->model_,numberOfClones2Create_);
 	clone->SetStage(stage_);
 
-	// クローン生成タイミングでフラグを立てる
-	isCloneThisFrame_ = true;
+	// クローン先のパーティクル発生フラグを立てる
+	clone->isCloneThisFrame_ = true;
 
 	return clone;
 }
