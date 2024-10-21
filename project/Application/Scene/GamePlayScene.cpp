@@ -59,35 +59,35 @@ void GamePlayScene::Initialize()
 	buttonUpdate_[0] = [this](Sprite* sprite) {
 		bool isActive = Input::GetInstance()->PushKey(DIK_UP) || Input::GetInstance()->PushKey(DIK_W);
 		// 各ボタンの位置とサイズを個別に指定
-		Float2 position = { 400, 600 };
+		Float2 position = { 500, 600 };
 		Float2 size = { 50, 50 };
 		BottonSpriteUI(sprite, isActive, position, size);
 		};
 
 	buttonUpdate_[1] = [this](Sprite* sprite) {
 		bool isActive = Input::GetInstance()->PushKey(DIK_LEFT) || Input::GetInstance()->PushKey(DIK_A);
-		Float2 position = { 350, 650 };
+		Float2 position = { 450, 650 };
 		Float2 size = { 50, 50 };
 		BottonSpriteUI(sprite, isActive, position, size);
 		};
 
 	buttonUpdate_[2] = [this](Sprite* sprite) {
 		bool isActive = Input::GetInstance()->PushKey(DIK_DOWN) || Input::GetInstance()->PushKey(DIK_S);
-		Float2 position = { 400, 650 };
+		Float2 position = { 500, 650 };
 		Float2 size = { 50, 50 };
 		BottonSpriteUI(sprite, isActive, position, size);
 		};
 
 	buttonUpdate_[3] = [this](Sprite* sprite) {
 		bool isActive = Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_D);
-		Float2 position = { 450, 650 };
+		Float2 position = { 550, 650 };
 		Float2 size = { 50, 50 };
 		BottonSpriteUI(sprite, isActive, position, size);
 		};
 
 	buttonUpdate_[4] = [this](Sprite* sprite) {
 		bool isActive = Input::GetInstance()->PushKey(DIK_SPACE);
-		Float2 position = { 600, 650 };
+		Float2 position = { 640, 650 };
 		Float2 size = { 120, 50 };
 		BottonSpriteUI(sprite, isActive, position, size);
 		};
