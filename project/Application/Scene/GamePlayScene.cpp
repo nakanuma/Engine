@@ -96,6 +96,24 @@ void GamePlayScene::Draw()
 	// ライトの定数バッファを設定
 	lightManager->TransferContantBuffer();
 
+	// スプライト描画前処理
+	spriteCommon->PreDraw();
+
+	///
+	///	↓ ここから背景スプライトの描画コマンド
+	///
+
+	stage_->DrawBackGround();
+
+	///
+	///	↑ ここまで背景スプライトの描画コマンド
+	///
+
+	// スプライト描画後処理
+	spriteCommon->PostDraw();
+	Camera::TransferConstantBuffer();
+	lightManager->TransferContantBuffer();
+
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
@@ -110,11 +128,11 @@ void GamePlayScene::Draw()
 	spriteCommon->PreDraw();
 
 	///
-	/// ↓ ここからスプライトの描画コマンド
+	/// ↓ ここから前景スプライトの描画コマンド
 	/// 
 
 	///
-	/// ↑ ここまでスプライトの描画コマンド
+	/// ↑ ここまで前景スプライトの描画コマンド
 	/// 
 
 	#pragma region パーティクル用PSOに変更->パーティクル描画->通常PSOに変更

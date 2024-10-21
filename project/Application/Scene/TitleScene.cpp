@@ -13,8 +13,7 @@
 #include "DeltaTime.h"
 #include "GlobalVariables.h"
 
-void TitleScene::Initialize()
-{
+void TitleScene::Initialize() {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// SpriteCommonの生成と初期化
@@ -43,113 +42,109 @@ void TitleScene::Initialize()
 
 	///
 	///	↓ ゲームシーン用
-	///	
+	///
 
 #ifdef _DEBUG
 	stage_ = SceneManager::GetInstance()->GetStage();
-	if(!stage_)
-	{
+	if (!stage_) {
 		SceneManager::GetInstance()->CreateStage();
 		stage_ = SceneManager::GetInstance()->GetStage();
-	} else
-	{
+	} else {
 		stage_->InitializeStatus("Title");
 	}
 #endif // _DEBUG
 
 	///===========================================================================================
-	/// Camera 
+	/// Camera
 	///===========================================================================================
 	cameraPosWhenEnterScene_ = camera->transform.translate;
 
 	///===========================================================================================
-	/// Texture 
+	/// Texture
 	///===========================================================================================
-	buttonTextureIndex_ = TextureManager::Load("./resources/Images/push_space.png",dxBase->GetDevice());
+	buttonTextureIndex_ = TextureManager::Load("./resources/Images/push_space.png", dxBase->GetDevice());
 
 	///===========================================================================================
-	/// Title 
+	/// Title
 	///===========================================================================================
-	titleTextModel_ = ModelManager::LoadModelFile("resources/Models","Title.obj",dxBase->GetDevice());
-	titleTextModel_.material.textureHandle = TextureManager::Load("resources/Images/title_color.png",dxBase->GetDevice());
+	titleTextModel_ = ModelManager::LoadModelFile("resources/Models", "Title.obj", dxBase->GetDevice());
+	titleTextModel_.material.textureHandle = TextureManager::Load("resources/Images/title_color.png", dxBase->GetDevice());
 
 	titleTextObject_ = std::make_unique<Object3D>();
 	titleTextObject_->model_ = &titleTextModel_;
 
 	///===========================================================================================
-	/// UI 
+	/// UI
 	///===========================================================================================
 	buttonUI_ = std::make_unique<UI>();
-	buttonUI_->Init("Title","buttonUI",buttonTextureIndex_,spriteCommon.get());
+	buttonUI_->Init("Title", "buttonUI", buttonTextureIndex_, spriteCommon.get());
 	signT_ = 1.0f;
 
 	// 各 Update
-	buttonUpdateWhenEnterScene_ = [this](Sprite* sprite){
+	buttonUpdateWhenEnterScene_ = [this](Sprite* sprite) {
 		Float4 color = sprite->GetColor();
-		color.w = Lerp(t_,0.0f,1.0f);
-		color.w = std::clamp(color.w,0.0f,1.0f);
+		color.w = Lerp(t_, 0.0f, 1.0f);
+		color.w = std::clamp(color.w, 0.0f, 1.0f);
 		sprite->SetColor(color);
 	};
-	buttonUpdateWhenSceneUpdate_ = [this](Sprite* sprite){
-		if(t_ >= 1.0f)
-		{
+	buttonUpdateWhenSceneUpdate_ = [this](Sprite* sprite) {
+		if (t_ >= 1.0f) {
 			signT_ = -1.0f;
-		} else if(t_ <= -1.0f)
-		{
+		} else if (t_ <= -1.0f) {
 			signT_ = 1.0f;
 		}
 
-		Float2 currentButtonOffset = Float2::Lerp(t_,-buttonUiOffset_,buttonUiOffset_);
+		Float2 currentButtonOffset = Float2::Lerp(t_, -buttonUiOffset_, buttonUiOffset_);
 		sprite->SetPosition(buttonUI_->GetPosition() + currentButtonOffset);
 	};
-	buttonUpdateWhenOutScene_ = [this](Sprite* sprite){
+	buttonUpdateWhenOutScene_ = [this](Sprite* sprite) {
 		Float4 color = sprite->GetColor();
-		color.w = Lerp(1.0f - t_,0.0f,1.0f);
-		color.w = std::clamp(color.w,0.0f,1.0f);
+		color.w = Lerp(1.0f - t_, 0.0f, 1.0f);
+		color.w = std::clamp(color.w, 0.0f, 1.0f);
 		sprite->SetColor(color);
 	};
 
 	buttonUI_->setUpdate(buttonUpdateWhenEnterScene_);
 
 	///===========================================================================================
-	/// cloudPlane_ 
+	/// cloudPlane_
 	///===========================================================================================
 	uint32_t cloudTexture[3];
-	cloudTexture[0] = TextureManager::Load("resources/Images/cloud_1.png",dxBase->GetDevice());
-	cloudTexture[1] = TextureManager::Load("resources/Images/cloud_2.png",dxBase->GetDevice());
-	
+	cloudTexture[0] = TextureManager::Load("resources/Images/cloud_1.png", dxBase->GetDevice());
+	cloudTexture[1] = TextureManager::Load("resources/Images/cloud_2.png", dxBase->GetDevice());
+
 	cloudSprite_[0] = std::make_unique<UI>();
-	cloudSprite_[0]->Init("Title","Cloud1",cloudTexture[0],spriteCommon.get());
+	cloudSprite_[0]->Init("Title", "Cloud1", cloudTexture[0], spriteCommon.get());
 
 	cloudSprite_[1] = std::make_unique<UI>();
-	cloudSprite_[1]->Init("Title","Cloud2",cloudTexture[1],spriteCommon.get());
+	cloudSprite_[1]->Init("Title", "Cloud2", cloudTexture[1], spriteCommon.get());
 
 	///===========================================================================================
-	/// GlobalVariables 
+	/// GlobalVariables
 	///===========================================================================================
 	GlobalVariables* variables = GlobalVariables::getInstance();
 
 	// time
-	variables->addValue("Title","Times","enterSceneMaxTime_",enterSceneMaxTime_);
-	variables->addValue("Title","Times","outSceneMaxTime_",outSceneMaxTime_);
+	variables->addValue("Title", "Times", "enterSceneMaxTime_", enterSceneMaxTime_);
+	variables->addValue("Title", "Times", "outSceneMaxTime_", outSceneMaxTime_);
 	leftTime_ = 0.0f;
 
 	// button
-	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
+	variables->addValue("Title", "buttonUI", "buttonUiOffset_", buttonUiOffset_);
 
 	// Camera
-	variables->addValue("Title","Camera","cameraHomePosition",cameraHomePos_);
+	variables->addValue("Title", "Camera", "cameraHomePosition", cameraHomePos_);
 
 	// text Model
-	variables->addValue("Title","Text","Scale",titleTextObject_->transform_.scale);
-	variables->addValue("Title","Text","Rotate",titleTextObject_->transform_.rotate);
-	variables->addValue("Title","Text","Translate",titleTextObject_->transform_.translate);
+	variables->addValue("Title", "Text", "Scale", titleTextObject_->transform_.scale);
+	variables->addValue("Title", "Text", "Rotate", titleTextObject_->transform_.rotate);
+	variables->addValue("Title", "Text", "Translate", titleTextObject_->transform_.translate);
 
 	///===========================================================================================
-	/// Update State 
+	/// Update State
 	///===========================================================================================
 
-	currentUpdate_ = [this](){ this->EnterSceneUpdate(); };
+	currentUpdate_ = [this]() { this->EnterSceneUpdate(); };
 }
 
 void TitleScene::Finalize()
@@ -183,6 +178,25 @@ void TitleScene::Draw()
 	Camera::TransferConstantBuffer();
 	// ライトの定数バッファを設定
 	lightManager->TransferContantBuffer();
+
+	// スプライト描画前処理
+	spriteCommon->PreDraw();
+
+	///
+	///	↓ ここから背景スプライトの描画コマンド
+	/// 
+
+	stage_->DrawBackGround();
+
+	///
+	///	↑ ここまで背景スプライトの描画コマンド
+	/// 
+
+	// スプライト描画後処理
+	spriteCommon->PostDraw();
+	Camera::TransferConstantBuffer();
+	lightManager->TransferContantBuffer();
+
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
@@ -201,7 +215,7 @@ void TitleScene::Draw()
 	spriteCommon->PreDraw();
 
 	///
-	/// ↓ ここからスプライトの描画コマンド
+	/// ↓ ここから前景スプライトの描画コマンド
 	/// 
 	cloudSprite_[0]->Update();
 	cloudSprite_[0]->Draw();
@@ -210,7 +224,7 @@ void TitleScene::Draw()
 	buttonUI_->Draw();
 
 	///
-	/// ↑ ここまでスプライトの描画コマンド
+	/// ↑ ここまで前景スプライトの描画コマンド
 	/// 
 
 #pragma region 丸影の設定
