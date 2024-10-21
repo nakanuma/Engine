@@ -13,7 +13,7 @@
 #include "SRVManager.h"
 #include "ParticleManager.h"
 #include "ParticleEmitter.h"
-
+#include "Application/UI/UI.h"
 #include <memory>
 #include <list>
 
@@ -41,6 +41,8 @@ private:
 	Transform savedCameraTransform; // 通常カメラのTransformを保持
 
 	void DebugCameraUpdate(Input* input);
+
+	void ButtonSpriteUI(Sprite* sprite, bool isActive, const Float2& position, const Float2& size);
 #endif
 
 private:
@@ -62,6 +64,10 @@ private:
 	ModelManager::ModelData planeModel;
 
 	Sprite* spaceToTitle_;
+
+	std::array<std::unique_ptr<UI>, 5> buttonSprite_;
+
+	std::function<void(Sprite*)> buttonUpdate_[5];
 
 	// テスト用サウンドデータ
 	SoundManager::SoundData soundData1;
