@@ -333,6 +333,9 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 
 	// 敵着地時のパーティクルを更新
 	enemyLandingEmitter_.Update();
+
+	// 敵分裂時のパーティクルを更新
+	enemyDivideEmitter_.Update();
 	
 #pragma endregion
 
