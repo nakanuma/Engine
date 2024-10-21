@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "ModelManager.h"
+#include "SpriteCommon.h"
+#include "Sprite.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -29,6 +31,7 @@ public:
 	void Initialize();
 	void Update(Camera* camera);
 	void DrawModels();
+	void DrawBackGround();
 
 	void UpdatePlayerAndMapChip(Camera* camera);
 
@@ -125,4 +128,10 @@ private:
 	EnemyDivideEmitter enemyDivideEmitter_;
 	// エネミー分裂時パーティクルのモデル
 	ModelManager::ModelData modelEnemyDivideParticle_;
+
+private:
+	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
+
+	// 背景スプライト
+	std::unique_ptr<Sprite> backGroundSprite_;
 };

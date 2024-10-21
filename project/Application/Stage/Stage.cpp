@@ -10,6 +10,10 @@ void Stage::Initialize()
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 	GlobalVariables* variables = GlobalVariables::getInstance();
 
+	// SpriteCommonの生成と初期化
+	spriteCommon = std::make_unique<SpriteCommon>();
+	spriteCommon->Initialize(DirectXBase::GetInstance());
+
 	// Texture読み込み
 	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/block.png",dxBase->GetDevice());
 
@@ -101,6 +105,14 @@ void Stage::Initialize()
 	// エネミー分裂時パーティクル関連初期化
 	modelEnemyDivideParticle_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
 	uint32_t enemyDivideParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
+
+
+	// 背景スプライト生成
+	uint32_t backGroundGH = TextureManager::Load("resources/Images/backGround.png", dxBase->GetDevice());
+	backGroundSprite_ = std::make_unique<Sprite>();
+	backGroundSprite_->Initialize(spriteCommon.get(), backGroundGH);
+	backGroundSprite_->SetSize({ static_cast<float>(Window::GetWidth()), static_cast<float>(Window::GetHeight()) });
+
 
 	enemyDivideEmitter_.Initialize(&modelEnemyDivideParticle_, enemyDivideParticleGH);
 
@@ -235,6 +247,9 @@ void Stage::Update(Camera* camera)
 	camera->UpdateShake();
 
 #pragma endregion
+
+	// 背景スプライト更新
+	backGroundSprite_->Update();
 }
 
 void Stage::DrawModels()
@@ -283,6 +298,11 @@ void Stage::DrawModels()
 	timerNeedleObject_->Draw();
 }
 
+void Stage::DrawBackGround() { 
+	// 背景スプライト描画
+	backGroundSprite_->Draw();
+}
+
 void Stage::UpdatePlayerAndMapChip(Camera* camera)
 {
 	if(chargedEnergy_ >= maxEnergy_)
@@ -327,6 +347,9 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 	camera->UpdateShake();
 
 #pragma endregion
+
+	// 背景スプライト更新
+	backGroundSprite_->Update();
 }
 
 void Stage::InitializeStatus(const std::string& scene)
