@@ -171,8 +171,13 @@ void GamePlayScene::Draw()
 
 	ImGui::Text("fps : %.1f", ImGui::GetIO().Framerate);
 
+	// 音声の再生
 	if (ImGui::Button("PlaySound")) {
 		soundManager->PlayWave(soundData1, false, 0.1f);
+	}
+	// 音声の停止
+	if (ImGui::Button("StopSound")) {
+		soundManager->StopWave(soundData1);
 	}
 
 	ImGui::End();

@@ -118,13 +118,12 @@ void SoundManager::Unload(SoundData* soundData)
 	soundData->wfex = {};
 }
 
-void SoundManager::PlayWave(const SoundData& soundData, bool loopFlag, float volume)
+void SoundManager::PlayWave(SoundData& soundData, bool loopFlag, float volume)
 {
 	HRESULT result;
 
 	// 波形フォーマットを元にSourceVoiceの生成
-	IXAudio2SourceVoice* pSourceVoice = nullptr;
-	result = xAudio2->CreateSourceVoice(&pSourceVoice, &soundData.wfex);
+	result = xAudio2->CreateSourceVoice(&soundData.pSourceVoice, &soundData.wfex);
 	assert(SUCCEEDED(result));
 
 	// 再生する波形データの設定
@@ -137,7 +136,16 @@ void SoundManager::PlayWave(const SoundData& soundData, bool loopFlag, float vol
 	buf.LoopCount = loopFlag ? XAUDIO2_LOOP_INFINITE : 0;
 
 	// 波形データの再生
-	result = pSourceVoice->SubmitSourceBuffer(&buf);
-	result = pSourceVoice->SetVolume(volume);
-	result = pSourceVoice->Start();
+	result = soundData.pSourceVoice->SubmitSourceBuffer(&buf);
+	result = soundData.pSourceVoice->SetVolume(volume);
+	result = soundData.pSourceVoice->Start();
+}
+
+void SoundManager::StopWave(SoundData& soundData)
+{
+	// 再生を停止
+	HRESULT result = soundData.pSourceVoice->Stop();
+
+	// 音声バッファをクリア
+	result = soundData.pSourceVoice->FlushSourceBuffers();
 }
