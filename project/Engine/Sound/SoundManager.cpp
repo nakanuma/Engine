@@ -143,9 +143,11 @@ void SoundManager::PlayWave(SoundData& soundData, bool loopFlag, float volume)
 
 void SoundManager::StopWave(SoundData& soundData)
 {
-	// 再生を停止
-	HRESULT result = soundData.pSourceVoice->Stop();
+	if (soundData.pSourceVoice) {
+		// 再生を停止
+		HRESULT result = soundData.pSourceVoice->Stop();
 
-	// 音声バッファをクリア
-	result = soundData.pSourceVoice->FlushSourceBuffers();
+		// 音声バッファをクリア
+		result = soundData.pSourceVoice->FlushSourceBuffers();
+	}
 }
