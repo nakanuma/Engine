@@ -16,5 +16,8 @@ public:
 private:
 	ModelManager::ModelData planeModel_;
 	std::unique_ptr<Object3D> planeObject_;
+public:
+	const ModelManager::ModelData& GetModelData()const { return planeModel_; }
+	const Object3D* GetPlaneObject()const { return planeObject_.get(); }
 };
 
