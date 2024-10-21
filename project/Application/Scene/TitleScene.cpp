@@ -53,7 +53,7 @@ void TitleScene::Initialize()
 		stage_ = SceneManager::GetInstance()->GetStage();
 	} else
 	{
-		stage_->InitializeStatus();
+		stage_->InitializeStatus("Title");
 	}
 #endif // _DEBUG
 
@@ -274,18 +274,19 @@ void TitleScene::EnterSceneUpdate()
 void TitleScene::SceneUpdate()
 {
 	t_ += DeltaTime::getInstance()->getDeltaTime() * signT_;
-	// 一旦 置いとく
-	if(input->TriggerKey(DIK_SPACE))
+	stage_->UpdatePlayerAndMapChip(camera);
+	if(stage_->GetIsClear())
 	{
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
-		t_ =0.0f;
+		t_ = 0.0f;
 	}
 }
 
 void TitleScene::OutSceneUpdate()
 {
 	leftTime_ += DeltaTime::getInstance()->getDeltaTime();
+	stage_->UpdatePlayerAndMapChip(camera);
 	t_ = leftTime_ / outSceneMaxTime_;
 	if(leftTime_ >= outSceneMaxTime_)
 	{

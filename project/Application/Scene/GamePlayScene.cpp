@@ -51,7 +51,7 @@ void GamePlayScene::Initialize()
 	///	↓ ゲームシーン用 
 	///	
 	stage_ = SceneManager::GetInstance()->GetStage();
-
+	stage_->InitializeStatus("Game");
 }
 
 void GamePlayScene::Finalize()

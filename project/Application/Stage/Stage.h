@@ -34,7 +34,7 @@ public:
 	/// <summary>
 	/// ステータスの初期化 (model の読み込み などをしない初期化)
 	/// </summary>
-	void InitializeStatus();
+	void InitializeStatus(const std::string& scene);
 private:
 	void CheckAlCollisions();
 private:

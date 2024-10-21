@@ -48,7 +48,6 @@ void Stage::Initialize()
 	sideHandModel_[1] = ModelManager::LoadModelFile("resources/Models","bighand_left.obj",dxBase->GetDevice());
 	sideHandModel_[1].material.textureHandle = TextureManager::Load("resources/Images/bighand.png",dxBase->GetDevice());
 
-
 	sideHandObject_[0] = std::make_unique<Object3D>();
 	sideHandObject_[1] = std::make_unique<Object3D>();
 	sideHandObject_[0]->model_ = &sideHandModel_[0];
@@ -261,8 +260,18 @@ void Stage::DrawModels()
 
 void Stage::UpdatePlayerAndMapChip(Camera* camera)
 {
+	if(chargedEnergy_ >= maxEnergy_)
+	{
+		isClear_ = true;
+		return;
+	}
 	player_->Update();
 	mapChip_->Update();
+	mapChip_->SetPower(chargedEnergy_);
+
+	// Collision
+	mapChip_->CheckCollision_Collider(player_->GetHandCollider());
+
 #pragma region パーティクルの発生と更新
 	/*--------------------------*/
 	/* プレイヤー移動時パーティクル */
@@ -295,32 +304,32 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 #pragma endregion
 }
 
-void Stage::InitializeStatus()
+void Stage::InitializeStatus(const std::string& scene)
 {
 	GlobalVariables* variables = GlobalVariables::getInstance();
 
 	mapChip_->Initialize(modelBlock_);
 
-	player_->InitializeStatus();
-	player_->SetMapChipField(mapChip_.get());
-	player_->SetStage(this);
-
-	variables->addValue("Game","EnemySpawner_Default","spawnerValue",enemySpawnerValue_);
-	enemies_.clear();
-	enemySpawners_.clear();
-	for(size_t i = 0; i < enemySpawnerValue_; ++i)
+	if(scene == "Title")
 	{
-		enemySpawners_.push_back(std::make_unique<EnemySpawner>());
-		enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
-		enemySpawners_.back()->SetEnemyModel(enemyModel);
+		player_->InitializeStatus();
+		player_->SetMapChipField(mapChip_.get());
+		player_->SetStage(this);
+		variables->addValue("Game","EnemySpawner_Default","spawnerValue",enemySpawnerValue_);
+		enemies_.clear();
+		enemySpawners_.clear();
+		for(size_t i = 0; i < enemySpawnerValue_; ++i)
+		{
+			enemySpawners_.push_back(std::make_unique<EnemySpawner>());
+			enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+			enemySpawners_.back()->SetEnemyModel(enemyModel);
+		}
 	}
+	
+	collisionManager_->Reset();
+	variables->addValue(scene,"Stage","maxEnergy",maxEnergy_);
 
-	// 衝突マネージャの生成
-	collisionManager_ = std::make_unique<CollisionManager>();
-
-	variables->addValue("Game","Stage","maxEnergy",maxEnergy_);
-
-	variables->addValue("Game","Stage","limitTime",limitTime_);
+	variables->addValue(scene,"Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
 
 	chargedEnergy_ = 0.0f;
