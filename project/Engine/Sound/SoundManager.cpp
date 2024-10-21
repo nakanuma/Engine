@@ -118,7 +118,7 @@ void SoundManager::Unload(SoundData* soundData)
 	soundData->wfex = {};
 }
 
-void SoundManager::PlayWave(const SoundData& soundData)
+void SoundManager::PlayWave(const SoundData& soundData, bool loopFlag, float volume)
 {
 	HRESULT result;
 
@@ -133,7 +133,11 @@ void SoundManager::PlayWave(const SoundData& soundData)
 	buf.AudioBytes = soundData.bufferSize;
 	buf.Flags = XAUDIO2_END_OF_STREAM;
 
+	// ループ設定
+	buf.LoopCount = loopFlag ? XAUDIO2_LOOP_INFINITE : 0;
+
 	// 波形データの再生
 	result = pSourceVoice->SubmitSourceBuffer(&buf);
+	result = pSourceVoice->SetVolume(volume);
 	result = pSourceVoice->Start();
 }

@@ -52,6 +52,8 @@ void GamePlayScene::Initialize()
 	///	
 	stage_ = SceneManager::GetInstance()->GetStage();
 	stage_->InitializeStatus("Game");
+
+	soundData1 = soundManager->LoadWave("resources/Sounds/yay.wav");
 }
 
 void GamePlayScene::Finalize()
@@ -168,6 +170,10 @@ void GamePlayScene::Draw()
 	ImGui::DragFloat3("camera.rotation",&camera->transform.rotate.x,0.01f);
 
 	ImGui::Text("fps : %.1f", ImGui::GetIO().Framerate);
+
+	if (ImGui::Button("PlaySound")) {
+		soundManager->PlayWave(soundData1, false, 0.1f);
+	}
 
 	ImGui::End();
 
