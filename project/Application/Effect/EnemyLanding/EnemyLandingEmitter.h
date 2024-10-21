@@ -21,5 +21,5 @@ private:
 	// パーティクルリスト
 	std::list<std::unique_ptr<EnemyLandingParticle>> particleList_;
 	// 一度の発生パーティクル数
-	const uint32_t kParticleNum = 4;
+	const uint32_t kParticleNum = 5;
 };

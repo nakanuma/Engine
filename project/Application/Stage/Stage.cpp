@@ -88,6 +88,8 @@ void Stage::Initialize()
 	collisionManager_ = std::make_unique<CollisionManager>();
 
 	variables->addValue("Game","Stage","maxEnergy",maxEnergy_);
+
+
 	/* パーティクル関連 */
 	
 	// エネミー着地時パーティクル関連初期化
@@ -106,6 +108,9 @@ void Stage::Initialize()
 	modelEnemyDivideParticle_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
 	uint32_t enemyDivideParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
 
+	// 背景の星パーティクル関連初期化
+	uint32_t backGroundStarParticleGH = TextureManager::Load("resources/Images/backGroundStar.png", dxBase->GetDevice());
+	backGroundStarEmitter_.Initialize(backGroundStarParticleGH, spriteCommon.get());
 
 	// 背景スプライト生成
 	uint32_t backGroundGH = TextureManager::Load("resources/Images/backGround.png", dxBase->GetDevice());
@@ -234,6 +239,19 @@ void Stage::Update(Camera* camera)
 	// 敵分裂時のパーティクルを更新
 	enemyDivideEmitter_.Update();
 
+	/*--------------------------*/
+	/*  背景の星パーティクル(2D)   */
+	/*--------------------------*/
+
+	// 指定した頻度毎に生成
+	const int32_t kEmitInterval = 30;
+	if (emitTimer_++ % kEmitInterval == 0) {
+		backGroundStarEmitter_.Emit();
+	}
+
+	// 背景の星パーティクルの更新
+	backGroundStarEmitter_.Update();
+
 #pragma endregion
 
 #pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
@@ -301,6 +319,14 @@ void Stage::DrawModels()
 void Stage::DrawBackGround() { 
 	// 背景スプライト描画
 	backGroundSprite_->Draw();
+
+	/* パーティクル関連描画 */
+
+	/*--------------------------*/
+	/*  背景の星パーティクル(2D)   */
+	/*--------------------------*/
+
+	backGroundStarEmitter_.Draw();
 }
 
 void Stage::UpdatePlayerAndMapChip(Camera* camera)
@@ -336,6 +362,9 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 
 	// 敵分裂時のパーティクルを更新
 	enemyDivideEmitter_.Update();
+
+	// 背景の星パーティクルの更新
+	backGroundStarEmitter_.Update();
 	
 #pragma endregion
 
@@ -409,7 +438,7 @@ void Stage::Debug() {
 	ImGui::Begin("stage");
 
 	if (ImGui::Button("emit")) {
-		enemyDivideEmitter_.Emit({0.0f, 10.0f, 0.0f});
+		backGroundStarEmitter_.Emit();
 	}
 
 	ImGui::End();
