@@ -220,5 +220,9 @@ Enemy* Enemy::CreateClone()
 	// Clone 用の 初期化
 	clone->CloneInitialize(cloneSpawnPos,moveDirection_,object_->model_,numberOfClones2Create_);
 	clone->SetStage(stage_);
+
+	// クローン先のパーティクル発生フラグを立てる
+	clone->isCloneThisFrame_ = true;
+
 	return clone;
 }

@@ -167,6 +167,18 @@ void GamePlayScene::Draw()
 
 	ImGui::End();
 
+	/*ImGui::Begin("Light");
+
+	ImGui::DragFloat3("position", &lightManager->spotLightsCB_.data_->spotLights[0].position.x);
+	ImGui::DragFloat("intensity", &lightManager->spotLightsCB_.data_->spotLights[0].intensity);
+	ImGui::DragFloat3("direction", &lightManager->spotLightsCB_.data_->spotLights[0].direction.x);
+	ImGui::DragFloat("distance", &lightManager->spotLightsCB_.data_->spotLights[0].distance);
+	ImGui::DragFloat("decay", &lightManager->spotLightsCB_.data_->spotLights[0].decay);
+	ImGui::DragFloat("cosAngle", &lightManager->spotLightsCB_.data_->spotLights[0].cosAngle);
+	ImGui::DragFloat("cosFalloffStart", &lightManager->spotLightsCB_.data_->spotLights[0].cosFalloffStart);
+
+	ImGui::End();*/
+
 	// ImGuiの内部コマンドを生成する
 	ImguiWrapper::Render(dxBase->GetCommandList());
 	// 描画後処理

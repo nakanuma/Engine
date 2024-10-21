@@ -98,6 +98,12 @@ void Stage::Initialize()
 
 	playerMoveEmitter_.Initialize(&modelPlayerMoveParticle_, playerMoveParticleGH);
 
+	// エネミー分裂時パーティクル関連初期化
+	modelEnemyDivideParticle_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
+	uint32_t enemyDivideParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
+
+	enemyDivideEmitter_.Initialize(&modelEnemyDivideParticle_, enemyDivideParticleGH);
+
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
 
@@ -200,6 +206,22 @@ void Stage::Update(Camera* camera)
 	// 敵着地時のパーティクルを更新
 	enemyLandingEmitter_.Update();
 
+	/*--------------------------*/
+	/*     敵分裂パーティクル      */
+	/*--------------------------*/
+
+	// 敵分裂時にパーティクルを発生させる
+	for (auto& enemy : enemies_) {
+		if (enemy->GetIsCloneThisFrame()) {
+			enemyDivideEmitter_.Emit(enemy->GetTranslate());
+			// パーティクル発生後にフラグを下ろす
+			enemy->SetIsCloneThisFrame(false);
+		}
+	}
+
+	// 敵分裂時のパーティクルを更新
+	enemyDivideEmitter_.Update();
+
 #pragma endregion
 
 #pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
@@ -238,6 +260,9 @@ void Stage::DrawModels()
 
 	// 敵落下時パーティクルを描画
 	enemyLandingEmitter_.Draw();
+
+	// 敵分裂時パーティクルを描画
+	enemyDivideEmitter_.Draw();
 
 #pragma region マップチップ描画用PSOに変更->マップチップ描画->通常PSOに戻す
 	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateMapchip());
@@ -358,7 +383,7 @@ void Stage::Debug() {
 	ImGui::Begin("stage");
 
 	if (ImGui::Button("emit")) {
-		enemyLandingEmitter_.Emit({0.0f, 10.0f, 0.0f});
+		enemyDivideEmitter_.Emit({0.0f, 10.0f, 0.0f});
 	}
 
 	ImGui::End();

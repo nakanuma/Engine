@@ -18,6 +18,7 @@
 
 #include "EnemyLandingEmitter.h"
 #include "PlayerMoveEmitter.h"
+#include "EnemyDivideEmitter.h"
 
 class Stage
 {
@@ -119,4 +120,9 @@ private:
 	PlayerMoveEmitter playerMoveEmitter_;
 	// プレイヤー移動時パーティクルのモデル
 	ModelManager::ModelData modelPlayerMoveParticle_;
+
+	// エネミー分裂時パーティクルのエミッター
+	EnemyDivideEmitter enemyDivideEmitter_;
+	// エネミー分裂時パーティクルのモデル
+	ModelManager::ModelData modelEnemyDivideParticle_;
 };
