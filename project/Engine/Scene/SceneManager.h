@@ -40,7 +40,7 @@ private:
 	std::unique_ptr<Camera> camera_ = nullptr;
 	std::unique_ptr<Stage> stage_;
 public:
-	void CreateStage(){ stage_ = std::make_unique<Stage>();}
+	void CreateStage();
 	Stage* GetStage(){return stage_.get();}
 	Camera* GetCamera(){return camera_.get();}
 };

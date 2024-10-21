@@ -10,11 +10,14 @@
 #include "SpriteCommon.h"
 #include "TextureManager.h"
 
+#include <queue>
+
 #include "Application/Stage/Stage.h"
 #include "Application/UI/UI.h"
 
 // ゲームプレイシーン
-class TitleScene : public BaseScene
+class TutorialScene
+	: public BaseScene
 {
 public:
 	// 初期化
@@ -55,17 +58,8 @@ private:
 	Float3 cameraPosWhenEnterScene_;
 	Float3 cameraHomePos_;
 
-	uint32_t buttonTextureIndex_;
-	std::unique_ptr<UI> buttonUI_;
-	std::function<void(Sprite*)> buttonUpdateWhenEnterScene_;
-	std::function<void(Sprite*)> buttonUpdateWhenSceneUpdate_;
-	std::function<void(Sprite*)> buttonUpdateWhenOutScene_;
-
-	std::array<std::unique_ptr<UI>,2> cloudSprite_;
-
-	ModelManager::ModelData titleTextModel_;
-	std::unique_ptr<Object3D> titleTextObject_;
-
-	Float2 buttonUiOffset_;
-	float signT_;
+	std::queue<std::function<void()>> tutorialTextUpdate_;
+	std::queue<std::function<bool()>> tutorialTask_;
+	bool isPrePlayerAttack_;
+	std::unordered_map<Enemy*,bool> wasAttackedFormPlayer_;
 };

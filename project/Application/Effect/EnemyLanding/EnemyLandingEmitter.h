@@ -12,6 +12,7 @@ public:
 	void Draw();
 	void Emit(Float3 translation);
 
+	void ClearParticles();
 private:
 	// モデル
 	ModelManager::ModelData* model_;

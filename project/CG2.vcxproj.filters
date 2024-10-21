@@ -80,6 +80,7 @@
     <ClCompile Include="Engine\Math\Easing.cpp" />
     <ClCompile Include="Application\Effect\EnemyDivide\EnemyDivideParticle.cpp" />
     <ClCompile Include="Application\Effect\EnemyDivide\EnemyDivideEmitter.cpp" />
+    <ClCompile Include="Application\Scene\TutorialScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
@@ -100,6 +101,7 @@
     <ClInclude Include="Engine\Math\Easing.h" />
     <ClInclude Include="Application\Effect\EnemyDivide\EnemyDivideParticle.h" />
     <ClInclude Include="Application\Effect\EnemyDivide\EnemyDivideEmitter.h" />
+    <ClInclude Include="Application\Scene\TutorialScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />

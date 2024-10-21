@@ -31,8 +31,13 @@ void TitleScene::Initialize()
 	// Inputの初期化
 	input = Input::GetInstance();
 
+	// LightManagerの初期化
 	lightManager = LightManager::GetInstance();
 	lightManager->Initialize();
+	// プレイヤーの手に割り当てる丸影を有効化
+	lightManager->spotLightsCB_.data_->spotLights[0].isActive = true;
+	lightManager->spotLightsCB_.data_->spotLights[0].decay = 0.5f;
+	lightManager->spotLightsCB_.data_->spotLights[0].distance = 60;
 
 	camera = SceneManager::GetInstance()->GetCamera();
 
@@ -46,25 +51,12 @@ void TitleScene::Initialize()
 	{
 		SceneManager::GetInstance()->CreateStage();
 		stage_ = SceneManager::GetInstance()->GetStage();
+	} else
+	{
+		stage_->InitializeStatus("Title");
 	}
-	stage_->Initialize();
 #endif // _DEBUG
-	///===========================================================================================
-	/// GlobalVariables 
-	///===========================================================================================
-	GlobalVariables* variables = GlobalVariables::getInstance();
 
-	// time
-	variables->addValue("Title","Times","enterSceneMaxTime_",enterSceneMaxTime_);
-	variables->addValue("Title","Times","outSceneMaxTime_",outSceneMaxTime_);
-	leftTime_ = 0.0f;
-
-	// button
-	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
-
-	// Camera
-	variables->addValue("Title","Camera","cameraHomePosition",cameraHomePos_);
-	
 	///===========================================================================================
 	/// Camera 
 	///===========================================================================================
@@ -73,7 +65,16 @@ void TitleScene::Initialize()
 	///===========================================================================================
 	/// Texture 
 	///===========================================================================================
-	buttonTextureIndex_ = TextureManager::Load("./resources/Images/white.png",dxBase->GetDevice());
+	buttonTextureIndex_ = TextureManager::Load("./resources/Images/push_space.png",dxBase->GetDevice());
+
+	///===========================================================================================
+	/// Title 
+	///===========================================================================================
+	titleTextModel_ = ModelManager::LoadModelFile("resources/Models","Title.obj",dxBase->GetDevice());
+	titleTextModel_.material.textureHandle = TextureManager::Load("resources/Images/title_color.png",dxBase->GetDevice());
+
+	titleTextObject_ = std::make_unique<Object3D>();
+	titleTextObject_->model_ = &titleTextModel_;
 
 	///===========================================================================================
 	/// UI 
@@ -110,6 +111,44 @@ void TitleScene::Initialize()
 
 	buttonUI_->setUpdate(buttonUpdateWhenEnterScene_);
 
+	///===========================================================================================
+	/// cloudPlane_ 
+	///===========================================================================================
+	uint32_t cloudTexture[3];
+	cloudTexture[0] = TextureManager::Load("resources/Images/cloud_1.png",dxBase->GetDevice());
+	cloudTexture[1] = TextureManager::Load("resources/Images/cloud_2.png",dxBase->GetDevice());
+	
+	cloudSprite_[0] = std::make_unique<UI>();
+	cloudSprite_[0]->Init("Title","Cloud1",cloudTexture[0],spriteCommon.get());
+
+	cloudSprite_[1] = std::make_unique<UI>();
+	cloudSprite_[1]->Init("Title","Cloud2",cloudTexture[1],spriteCommon.get());
+
+	///===========================================================================================
+	/// GlobalVariables 
+	///===========================================================================================
+	GlobalVariables* variables = GlobalVariables::getInstance();
+
+	// time
+	variables->addValue("Title","Times","enterSceneMaxTime_",enterSceneMaxTime_);
+	variables->addValue("Title","Times","outSceneMaxTime_",outSceneMaxTime_);
+	leftTime_ = 0.0f;
+
+	// button
+	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
+
+	// Camera
+	variables->addValue("Title","Camera","cameraHomePosition",cameraHomePos_);
+
+	// text Model
+	variables->addValue("Title","Text","Scale",titleTextObject_->transform_.scale);
+	variables->addValue("Title","Text","Rotate",titleTextObject_->transform_.rotate);
+	variables->addValue("Title","Text","Translate",titleTextObject_->transform_.translate);
+
+	///===========================================================================================
+	/// Update State 
+	///===========================================================================================
+
 	currentUpdate_ = [this](){ this->EnterSceneUpdate(); };
 }
 
@@ -123,9 +162,9 @@ void TitleScene::Update()
 	///	シーン切り替え
 	/// 
 
-	stage_->Update(camera);
-	currentUpdate_();
+	stage_->UpdatePlayerAndMapChip(camera);
 	buttonUI_->Update();
+	currentUpdate_();
 }
 
 void TitleScene::Draw()
@@ -144,12 +183,15 @@ void TitleScene::Draw()
 	Camera::TransferConstantBuffer();
 	// ライトの定数バッファを設定
 	lightManager->TransferContantBuffer();
-
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
 
+	titleTextObject_->UpdateMatrix();
+	titleTextObject_->Draw();
 	stage_->DrawModels();
+
+	
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -161,15 +203,22 @@ void TitleScene::Draw()
 	///
 	/// ↓ ここからスプライトの描画コマンド
 	/// 
-
+	cloudSprite_[0]->Update();
+	cloudSprite_[0]->Draw();
+	cloudSprite_[1]->Update();
+	cloudSprite_[1]->Draw();
 	buttonUI_->Draw();
 
 	///
 	/// ↑ ここまでスプライトの描画コマンド
 	/// 
 
+#pragma region 丸影の設定
 
+// spotLight[0]の位置をプレイヤーの手と同期
+	lightManager->spotLightsCB_.data_->spotLights[0].position = stage_->GetPlayer()->GetTranslate();
 
+#pragma endregion
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
 #endif // _DEBUG
@@ -225,18 +274,19 @@ void TitleScene::EnterSceneUpdate()
 void TitleScene::SceneUpdate()
 {
 	t_ += DeltaTime::getInstance()->getDeltaTime() * signT_;
-	// 一旦 置いとく
-	if(input->TriggerKey(DIK_SPACE))
+	stage_->UpdatePlayerAndMapChip(camera);
+	if(stage_->GetIsClear())
 	{
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
-		t_ =0.0f;
+		t_ = 0.0f;
 	}
 }
 
 void TitleScene::OutSceneUpdate()
 {
 	leftTime_ += DeltaTime::getInstance()->getDeltaTime();
+	stage_->UpdatePlayerAndMapChip(camera);
 	t_ = leftTime_ / outSceneMaxTime_;
 	if(leftTime_ >= outSceneMaxTime_)
 	{

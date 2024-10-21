@@ -28,23 +28,16 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	variables->addValue("Game","Wave","initialYVelocity_",initialYVelocity_);
 	variables->addValue("Game","Player_AttackState","minChargingEnergy_",minChargingEnergy_);
 	variables->addValue("Game","Player_AttackState","maxChargingEnergy_",maxChargingEnergy_);
-
-///===========================================================================================
-/// Body
-///===========================================================================================
-	DirectXBase* dxBase = DirectXBase::GetInstance();
-	bodyModelData_ = ModelManager::LoadModelFile("./resources/Models","monkey.obj",dxBase->GetDevice());
-	bodyModelData_.material.textureHandle = uvCheckerGH;
-	bodyObject_ = std::make_unique<Object3D>();
-	bodyObject_->model_ = &bodyModelData_;
-	bodyObject_->transform_.translate.y = 4.0f;
+	variables->addValue("Game","Player_NeutralState","startPos_",startPos_);
 
 ///===========================================================================================
 /// Hand
 ///===========================================================================================
+	DirectXBase* dxBase = DirectXBase::GetInstance();
 	handModelData_ = ModelManager::LoadModelFile("./resources/Models","player.obj",dxBase->GetDevice());
-	handModelData_.material.textureHandle = uvCheckerGH;
+	handModelData_.material.textureHandle = TextureManager::Load("resources/Images/player.png",dxBase->GetDevice());
 	handObject_ = std::make_unique<Object3D>();
+	handObject_->transform_.translate = startPos_;
 	handObject_->model_ = &handModelData_;
 	// handObject_.parent = &body;
 
@@ -71,15 +64,52 @@ void Player::Initialize(uint32_t uvCheckerGH)
 	TransitionState(new NeutralPlayerState(this));
 }
 
+void Player::InitializeStatus()
+{
+///===========================================================================================
+/// GlobalVariables
+///===========================================================================================
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	// TODO
+	// 要対策
+	variables->addValue("Game","Wave","minRange_",minWaveRange_);
+	variables->addValue("Game","Wave","maxRange_",maxWaveRange_);
+	variables->addValue("Game","Wave","initialYVelocity_",initialYVelocity_);
+	variables->addValue("Game","Player_AttackState","minChargingEnergy_",minChargingEnergy_);
+	variables->addValue("Game","Player_AttackState","maxChargingEnergy_",maxChargingEnergy_);
+	variables->addValue("Game","Player_NeutralState","startPos_",startPos_);
+
+///===========================================================================================
+/// Hand
+///===========================================================================================
+	auto onCollision = []([[maybe_unused]] Collider* a) {};
+
+	auto onCollisionMapChip = [this](MapChipField::MapObject* mapObj)
+	{
+		// wave を 起こす
+		MapChipField::IndexSet address = mapObj->GetIndexSet();
+		float waveRange = Lerp(chargePercent_,minWaveRange_,maxWaveRange_);
+		mapChipField_->TriggerWave(address.xIndex,address.zIndex,waveRange,initialYVelocity_);
+
+		// Energy を 貯める
+		float chargingEnergy = Lerp(chargePercent_,minChargingEnergy_,maxChargingEnergy_);
+		stage_->ChargeEnergy(chargingEnergy);
+		chargePercent_ = 0.0f;
+	};
+	handObject_->transform_.translate = startPos_;
+	handCollider_ = std::make_unique<Collider>();
+	handCollider_->Init(handObject_->transform_.translate,0.3f,onCollision,onCollisionMapChip);
+
+///===========================================================================================
+/// State
+///===========================================================================================
+	TransitionState(new NeutralPlayerState(this));
+
+}
+
 void Player::Update()
 {
 	currentState_->Update();
-	bodyObject_->UpdateMatrix();
-	handObject_->transform_.rotate = {
-		bodyObject_->transform_.rotate.x,
-		bodyObject_->transform_.rotate.y + std::numbers::pi_v<float>,
-		bodyObject_->transform_.rotate.z
-	};
 	handObject_->UpdateMatrix();
 
 	handCollider_->SetPosition(handObject_->transform_.translate);
@@ -87,12 +117,6 @@ void Player::Update()
 
 void Player::Draw()
 {
-	ImGui::DragFloat3("Rotate",&bodyObject_->transform_.rotate.x,0.1f);
-	ImGui::DragFloat3("Translate",&bodyObject_->transform_.translate.x,0.1f);
-
-	ImGui::DragFloat3("Hand.Translate", &handObject_->transform_.translate.x, 0.1f);
-	bodyObject_->Draw();
-
 	handObject_->Draw();
 }
 

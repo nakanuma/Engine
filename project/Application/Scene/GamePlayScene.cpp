@@ -42,24 +42,16 @@ void GamePlayScene::Initialize()
 	lightManager->Initialize();
 	// プレイヤーの手に割り当てる丸影を有効化
 	lightManager->spotLightsCB_.data_->spotLights[0].isActive = true;
+	lightManager->spotLightsCB_.data_->spotLights[0].decay = 0.5f;
+	lightManager->spotLightsCB_.data_->spotLights[0].distance = 60;
 
 	camera = SceneManager::GetInstance()->GetCamera();
 
 	///
 	///	↓ ゲームシーン用 
 	///	
-
-#ifdef _DEBUG
 	stage_ = SceneManager::GetInstance()->GetStage();
-	if(!stage_)
-	{
-		SceneManager::GetInstance()->CreateStage();
-		stage_ = SceneManager::GetInstance()->GetStage();
-	}
-	stage_->Initialize();
-
-#endif // _DEBUG
-
+	stage_->InitializeStatus("Game");
 }
 
 void GamePlayScene::Finalize()
@@ -74,6 +66,10 @@ void GamePlayScene::Update()
 	if(stage_->GetIsClear())
 	{
 		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		return;
+	} else if(stage_->GetIsGameOver())
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
 		return;
 	}
 
@@ -132,7 +128,7 @@ void GamePlayScene::Draw()
 #pragma region 丸影の設定
 
 	// spotLight[0]の位置をプレイヤーの手と同期
-	lightManager->spotLightsCB_.data_->spotLights[0].position = stage_->GetPlayer()->GetHandTranslate();
+	lightManager->spotLightsCB_.data_->spotLights[0].position = stage_->GetPlayer()->GetTranslate();
 
 #pragma endregion
 
