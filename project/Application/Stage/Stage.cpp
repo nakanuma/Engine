@@ -409,7 +409,7 @@ void Stage::Debug() {
 	ImGui::Begin("stage");
 
 	if (ImGui::Button("emit")) {
-		enemyDivideEmitter_.Emit({0.0f, 10.0f, 0.0f});
+		enemyLandingEmitter_.Emit({0.0f, 10.0f, 0.0f});
 	}
 
 	ImGui::End();
