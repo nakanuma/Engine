@@ -66,7 +66,6 @@ void TitleScene::Initialize()
 	/// Texture 
 	///===========================================================================================
 	buttonTextureIndex_ = TextureManager::Load("./resources/Images/push_space.png",dxBase->GetDevice());
-
 	///===========================================================================================
 	/// Title 
 	///===========================================================================================
@@ -190,8 +189,6 @@ void TitleScene::Draw()
 	titleTextObject_->UpdateMatrix();
 	titleTextObject_->Draw();
 	stage_->DrawModels();
-
-	
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド

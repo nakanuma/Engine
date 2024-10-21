@@ -12,6 +12,7 @@
 
 #include "Application/Stage/Stage.h"
 #include "Application/UI/UI.h"
+#include "Application/TexturePlane/TexturePlane.h"
 
 // ゲームプレイシーン
 class TitleScene : public BaseScene
@@ -57,6 +58,7 @@ private:
 
 	uint32_t buttonTextureIndex_;
 	std::unique_ptr<UI> buttonUI_;
+
 	std::function<void(Sprite*)> buttonUpdateWhenEnterScene_;
 	std::function<void(Sprite*)> buttonUpdateWhenSceneUpdate_;
 	std::function<void(Sprite*)> buttonUpdateWhenOutScene_;
