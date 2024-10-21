@@ -47,7 +47,7 @@ public:
 
 	void Unload(SoundData* soundData);
 
-	void PlayWave(const SoundData& soundData);
+	void PlayWave(const SoundData& soundData, bool loopFlag = false, float volume = 1.0f);
 
 private:
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2;

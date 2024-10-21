@@ -62,4 +62,7 @@ private:
 	ModelManager::ModelData planeModel;
 
 	Sprite* spaceToTitle_;
+
+	// テスト用サウンドデータ
+	SoundManager::SoundData soundData1;
 };
