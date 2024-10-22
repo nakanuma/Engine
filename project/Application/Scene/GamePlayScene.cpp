@@ -215,17 +215,20 @@ void GamePlayScene::Draw()
 	GlobalVariables::getInstance()->Update();
 #endif // _DEBUG
 
+#ifdef _DEBUG
 	ImGui::Begin("Camera");
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
 
 	stage_->Debug();
-	
+#endif // _DEBUG
+
 #ifdef _DEBUG // デバッグカメラ
 	ImGui::Checkbox("useDebugCamera",&useDebugCamera);
 #endif
 
+#ifdef _DEBUG
 	ImGui::DragFloat3("camera.rotation",&camera->transform.rotate.x,0.01f);
 
 	ImGui::Text("fps : %.1f", ImGui::GetIO().Framerate);
@@ -254,6 +257,7 @@ void GamePlayScene::Draw()
 	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
+#endif // _DEBUG
 
 	/*ImGui::Begin("Light");
 

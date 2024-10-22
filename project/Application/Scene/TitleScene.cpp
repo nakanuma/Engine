@@ -44,7 +44,7 @@ void TitleScene::Initialize() {
 	///	↓ ゲームシーン用
 	///
 
-#ifdef _DEBUG
+
 	stage_ = SceneManager::GetInstance()->GetStage();
 	if (!stage_) {
 		SceneManager::GetInstance()->CreateStage();
@@ -52,6 +52,7 @@ void TitleScene::Initialize() {
 	} else {
 		stage_->InitializeStatus("Title");
 	}
+#ifdef _DEBUG
 #endif // _DEBUG
 
 	///===========================================================================================
@@ -237,6 +238,7 @@ void TitleScene::Draw()
 	GlobalVariables::getInstance()->Update();
 #endif // _DEBUG
 
+#ifdef _DEBUG
 	ImGui::Begin("Camera");
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
@@ -258,6 +260,7 @@ void TitleScene::Draw()
 	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
+#endif // _DEBUG
 
 	// ImGuiの内部コマンドを生成する
 	ImguiWrapper::Render(dxBase->GetCommandList());
