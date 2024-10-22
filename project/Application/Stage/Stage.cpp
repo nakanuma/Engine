@@ -141,6 +141,32 @@ void Stage::Initialize()
 	cloudSprite_[3].SetColor({1.0f, 1.0f, 1.0f, 0.75f});
 
 
+	// モデルの読み込みは一度だけ実行
+	for (int i = 0; i < 10; ++i) {
+		std::string modelPath = std::to_string(i) + ".obj";
+		numberModel_[i] = ModelManager::LoadModelFile("resources/Models/number/", modelPath, dxBase->GetDevice());
+
+		// テクスチャを設定
+		numberModel_[i].material.textureHandle = TextureManager::Load("resources/Images/enempng.png", dxBase->GetDevice());
+	}
+
+	// オブジェクト生成
+	for (int j = 0; j < 3; ++j) {
+		for (int i = 0; i < 10; ++i) {
+			// Object3Dオブジェクトを作成
+			numberObject_[i][j] = std::make_unique<Object3D>();
+			numberObject_[i][j]->model_ = &numberModel_[i];
+
+			// スケールと位置を設定
+			numberObject_[i][j]->transform_.scale = { 4, 4, 2 };
+			numberObject_[i][j]->transform_.rotate = { 0, 3.14f, 0 };
+			numberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -1.3f, 10, 0 };  // X方向にずらして配置
+		}
+	}
+	
+
+
+
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
 
@@ -162,6 +188,10 @@ void Stage::Update(Camera* camera)
 		 isGameOver_ = true;
 		 return;
 	}
+
+
+	
+	
 
 #ifdef _DEBUG
 	int32_t movingSpawnerValue = enemySpawnerValue_ - static_cast<int32_t>(enemySpawners_.size());
@@ -319,6 +349,18 @@ void Stage::DrawModels()
 	timerNeedleObject_->UpdateMatrix();
 	timerObject_->Draw();
 	timerNeedleObject_->Draw();
+
+	// 描画処理
+	for (int j = 0; j < 3; ++j) {
+		// j桁目の数字を取り出す（右から左へ）
+		int digit = (static_cast<int>(chargedEnergy_) / static_cast<int>(pow(10, j))) % 10;
+
+		// 桁に対応する数字を描画
+		numberObject_[digit][j]->UpdateMatrix();
+		numberObject_[digit][j]->Draw();
+	}
+
+	
 }
 
 void Stage::UpdateBackGround() {
