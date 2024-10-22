@@ -61,18 +61,10 @@ void GameClearScene::Initialize()
 	///===========================================================================================
 	/// ClearTextPlane
 	///===========================================================================================
-	planeModel_ = ModelManager::LoadModelFile("resources/Models","plane.obj",dxBase->GetDevice());
 	clearTextTextureIndex_ = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
+	clearTextPlane_ = std::make_unique<TexturePlane>();
+	clearTextPlane_->Initialize("GameClear","clearTextPlane_",clearTextTextureIndex_,dxBase->GetDevice());
 
-	planeModel_.material.textureHandle = clearTextTextureIndex_;
-
-	clearTextPlane_ = std::make_unique<Object3D>();
-	clearTextPlane_->materialCB_.data_->color ={0.0f,0.0f,0.0f,1.0f};
-	clearTextPlane_->model_ = &planeModel_;
-
-	variables->addValue("GameClear","ClearText","scale",clearTextPlane_->transform_.scale);
-	variables->addValue("GameClear","ClearText","rotate",clearTextPlane_->transform_.rotate);
-	variables->addValue("GameClear","ClearText","position",clearTextPlane_->transform_.translate);
 	///===========================================================================================
 	/// Camera
 	///===========================================================================================
@@ -88,8 +80,6 @@ void GameClearScene::Update()
 {
 	stage_->UpdatePlayerAndMapChip(camera);
 	currentUpdate_();
-	// 背景の更新
-	stage_->UpdateBackGround();
 }
 
 void GameClearScene::Draw()
@@ -132,7 +122,7 @@ void GameClearScene::Draw()
 	/// 
 
 	stage_->DrawModels();
-	clearTextPlane_->UpdateMatrix();
+	clearTextPlane_->Update();
 	clearTextPlane_->Draw();
 
 	///
@@ -166,6 +156,7 @@ void GameClearScene::Draw()
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
 
 	ImGui::Text("fps : %.1f",ImGui::GetIO().Framerate);
+	ImGui::Text("%.2f", stage_->GetCloudY());
 
 	ImGui::End();
 
@@ -196,11 +187,11 @@ void GameClearScene::EnterSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
-	clearTextPlane_->materialCB_.data_->color.w = Lerp(t,0.0f,1.0f);
+	clearTextPlane_->GetPlaneObject()->materialCB_.data_->color.w = Lerp(t,0.0f,1.0f);
 
 	if(leftTime_ <= 0.0f)
 	{
-		clearTextPlane_->materialCB_.data_->color.w = 1.0f;
+		clearTextPlane_->GetPlaneObject()->materialCB_.data_->color.w = 1.0f;
 
 		stage_->ClearEnemies();
 
@@ -236,6 +227,9 @@ void GameClearScene::OutSceneUpdate()
 		camera->transform.translate = cameraPosWhenOutScene_;
 		return;
 	}
+
+	// 背景の雲を上へ移動
+	stage_->UpBackGroundCloud();
 
 	// 背景の更新
 	stage_->UpdateBackGround();

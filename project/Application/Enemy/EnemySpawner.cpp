@@ -40,7 +40,6 @@ void EnemySpawner::Update()
 {
 	isSpawn_ = false;
 
-
 	if(inactiveEnemyValue_ <= stage_->GetEnemies().size())
 	{
 	productionPoint_ = 1.0f;

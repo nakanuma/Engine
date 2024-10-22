@@ -15,6 +15,7 @@
 #include "TextureManager.h"
 
 #include "Application/Stage/Stage.h"
+#include "Application/TexturePlane/TexturePlane.h"
 
 // ゲームプレイシーン
 class GameOverScene
@@ -62,8 +63,7 @@ private:
 	float enterSceneMaxTime_;
 	float outSceneMaxTime_;
 	// Text
-	ModelManager::ModelData   planeModel_;
-	uint32_t                  gameOverTextTextureIndex_;
-	std::unique_ptr<Object3D> gameOverTextPlane_;
+	uint32_t gameoverTextTextureIndex_;
+	std::unique_ptr<TexturePlane> gameoverTextPlane_;
 public:
 };
