@@ -68,4 +68,18 @@ private:
 
 	Float2 buttonUiOffset_;
 	float signT_;
+
+// nakanuma追加分
+private:
+	// タイトル文字の回転速度
+	float titleRotSpd_ = 0.0f;
+	const float kInitialRotSpd_ = 0.3f;
+
+	const int32_t kTotalFrame = 240; // このフレーム数使用して回転速度を減衰させる
+	int32_t currentFrame = 0;
+
+	bool isRotStart_ = false;
+
+	// タイトルオブジェクトの回転
+	void RotateTitleTextObject();
 };
