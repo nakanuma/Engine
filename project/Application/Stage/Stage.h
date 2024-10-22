@@ -22,6 +22,7 @@
 #include "PlayerMoveEmitter.h"
 #include "EnemyDivideEmitter.h"
 #include "BackGroundStarEmitter.h"
+#include "EnemyDeadEmitter.h"
 
 class Stage
 {
@@ -113,7 +114,7 @@ public:
 	void ChargeEnergy(float energy) { chargedEnergy_ += energy; }
 	float StealEnergy(float stealEnergy)
 	{
-// 総量 が 奪われる 量より多かったら
+	// 総量 が 奪われる 量より多かったら
 		if(chargedEnergy_ <= stealEnergy)
 		{
 			// 全部 奪われる
@@ -139,6 +140,11 @@ private:
 	EnemyDivideEmitter enemyDivideEmitter_;
 	// エネミー分裂時パーティクルのモデル
 	ModelManager::ModelData modelEnemyDivideParticle_;
+
+	// エネミー死亡時パーティクルのエミッター
+	EnemyDeadEmitter enemyDeadEmitter_;
+	// エネミー死亡時パーティクルのモデル
+	ModelManager::ModelData modelEnemyDeadParticle_;
 
 	// 背景の星パーティクル(2D)
 	BackGroundStarEmitter backGroundStarEmitter_;
