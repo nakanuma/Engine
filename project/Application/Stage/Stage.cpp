@@ -62,18 +62,19 @@ void Stage::Initialize()
 	sideHandObject_[1]->model_ = &sideHandModel_[1];
 
 	// timer
-	timerModel_ = ModelManager::LoadModelFile("resources/Models","timer.obj",dxBase->GetDevice());
-	timerModel_.material.textureHandle = TextureManager::Load("resources/Images/timer.png",dxBase->GetDevice());
+	timerModel_ = ModelManager::LoadModelFile("resources/Models","timer2.obj",dxBase->GetDevice());
+	timerModel_.material.textureHandle = TextureManager::Load("resources/Images/timer2.png",dxBase->GetDevice());
 
 	timerNeedleModel_ = ModelManager::LoadModelFile("resources/Models","timer_needle.obj",dxBase->GetDevice());
 	timerNeedleModel_.material.textureHandle = TextureManager::Load("resources/Images/timer_needle.png",dxBase->GetDevice());
 
 	timerObject_ = std::make_unique<Object3D>();
 	timerObject_->model_ = &timerModel_;
+	//timerObject_->transform_.rotate.x = { 0.01f };
 	timerNeedleObject_ = std::make_unique<Object3D>();
 	timerNeedleObject_->SetParent(timerObject_.get());
 	timerNeedleObject_->model_ = &timerNeedleModel_;
-
+	
 	variables->addValue("Game","Timer","scale",timerObject_->transform_.scale);
 	variables->addValue("Game","Timer","rotate",timerObject_->transform_.rotate);
 	variables->addValue("Game","Timer","translate",timerObject_->transform_.translate);
@@ -152,6 +153,7 @@ void Stage::Initialize()
 		numberModel_[i].material.textureHandle = TextureManager::Load("resources/Images/enempng.png", dxBase->GetDevice());
 	}
 
+	
 	// オブジェクト生成
 	for (int j = 0; j < 3; ++j) {
 		for (int i = 0; i < 10; ++i) {
@@ -162,7 +164,31 @@ void Stage::Initialize()
 			// スケールと位置を設定
 			numberObject_[i][j]->transform_.scale = { 6, 6, 2 };
 			numberObject_[i][j]->transform_.rotate = { 0, 3.14f, 0 };
-			numberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -2.0f - 4, 2, 16 };  // X方向にずらして配置
+			numberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -2.0f - 4.5f, 2, 16 };  // X方向にずらして配置
+		}
+	}
+	
+	// パーセント
+	percentModel_ = ModelManager::LoadModelFile("resources/Models/", "percent.obj", dxBase->GetDevice());
+	percentModel_.material.textureHandle = TextureManager::Load("resources/Images/enempng.png", dxBase->GetDevice());
+
+
+	percentObject_ = std::make_unique<Object3D>();
+	percentObject_->model_ = &percentModel_;
+	percentObject_->transform_.scale = { 1.5f, 1.5f, 4 };
+	percentObject_->transform_.rotate = { 0, 3.14f, 0 };
+	percentObject_->transform_.translate= { -2.1f, 3.5f, 16 };  // X方向にずらして配置
+	// オブジェクト生成
+	for (int j = 0; j < 2; ++j) {
+		for (int i = 0; i < 10; ++i) {
+			// Object3Dオブジェクトを作成
+			timerNumberObject_[i][j] = std::make_unique<Object3D>();
+			timerNumberObject_[i][j]->model_ = &numberModel_[i];
+
+			// スケールと位置を設定
+			timerNumberObject_[i][j]->transform_.scale = { 5, 5, 2 };
+			timerNumberObject_[i][j]->transform_.rotate = { -0.6f, 3.14f, 0 };
+			timerNumberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -2.0f + 47.1f, 4.7f, 17.1f };  // X方向にずらして配置
 		}
 	}
 	
@@ -362,13 +388,32 @@ void Stage::DrawModels()
 	timerNeedleObject_->Draw();
 
 	// 描画処理
-	for (int j = 0; j < 3; ++j) {
+	// 
+	// chargedEnergy_の桁数を取得
+	int numDigits = (chargedEnergy_ == 0) ? 1 : static_cast<int>(log10(chargedEnergy_)) + 1;
+
+
+	for (int j = 0; j < numDigits; ++j) {
 		// j桁目の数字を取り出す（右から左へ）
 		int digit = (static_cast<int>(chargedEnergy_) / static_cast<int>(pow(10, j))) % 10;
 
 		// 桁に対応する数字を描画
 		numberObject_[digit][j]->UpdateMatrix();
 		numberObject_[digit][j]->Draw();
+	}
+	
+
+	percentObject_->UpdateMatrix();
+	percentObject_->Draw();
+
+	// 描画処理
+	for (int j = 0; j < 2; ++j) {
+		// j桁目の数字を取り出す（右から左へ）
+		int digit = (static_cast<int>(leftTime_) / static_cast<int>(pow(10, j))) % 10;
+
+		// 桁に対応する数字を描画
+		timerNumberObject_[digit][j]->UpdateMatrix();
+		timerNumberObject_[digit][j]->Draw();
 	}
 
 	
