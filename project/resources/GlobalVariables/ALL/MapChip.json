@@ -1,0 +1,82 @@
+{
+    "MapChip": {
+        "changedBlockColorByWaved_": [
+            1.0,
+            0.27000001072883606,
+            0.0,
+            1.0
+        ],
+        "changedBlockColorByWaving_": [
+            1.0,
+            0.0,
+            0.0,
+            1.0
+        ],
+        "changedColorByEnergy_0": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "changedColorByEnergy_1": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "changedColorByEnergy_2": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "changedColorByEnergy_3": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "changedColorByEnergy_4": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "changedColorByEnergy_5": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "changedColorByEnergy_6": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "changedColorByEnergy_7": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "changedColorByEnergy_8": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "changedColorByEnergy_9": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "defaultBlockColor_": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+        ]
+    }
+}

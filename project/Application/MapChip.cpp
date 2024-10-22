@@ -1,9 +1,11 @@
 #include "MapChip.h"
+#include "Stage/Stage.h"
 
 #include <algorithm>
 
 #include "Collision/Collider.h"
 #include "DeltaTime/DeltaTime.h"
+#include "GlobalVariables/GlobalVariables.h"
 
 namespace
 {
@@ -42,6 +44,15 @@ void MapChipField::Initialize(ModelManager::ModelData model)
 	}
 
 	InitInstancing();
+
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	for(size_t i = 0; i < changedColorByEnergy_.size(); i++)
+	{
+		variables->addValue("ALL","MapChip","changedColorByEnergy_" + std::to_string(i),changedColorByEnergy_[i]);
+	}
+	variables->addValue("ALL","MapChip","defaultBlockColor_",defaultBlockColor_);
+	variables->addValue("ALL","MapChip","changedBlockColorByWaving_",changedBlockColorByWaving_);
+	variables->addValue("ALL","MapChip","changedBlockColorByWaved_",changedBlockColorByWaved_);
 }
 
 void MapChipField::Update()
@@ -422,74 +433,102 @@ void MapChipField::TriggerWave(int hitX,int hitZ,float waveRange,float initialYV
 
 void MapChipField::MapColor()
 {
+	float oneRowOfEnergy = stage_->GetMaxEnergy()/ mapWorld_.size();
+	float oneBlockOfEnergy = oneRowOfEnergy / mapWorld_[0].size();
+
+	currentMapEnergy_ = Lerp(0.08f,currentMapEnergy_,stage_->GetChargedEnergy());
+
+	// どの行 まで 色を変えるか
+	size_t colorChangeBlockLines = static_cast<size_t>(currentMapEnergy_ / oneRowOfEnergy);
+
+	// 行数がmapWorld_のサイズを超えないように調整
+	colorChangeBlockLines = std::min(colorChangeBlockLines,mapWorld_.size());
+
 	// ブロックの更新
-	int i = 0;
+	int row = 0;
 	for (auto& worldTransformBlockLine : mapWorld_)
 	{
-		int j = 0;
+		// 各行の 色を変える ブロック数を 計算
+		float remainingEnergyInRow = currentMapEnergy_ - (row * oneRowOfEnergy);
+		size_t colorChangeBlocks = static_cast<size_t>(remainingEnergyInRow / oneBlockOfEnergy);
+
+		int32_t colorIndex = static_cast<int32_t>(row / (mapWorld_.size() / changedColorByEnergy_.size()));
+
+		// ブロック数が行内のブロック数を超えないように調整
+		colorChangeBlocks = (std::min)(colorChangeBlocks,mapWorld_[row].size());
+		int col = 0;
 		for (auto& worldTransformBlock : worldTransformBlockLine)
 		{
 			if (!worldTransformBlock)
 			{
 				continue;
+				col++;
 			}
-			j++;
-
-			worldTransformBlock->color_ = { 0.25f, 0.25f, 0.25f, 1.0f }; //白
+			
+			if(row < colorChangeBlockLines)
+			{
+				if(col< colorChangeBlocks)
+				{
+					worldTransformBlock->color_ = changedColorByEnergy_[colorIndex];
+				} else
+				{
+					worldTransformBlock->color_ = defaultBlockColor_; //白
+				}
+			} else
+			{
+				worldTransformBlock->color_ = defaultBlockColor_; //白
+			}
 
 			// 列ごとの色変更テスト
-			if (i <= 39 && 35 < i && mapPower >= 10) {
-				worldTransformBlock->color_ = { 0.0f, 0.0f, 0.545f, 1.0f }; //ダーク青
-			}
+			//if (i <= 39 && 35 < i && mapPower >= 10) {
+			//	worldTransformBlock->color_ = { 0.0f, 0.0f, 0.545f, 1.0f }; //ダーク青
+			//}
+			//
+			//if (i <= 35 && 31 < i && mapPower >= 20) {
+			//	worldTransformBlock->color_ = { 0.254f,0.411f, 0.882f, 1.0f }; //青
+			//}
+			//
+			//if (i <= 31 && 27 < i && mapPower >= 30) {
+			//	worldTransformBlock->color_ = { 0.117f,0.564f, 1.000f, 1.0f }; //水色
+			//}
+			//
+			//if (i <= 27 && 23 < i && mapPower >= 40) {
+			//	worldTransformBlock->color_ = { 0.596f,0.984f, 0.596f, 1.0f }; //ダークグリーン
+			//}
+			//
+			//if (i <= 23 && 19 < i && mapPower >= 50) {
+			//	worldTransformBlock->color_ = { 0.486f,0.988f, 0.000f, 1.0f }; //グリーン
+			//}
+			//
+			//if (i <= 19 && 15 < i && mapPower >= 60) {
+			//	worldTransformBlock->color_ = { 1.000f,1.000f, 0.000f, 1.0f }; //黄色
+			//}
+			//
+			//if (i <= 15 && 11 < i && mapPower >= 70) {
+			//	worldTransformBlock->color_ = { 1.000f,0.843f, 0.000f, 1.0f }; //ゴールド
+			//}
+			//
+			//if (i <= 11 && 7 < i && mapPower >= 80) {
+			//	worldTransformBlock->color_ = { 1.000f,0.647f, 0.000f, 1.0f }; //オレンジ
+			//}
+			//
+			//if (i <= 7 && 3 < i && mapPower >= 90) {
+			//	worldTransformBlock->color_ = { 0.780f,0.082f, 0.521f, 1.0f }; //ダークピンク
+			//}
+			//
+			//if (i <= 3 && mapPower >= 100) {
+			//	worldTransformBlock->color_ = { 1.000f,0.411f, 0.705f, 1.0f }; //ピンク
+			//}
 			
-			if (i <= 35 && 31 < i && mapPower >= 20) {
-				worldTransformBlock->color_ = { 0.254f,0.411f, 0.882f, 1.0f }; //青
-			}
-			
-			if (i <= 31 && 27 < i && mapPower >= 30) {
-				worldTransformBlock->color_ = { 0.117f,0.564f, 1.000f, 1.0f }; //水色
-			}
-			
-			if (i <= 27 && 23 < i && mapPower >= 40) {
-				worldTransformBlock->color_ = { 0.596f,0.984f, 0.596f, 1.0f }; //ダークグリーン
-			}
-			
-			if (i <= 23 && 19 < i && mapPower >= 50) {
-				worldTransformBlock->color_ = { 0.486f,0.988f, 0.000f, 1.0f }; //グリーン
-			}
-			
-			if (i <= 19 && 15 < i && mapPower >= 60) {
-				worldTransformBlock->color_ = { 1.000f,1.000f, 0.000f, 1.0f }; //黄色
-			}
-			
-			if (i <= 15 && 11 < i && mapPower >= 70) {
-				worldTransformBlock->color_ = { 1.000f,0.843f, 0.000f, 1.0f }; //ゴールド
-			}
-			
-			if (i <= 11 && 7 < i && mapPower >= 80) {
-				worldTransformBlock->color_ = { 1.000f,0.647f, 0.000f, 1.0f }; //オレンジ
-			}
-			
-			if (i <= 7 && 3 < i && mapPower >= 90) {
-				worldTransformBlock->color_ = { 0.780f,0.082f, 0.521f, 1.0f }; //ダークピンク
-			}
-			
-			if (i <= 3 && mapPower >= 100) {
-				worldTransformBlock->color_ = { 1.000f,0.411f, 0.705f, 1.0f }; //ピンク
-			}
-			
-			
-
-
 			// ウェーブが発生中の場合
 			if (worldTransformBlock->isWave && worldTransformBlock->waveDelay >= 0) {
-				worldTransformBlock->color_ = { 1.000f,0.270f,0.000f,1.0f }; //オレンジ
+				worldTransformBlock->color_ = changedBlockColorByWaving_/*{ 1.000f,0.270f,0.000f,1.0f }*/; //オレンジ
 			}
 			else if (worldTransformBlock->isWave && worldTransformBlock->waveDelay < 0) {
-				worldTransformBlock->color_ = { 1.000f,0.000f,0.000f,1.0f }; //赤
+				worldTransformBlock->color_ = changedBlockColorByWaved_/*{ 1.000f,0.000f,0.000f,1.0f }*/; //赤
 			}
-			
+			col++;
 		}
-		i++;
+		row++;
 	}
 }

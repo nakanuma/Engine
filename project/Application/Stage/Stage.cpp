@@ -27,6 +27,7 @@ void Stage::Initialize()
 	//mapChip_->LoadMapChipCsv("resources/blocks.csv");
 	// そのあとに初期化
 	mapChip_->Initialize(modelBlock_);
+	mapChip_->SetStage(this);
 
 	// Texture読み込み
 	uint32_t monsterBallTexture = TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice());
@@ -207,7 +208,6 @@ void Stage::Update(Camera* camera)
 	
 
 	mapChip_->Update();
-	mapChip_->SetPower(chargedEnergy_);
 
 	CheckAlCollisions();
 
@@ -378,7 +378,6 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 	}
 	player_->Update();
 	mapChip_->Update();
-	mapChip_->SetPower(chargedEnergy_);
 
 	// Collision
 	mapChip_->CheckCollision_Collider(player_->GetHandCollider());
