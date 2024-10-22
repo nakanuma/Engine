@@ -80,8 +80,6 @@ void GameClearScene::Update()
 {
 	stage_->UpdatePlayerAndMapChip(camera);
 	currentUpdate_();
-	// 背景の更新
-	stage_->UpdateBackGround();
 }
 
 void GameClearScene::Draw()
@@ -158,6 +156,7 @@ void GameClearScene::Draw()
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
 
 	ImGui::Text("fps : %.1f",ImGui::GetIO().Framerate);
+	ImGui::Text("%.2f", stage_->GetCloudY());
 
 	ImGui::End();
 
@@ -228,6 +227,9 @@ void GameClearScene::OutSceneUpdate()
 		camera->transform.translate = cameraPosWhenOutScene_;
 		return;
 	}
+
+	// 背景の雲を上へ移動
+	stage_->UpBackGroundCloud();
 
 	// 背景の更新
 	stage_->UpdateBackGround();

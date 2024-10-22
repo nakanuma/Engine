@@ -577,6 +577,35 @@ void Stage::UpdateCloudPosition(Sprite& sprite,float& x,float moveSpeed,float re
 		x = resetPosition;
 	}
 
-	sprite.SetPosition({x,0.0f});
+	sprite.SetPosition({x, cloudY});
 	sprite.Update();
 }
+
+void Stage::UpBackGroundCloud() {
+	// 背景の雲を上へ移動させる
+	if (cloudY > -720.0f) {
+		cloudY -= kCloudUpSpeed;
+	} 
+}
+
+void Stage::DownBackGroundCloud() {
+	// 背景の雲を上へ移動させる
+	if (cloudY < 720.0f) {
+		cloudY += kCloudUpSpeed;
+	}
+}
+
+void Stage::RestoreBackGroundCloud() { 
+	// 0より小さい場合は0になるまで増加
+	if (cloudY < 0.0f) {
+		cloudY += kCloudUpSpeed;
+	// 0より大きい場合は0になるまで減少
+	} else if (cloudY > 0.0f) {
+		cloudY -= kCloudUpSpeed;
+	}
+
+	if (cloudY == 0.0f) {
+		cloudY = 0.0f;
+	}
+}
+
