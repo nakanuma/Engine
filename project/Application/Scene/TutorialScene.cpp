@@ -170,7 +170,7 @@ void TutorialScene::Initialize()
 	///===========================================================================================
 	/// Sound 
 	///===========================================================================================
-	clickSound_ = SoundManager::GetInstance()->LoadWave("resources/Sounds/click.wav");
+	clickSound_ = soundManager->LoadWave("resources/Sounds/click.wav");
 }
 
 void TutorialScene::Finalize()
@@ -288,7 +288,7 @@ void TutorialScene::TextTextureUpdate(uint32_t textureSum)
 			doTask_ = true;
 			currentTextTextureIndex_ = 0;
 
-			SoundManager::GetInstance()->PlayWave(clickSound_,false,0.7f);
+			soundManager->PlayWave(clickSound_,false,0.7f);
 
 			for(size_t i = 0; i < textureSum; i++)
 			{
@@ -304,7 +304,7 @@ void TutorialScene::TextTextureUpdate(uint32_t textureSum)
 
 		} else if(input->TriggerKey(DIK_S) || input->TriggerKey(DIK_A))
 		{
-			SoundManager::GetInstance()->PlayWave(clickSound_,false,0.7f);
+			soundManager->PlayWave(clickSound_,false,0.7f);
 			currentTextTextureIndex_ = std::clamp(static_cast<int32_t>(currentTextTextureIndex_ - 1),0,static_cast<int32_t>(textureSum) - 1);
 		}
 

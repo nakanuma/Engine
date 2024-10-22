@@ -44,6 +44,7 @@ private:
 	std::unique_ptr<Camera> camera_ = nullptr;
 	std::unique_ptr<Stage> stage_;
 
+	std::unique_ptr<SoundManager> soundManager_ = nullptr;
 	SoundManager::SoundData bgm_;
 public:
 	void CreateStage();

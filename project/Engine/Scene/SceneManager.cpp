@@ -16,8 +16,11 @@ SceneManager::~SceneManager()
 
 void SceneManager::InitializeSound()
 {
-	bgm_ = SoundManager::GetInstance()->LoadWave("resources/Sounds/BGM.wav");
-	SoundManager::GetInstance()->PlayWave(bgm_,true,0.4f);
+	soundManager_ = std::make_unique<SoundManager>();
+	soundManager_->Initialize();
+
+	bgm_ = soundManager_->LoadWave("resources/Sounds/BGM.wav");
+	soundManager_->PlayWave(bgm_,true,0.4f);
 }
 
 void SceneManager::CameraInitialize()
