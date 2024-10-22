@@ -153,6 +153,7 @@ void Stage::Initialize()
 		numberModel_[i].material.textureHandle = TextureManager::Load("resources/Images/enempng.png", dxBase->GetDevice());
 	}
 
+	
 	// オブジェクト生成
 	for (int j = 0; j < 3; ++j) {
 		for (int i = 0; i < 10; ++i) {
@@ -163,10 +164,20 @@ void Stage::Initialize()
 			// スケールと位置を設定
 			numberObject_[i][j]->transform_.scale = { 6, 6, 2 };
 			numberObject_[i][j]->transform_.rotate = { 0, 3.14f, 0 };
-			numberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -2.0f - 4, 2, 16 };  // X方向にずらして配置
+			numberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -2.0f - 4.5f, 2, 16 };  // X方向にずらして配置
 		}
 	}
 	
+	// パーセント
+	percentModel_ = ModelManager::LoadModelFile("resources/Models/", "percent.obj", dxBase->GetDevice());
+	percentModel_.material.textureHandle = TextureManager::Load("resources/Images/enempng.png", dxBase->GetDevice());
+
+
+	percentObject_ = std::make_unique<Object3D>();
+	percentObject_->model_ = &percentModel_;
+	percentObject_->transform_.scale = { 1.5f, 1.5f, 4 };
+	percentObject_->transform_.rotate = { 0, 3.14f, 0 };
+	percentObject_->transform_.translate= { -2.1f, 3.5f, 16 };  // X方向にずらして配置
 	// オブジェクト生成
 	for (int j = 0; j < 2; ++j) {
 		for (int i = 0; i < 10; ++i) {
@@ -377,7 +388,12 @@ void Stage::DrawModels()
 	timerNeedleObject_->Draw();
 
 	// 描画処理
-	for (int j = 0; j < 3; ++j) {
+	// 
+	// chargedEnergy_の桁数を取得
+	int numDigits = (chargedEnergy_ == 0) ? 1 : static_cast<int>(log10(chargedEnergy_)) + 1;
+
+
+	for (int j = 0; j < numDigits; ++j) {
 		// j桁目の数字を取り出す（右から左へ）
 		int digit = (static_cast<int>(chargedEnergy_) / static_cast<int>(pow(10, j))) % 10;
 
@@ -385,6 +401,10 @@ void Stage::DrawModels()
 		numberObject_[digit][j]->UpdateMatrix();
 		numberObject_[digit][j]->Draw();
 	}
+	
+
+	percentObject_->UpdateMatrix();
+	percentObject_->Draw();
 
 	// 描画処理
 	for (int j = 0; j < 2; ++j) {

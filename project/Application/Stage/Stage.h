@@ -81,6 +81,10 @@ private:
 	
 	std::unique_ptr<Object3D> timerNumberObject_[10][2];
 
+	// パーセント
+	ModelManager::ModelData percentModel_;
+	std::unique_ptr<Object3D> percentObject_;
+
 	float chargedEnergy_;
 	float maxEnergy_;
 
