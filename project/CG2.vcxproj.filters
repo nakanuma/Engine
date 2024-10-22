@@ -81,6 +81,7 @@
     <ClCompile Include="Application\Effect\EnemyDivide\EnemyDivideParticle.cpp" />
     <ClCompile Include="Application\Effect\EnemyDivide\EnemyDivideEmitter.cpp" />
     <ClCompile Include="Application\Scene\TutorialScene.cpp" />
+    <ClCompile Include="Application\TexturePlane\TexturePlane.cpp" />
     <ClCompile Include="Application\Effect\BackGroundStar\BackGroundStarParticle.cpp" />
     <ClCompile Include="Application\Effect\BackGroundStar\BackGroundStarEmitter.cpp" />
   </ItemGroup>
@@ -104,6 +105,7 @@
     <ClInclude Include="Application\Effect\EnemyDivide\EnemyDivideParticle.h" />
     <ClInclude Include="Application\Effect\EnemyDivide\EnemyDivideEmitter.h" />
     <ClInclude Include="Application\Scene\TutorialScene.h" />
+    <ClInclude Include="Application\TexturePlane\TexturePlane.h" />
     <ClInclude Include="Application\Effect\BackGroundStar\BackGroundStarParticle.h" />
     <ClInclude Include="Application\Effect\BackGroundStar\BackGroundStarEmitter.h" />
   </ItemGroup>

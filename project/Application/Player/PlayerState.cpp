@@ -63,7 +63,6 @@ void NeutralPlayerState::Initialize()
 
 void NeutralPlayerState::Update()
 {
-
 	Float2 moveVal{};
 	for(int32_t i = 0; i < 2; i++)
 	{
@@ -93,7 +92,7 @@ void NeutralPlayerState::Update()
 	{
 		return;
 	}
-	if(input_->PushKey(moveKeys.attack))
+	if(input_->TriggerKey(moveKeys.attack))
 	{
 		player_->TransitionState(
 			new ChargePlayerState(

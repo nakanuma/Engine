@@ -1,8 +1,8 @@
 {
     "Player_AttackState": {
         "accel": 11.600000381469727,
-        "maxChargingEnergy_": 1.0,
-        "maxSpeed": 25.700000762939453,
-        "minChargingEnergy_": 0.5
+        "maxChargingEnergy_": 7.599999904632568,
+        "maxSpeed": 28.600000381469727,
+        "minChargingEnergy_": 1.899999976158142
     }
 }

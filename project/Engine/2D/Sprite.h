@@ -64,6 +64,8 @@ public:
 	const Float2& GetTextureSize() const { return textureSize_; }
 	void SetTextureSize(const Float2& textureSize) { this->textureSize_ = textureSize; }
 
+	void SetTextureIndex(uint32_t textureIndex){ textureIndex_  = textureIndex; }
+
 private:
 	SpriteCommon* spriteCommon = nullptr;
 

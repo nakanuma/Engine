@@ -104,7 +104,6 @@ void Player::InitializeStatus()
 /// State
 ///===========================================================================================
 	TransitionState(new NeutralPlayerState(this));
-
 }
 
 void Player::Update()

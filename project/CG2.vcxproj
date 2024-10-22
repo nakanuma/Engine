@@ -21,6 +21,7 @@
     <ClCompile Include="Application\Scene\GameOverScene.cpp" />
     <ClCompile Include="Application\Scene\TutorialScene.cpp" />
     <ClCompile Include="Application\Stage\Stage.cpp" />
+    <ClCompile Include="Application\TexturePlane\TexturePlane.cpp" />
     <ClCompile Include="Application\UI\UI.cpp" />
     <ClCompile Include="Application\Effect\EnemyDivide\EnemyDivideParticle.cpp" />
     <ClCompile Include="Application\Effect\EnemyDivide\EnemyDivideEmitter.cpp" />
@@ -93,6 +94,7 @@
     <ClInclude Include="Application\Scene\GameOverScene.h" />
     <ClInclude Include="Application\Scene\TutorialScene.h" />
     <ClInclude Include="Application\Stage\Stage.h" />
+    <ClInclude Include="Application\TexturePlane\TexturePlane.h" />
     <ClInclude Include="Application\UI\UI.h" />
     <ClInclude Include="Application\Effect\EnemyDivide\EnemyDivideParticle.h" />
     <ClInclude Include="Application\Effect\EnemyDivide\EnemyDivideEmitter.h" />
