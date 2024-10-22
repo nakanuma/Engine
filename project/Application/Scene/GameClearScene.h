@@ -17,6 +17,8 @@
 #include "Application/Stage/Stage.h"
 #include "Application/UI/UI.h"
 
+#include "Application/TexturePlane/TexturePlane.h"
+
 // ゲームプレイシーン
 class GameClearScene
 	: public BaseScene
@@ -64,8 +66,7 @@ private:
 	Float3 cameraPosWhenEnterScene_;
 
 	// clearText
-	ModelManager::ModelData planeModel_;
 	uint32_t clearTextTextureIndex_;
-	std::unique_ptr<Object3D> clearTextPlane_;
+	std::unique_ptr<TexturePlane> clearTextPlane_;
 public:
 };

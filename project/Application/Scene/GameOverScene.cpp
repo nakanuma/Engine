@@ -56,15 +56,10 @@ void GameOverScene::Initialize()
 	///===========================================================================================
 	/// ClearTextPlane
 	///===========================================================================================
-	planeModel_ = ModelManager::LoadModelFile("resources/Models","plane.obj",dxBase->GetDevice());
-	gameOverTextTextureIndex_ = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
-
-	planeModel_.material.textureHandle = gameOverTextTextureIndex_;
-
-	gameOverTextPlane_ = std::make_unique<Object3D>();
-	gameOverTextPlane_->materialCB_.data_->color = {0.0f,0.0f,0.0f,1.0f};
-	gameOverTextPlane_->model_ = &planeModel_;
-
+	gameoverTextTextureIndex_ = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
+	gameoverTextPlane_ = std::make_unique<TexturePlane>();
+	gameoverTextPlane_->Initialize("GameOver","GameOverText",gameoverTextTextureIndex_,dxBase->GetDevice());
+	
 	///===========================================================================================
 	/// GlobalVariables
 	///===========================================================================================
@@ -74,9 +69,6 @@ void GameOverScene::Initialize()
 	leftTime_ = enterSceneMaxTime_;
 
 	variables->addValue("GameOver","Camera","cameraPosWhenOutScene_",cameraPosWhenOutScene_);
-	variables->addValue("GameOver","GameOverText","scale"   ,gameOverTextPlane_->transform_.scale);
-	variables->addValue("GameOver","GameOverText","rotate"  ,gameOverTextPlane_->transform_.rotate);
-	variables->addValue("GameOver","GameOverText","position",gameOverTextPlane_->transform_.translate);
 }
 
 void GameOverScene::Finalize()
@@ -132,8 +124,8 @@ void GameOverScene::Draw()
 	/// 
 
 	stage_->DrawModels();
-	gameOverTextPlane_->UpdateMatrix();
-	gameOverTextPlane_->Draw();
+	gameoverTextPlane_->Update();
+	gameoverTextPlane_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -196,11 +188,11 @@ void GameOverScene::EnterSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
-	gameOverTextPlane_->materialCB_.data_->color.w = Lerp(t,0.0f,1.0f);
+	gameoverTextPlane_->GetPlaneObject()->materialCB_.data_->color.w = Lerp(t,0.0f,1.0f);
 
 	if(leftTime_ <= 0.0f)
 	{
-		gameOverTextPlane_->materialCB_.data_->color.w = 1.0f;
+		gameoverTextPlane_->GetPlaneObject()->materialCB_.data_->color.w = 1.0f;
 
 		stage_->ClearEnemies();
 
