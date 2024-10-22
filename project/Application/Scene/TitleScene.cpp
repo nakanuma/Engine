@@ -202,6 +202,12 @@ void TitleScene::Draw()
 	titleTextObject_->UpdateMatrix();
 	titleTextObject_->Draw();
 	stage_->DrawModels();
+  
+	if(tutorialSkipPlane_)
+	{
+		tutorialSkipPlane_->Update();
+		tutorialSkipPlane_->Draw();
+	}
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -262,6 +268,33 @@ void TitleScene::Draw()
 	dxBase->EndFrame();
 }
 
+bool TitleScene::CheckTutorialSkip()
+{
+	const Player* player = stage_->GetPlayer();
+	Float3 playerPos = player->GetWorldPosition();
+	if(playerPos.y > 2.0f)
+	{
+		return false;
+	}
+	Float3 planeLt = {tutorialSkipPlane_->GetLbPos().x,tutorialSkipPlane_->GetLbPos().y,tutorialSkipPlane_->GetLbPos().z};
+	Float3 planeRb = {tutorialSkipPlane_->GetRtPos().x,tutorialSkipPlane_->GetRtPos().y,tutorialSkipPlane_->GetRtPos().z};
+
+	const Matrix& planeMat = tutorialSkipPlane_->GetWorldMatrix();
+	planeLt = TransformMatrix(planeLt,planeMat);
+	planeRb = TransformMatrix(planeRb,planeMat);
+	
+	// XZ平面での範囲判定
+	bool isWithinX = (playerPos.x >= planeRb.x && playerPos.x <= planeLt.x);
+	bool isWithinZ = (playerPos.z >= planeRb.z && playerPos.z <= planeLt.z);
+
+	// プレイヤーのXZ座標が平面内にあるかどうか
+	if(!isWithinX || !isWithinZ)
+	{
+		return false;   // XZ座標が範囲内にあるなら true を返す
+	}
+	return true;      // それ以外の場合は false を返す
+}
+
 void TitleScene::EnterSceneUpdate()
 {
 	leftTime_ += DeltaTime::getInstance()->getDeltaTime();
@@ -285,9 +318,32 @@ void TitleScene::SceneUpdate()
 	t_ += DeltaTime::getInstance()->getDeltaTime() * signT_;
 	if(stage_->GetIsClear())
 	{
-		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
+		currentUpdate_ = [this]() { this->OutScene_TutorialSkip(); };
 		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
+		stage_->SetEnergy(0.0f);
+		stage_->SetMaxEnergy(16.0f);
 		t_ = 0.0f;
+
+		// plane
+		DirectXBase* dxBase = DirectXBase::GetInstance();
+		tutorialSkipPlane_ = std::make_unique<TexturePlane>();
+		tutorialSkipPlane_->Initialize("Title","TutorialSkipPlane",buttonTextureIndex_,dxBase->GetDevice());
+	}
+}
+
+void TitleScene::OutScene_TutorialSkip()
+{
+	if(CheckTutorialSkip())
+	{
+		nextSceneName_ = "GAMEPLAY";
+		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
+		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
+	}
+	else if(stage_->GetIsClear())
+	{
+		nextSceneName_ = "TUTORIAL";
+		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
+		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 	}
 }
 
@@ -295,8 +351,8 @@ void TitleScene::OutSceneUpdate()
 {
 	leftTime_ += DeltaTime::getInstance()->getDeltaTime();
 	t_ = leftTime_ / outSceneMaxTime_;
-	if(leftTime_ >= outSceneMaxTime_)
-	{
-		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+
+	if(leftTime_ >= outSceneMaxTime_){
+		SceneManager::GetInstance()->ChangeScene(nextSceneName_);
 	}
 }

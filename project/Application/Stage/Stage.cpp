@@ -211,8 +211,7 @@ void Stage::Update(Camera* camera)
 	{
 		enemy->Update(enemies_);
 	}
-	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy) { return enemy->IsAlive()?false:true; });
-
+	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy) { return enemy->IsAlive() ? false : true; });
 
 	mapChip_->Update();
 
@@ -391,6 +390,9 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 	if(chargedEnergy_ >= maxEnergy_)
 	{
 		isClear_ = true;
+	} else
+	{
+		isClear_ = false;
 	}
 	player_->Update();
 	mapChip_->Update();
@@ -433,11 +435,41 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 #pragma endregion
 }
 
+void Stage::UpdateEnemies()
+{
+	// スポーン
+	for(auto& enemySpawner : enemySpawners_)
+	{
+		enemySpawner->Update();
+		if(!enemySpawner->IsSpawn())
+		{
+			continue;
+		}
+		std::unique_ptr<Enemy> enemy;
+		enemy.reset(enemySpawner->Spawn());
+		enemy->SetStage(this);
+		enemies_.emplace_back(std::move(enemy));
+	}
+
+	// Update
+	for(auto& enemy : enemies_)
+	{
+		enemy->Update(enemies_);
+	}
+	// Collision
+	for(auto& enemy : enemies_)
+	{
+		mapChip_->CheckCollision_Collider(enemy->GetCollider());
+	}
+	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy) { return enemy->IsAlive()?false:true; });
+
+	// 敵着地時のパーティクルを更新
+	enemyLandingEmitter_.Update();
+}
+
 void Stage::InitializeStatus(const std::string& scene)
 {
 	GlobalVariables* variables = GlobalVariables::getInstance();
-
-	mapChip_->Initialize(modelBlock_);
 
 	if(scene == "Title")
 	{

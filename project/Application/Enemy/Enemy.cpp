@@ -24,6 +24,7 @@ Enemy::~Enemy()
 void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelData* modelData)
 {
 	isAlive_ = true;
+	isHurt_ = false;
 	isClone_ = false;
 
 	object_ = std::make_unique<Object3D>();
@@ -83,7 +84,8 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 		return;
 	}
 
-	
+	isHurt_ = false;
+
 	if(preOnGround_ && !isOnGround_)
 	{// 地面を離れた
 		if(onWavingMapChip_)
@@ -93,13 +95,14 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 		}
 	} else if(!preOnGround_ && isOnGround_)
 	{// 着地した 瞬間
-		// waveRange を 複製体 の 切符として 機能させる
+		// waveRange を 複製体作成 の 切符として 機能させる
 		if (waveRange_ != 0.0f)
 		{
 			if (object_->transform_.translate.y <= 1)
 			{
 				stage_->ChargeEnergy(stolenEnergy_);
 
+				isHurt_ = true;
 				isClone_ = true;
 				--numberOfClones2Create_;
 				if (numberOfClones2Create_ < 0.0f)

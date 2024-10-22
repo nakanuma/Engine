@@ -63,7 +63,6 @@ void NeutralPlayerState::Initialize()
 
 void NeutralPlayerState::Update()
 {
-
 	Float2 moveVal{};
 	for(int32_t i = 0; i < 2; i++)
 	{
