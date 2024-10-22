@@ -116,7 +116,7 @@ void Player::Update()
 	// 移動制限一旦書いときました(他に書くところがあるなら消してもいいよ!!)
 	// この範囲がマップの叩ける範囲
 	if (handObject_->transform_.translate.x >= 39) {
-		//handObject_->transform_.translate.x = 39;
+		handObject_->transform_.translate.x = 39;
 	}
 	if (handObject_->transform_.translate.x <= -0) {
 		handObject_->transform_.translate.x = -0;
