@@ -259,12 +259,6 @@ void TitleScene::Draw()
 
 	ImGui::End();
 
-	ImGui::Begin("titleDebug");
-	ImGui::DragFloat3("TitleObject.translate", &titleTextObject_->transform_.translate.x, 0.01f);
-	ImGui::DragFloat3("TitleObject.rotate", &titleTextObject_->transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("TitleObject.scale", &titleTextObject_->transform_.scale.x, 0.01f);
-	ImGui::End();
-
 #endif // _DEBUG
 
 	// ImGuiの内部コマンドを生成する
