@@ -79,7 +79,7 @@ private:
 	float maxEnergy_;
 
 	float limitTime_;
-	float currentTime_;
+	float leftTime_;
 
 	bool isClear_;
 	bool isGameOver_;
@@ -91,7 +91,7 @@ public:
 	float GetChargedEnergy()const { return chargedEnergy_; }
 
 	float GetLimitTime()const { return limitTime_; }
-	float GetCurrentTime()const { return currentTime_; }
+	float GetLeftTime()const { return leftTime_; }
 
 	void SetEnergy(float energy) { chargedEnergy_ = energy; }
 	void SetMaxEnergy(float maxEnergy) { maxEnergy_ = maxEnergy; }
