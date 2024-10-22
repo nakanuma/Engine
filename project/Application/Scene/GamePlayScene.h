@@ -42,9 +42,9 @@ private:
 
 	void DebugCameraUpdate(Input* input);
 
-	void ButtonSpriteUI(Sprite* sprite, bool isActive, const Float2& position, const Float2& size);
-#endif
 
+#endif
+	void ButtonSpriteUI(Sprite* sprite, bool isActive, const Float2& position, const Float2& size);
 private:
 	Camera* camera = nullptr;
 	std::unique_ptr<DebugCamera>   debugCamera = nullptr;
