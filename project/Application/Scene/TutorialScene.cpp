@@ -240,7 +240,7 @@ void TutorialScene::Draw()
 #pragma endregion
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
-#endif // _DEBUG
+
 
 	ImGui::Begin("Camera");
 
@@ -263,6 +263,7 @@ void TutorialScene::Draw()
 	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
+#endif // _DEBUG
 
 	// ImGuiの内部コマンドを生成する
 	ImguiWrapper::Render(dxBase->GetCommandList());
