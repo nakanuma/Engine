@@ -88,6 +88,8 @@ void GameClearScene::Update()
 {
 	stage_->UpdatePlayerAndMapChip(camera);
 	currentUpdate_();
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GameClearScene::Draw()
@@ -107,6 +109,24 @@ void GameClearScene::Draw()
 	// ライトの定数バッファを設定
 	lightManager->TransferContantBuffer();
 
+	// スプライト描画前処理
+	spriteCommon->PreDraw();
+
+	///
+	///	↓ ここから背景スプライトの描画コマンド
+	///
+
+	stage_->DrawBackGround();
+
+	///
+	///	↑ ここまで背景スプライトの描画コマンド
+	///
+
+	// スプライト描画後処理
+	spriteCommon->PostDraw();
+	Camera::TransferConstantBuffer();
+	lightManager->TransferContantBuffer();
+
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
@@ -123,11 +143,11 @@ void GameClearScene::Draw()
 	spriteCommon->PreDraw();
 
 	///
-	/// ↓ ここからスプライトの描画コマンド
+	/// ↓ ここから前景スプライトの描画コマンド
 	/// 
 
 	///
-	/// ↑ ここまでスプライトの描画コマンド
+	/// ↑ ここまで前景スプライトの描画コマンド
 	/// 
 
 #pragma region 丸影の設定
@@ -138,7 +158,7 @@ void GameClearScene::Draw()
 #pragma endregion
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
-#endif // _DEBUG
+
 
 	ImGui::Begin("Camera");
 
@@ -162,6 +182,7 @@ void GameClearScene::Draw()
 	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
+#endif // _DEBUG
 
 	// ImGuiの内部コマンドを生成する
 	ImguiWrapper::Render(dxBase->GetCommandList());
@@ -185,6 +206,9 @@ void GameClearScene::EnterSceneUpdate()
 
 		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GameClearScene::SceneUpdate()
@@ -194,6 +218,9 @@ void GameClearScene::SceneUpdate()
 		leftTime_ = outSceneMaxTime_;
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GameClearScene::OutSceneUpdate()
@@ -209,4 +236,7 @@ void GameClearScene::OutSceneUpdate()
 		camera->transform.translate = cameraPosWhenOutScene_;
 		return;
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }

@@ -265,6 +265,7 @@ void GlobalVariables::ImGuiMenu(){
 					if(ImGui::MenuItem(sceneList[i].c_str(),nullptr,currentSceneNum_ == i)){
 						currentScene_ = sceneList[i];
 						currentSceneNum_ = i; // Update currentSceneNum_ index
+						currentGroupNum_ = 0;
 					}
 				}
 				ImGui::EndMenu();  // Ensure this is called to match BeginMenu

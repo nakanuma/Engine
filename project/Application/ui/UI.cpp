@@ -12,14 +12,6 @@ void UI::Init(const std::string& scene,
 			  std::uint32_t textureIndex,
 			  SpriteCommon* spriteCommon){
 
-#ifndef _DEBUG
-	Float2 pos_;
-	Float2 size_;
-	Float4 color_ = {1.0f,1.0f,1.0f,1.0f};
-	Float2 anchor_ = {0.0f,0.0f};
-	bool isFlipX_ = false;
-	bool isFlipY_ = false;
-#endif // !_DEBUG
 	///===========================================================================================
 	/// Sprite 生成
 	///===========================================================================================

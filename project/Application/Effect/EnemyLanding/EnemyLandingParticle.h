@@ -21,7 +21,8 @@ private:
 	Float3 velocity_;
 	// 回転速度
 	Float3 rotateSpeed_;
-	float acceleratorY = 0.01f;
+	float acceleratorY = 0.008f;
+	const float kSpeed_ = 0.07f;
 	// 削除フラグ
 	bool del_ = false;
 	// 経過時間を計測

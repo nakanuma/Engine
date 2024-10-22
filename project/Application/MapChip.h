@@ -27,6 +27,7 @@ struct  MapChipData
 	std::vector<std::vector<MapChipType>> data;
 };
 
+class Stage;
 // マップチップ全体
 class MapChipField
 {
@@ -125,17 +126,17 @@ public:
 	// マップのカラー指定
 	void MapColor();
 
-	// マップパワーの加算
-	void SetAddPower(float p) { mapPower += p; };
-	// マップパワー取得
-	float& GetPower() { return mapPower; };
-
-	void SetPower(float p) { mapPower = p; };
-
 private:
 	// パワー
-	float mapPower = 0;
-
+	// float mapPower = 0;
+	// stage にあるから 不要
+	Stage* stage_;
+	// 表示されている エネルギー
+	float currentMapEnergy_;
+	std::array<Float4,10> changedColorByEnergy_;
+	Float4 defaultBlockColor_;
+	Float4 changedBlockColorByWaving_;
+	Float4 changedBlockColorByWaved_;
 
 	// モデルデータ
 	ModelManager::ModelData model_;
@@ -164,11 +165,8 @@ private:
 	// マップのY軸速度
 	float maxVelocityY_; //MAX
 	float minVelocityY_; //MIN
-
-
 public:
-
-
+	void SetStage(Stage* stage){stage_ = stage;}
 private:
 	// Instancing用オブジェクト
 	InstancedObject mapObjIns_;
