@@ -10,7 +10,8 @@
 #include "SpriteCommon.h"
 #include "TextureManager.h"
 
-#include <queue>
+#include <deque>
+#include <list>
 
 #include "Application/Stage/Stage.h"
 #include "Application/UI/UI.h"
@@ -31,7 +32,8 @@ public:
 
 	// 描画
 	void Draw() override;
-
+private:
+	void TextTextureUpdate(uint32_t textureSum);
 private:
 	Camera* camera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
@@ -55,11 +57,20 @@ private:
 	float enterSceneMaxTime_;
 	float outSceneMaxTime_;
 
-	Float3 cameraPosWhenEnterScene_;
-	Float3 cameraHomePos_;
+	bool doTask_;
+	std::deque<uint32_t> tutorialTextTextures_;
+	std::deque<uint32_t> tutorialTaskGuidTextures_;
+	uint32_t currentTextTextureIndex_;
 
-	std::queue<std::function<void()>> tutorialTextUpdate_;
-	std::queue<std::function<bool()>> tutorialTask_;
-	bool isPrePlayerAttack_;
-	std::unordered_map<Enemy*,bool> wasAttackedFormPlayer_;
+	std::unique_ptr<Sprite> currentTextTexture_;
+	Float2 textTexturePos_;
+	std::unique_ptr<Sprite> currentTaskGuidTexture_;
+	Float2 taskGuidTexturePos_;
+
+	std::deque<std::function<void()>> tutorialTextUpdate_;
+	std::deque<std::function<bool()>> tutorialTask_;
+
+	// タスクに使う 変数 群
+	int32_t playerAttackNum_;
+	int32_t enemyHurtNum_;
 };

@@ -12,6 +12,7 @@
 
 #include "Application/Stage/Stage.h"
 #include "Application/UI/UI.h"
+#include "Application/TexturePlane/TexturePlane.h"
 
 // ゲームプレイシーン
 class TitleScene : public BaseScene
@@ -30,6 +31,8 @@ public:
 	void Draw() override;
 
 private:
+	bool CheckTutorialSkip();
+private:
 	Camera* camera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
@@ -46,6 +49,7 @@ private:
 
 	void EnterSceneUpdate();
 	void SceneUpdate();
+	void OutScene_TutorialSkip();
 	void OutSceneUpdate();
 	float t_;
 	float leftTime_;
@@ -57,6 +61,7 @@ private:
 
 	uint32_t buttonTextureIndex_;
 	std::unique_ptr<UI> buttonUI_;
+
 	std::function<void(Sprite*)> buttonUpdateWhenEnterScene_;
 	std::function<void(Sprite*)> buttonUpdateWhenSceneUpdate_;
 	std::function<void(Sprite*)> buttonUpdateWhenOutScene_;
@@ -66,8 +71,12 @@ private:
 	ModelManager::ModelData titleTextModel_;
 	std::unique_ptr<Object3D> titleTextObject_;
 
+	std::unique_ptr<TexturePlane> tutorialSkipPlane_;
+
 	Float2 buttonUiOffset_;
 	float signT_;
+  
+  std::string nextSceneName_;
 
 // nakanuma追加分
 private:

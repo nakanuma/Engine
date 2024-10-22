@@ -63,17 +63,6 @@ void NeutralPlayerState::Initialize()
 
 void NeutralPlayerState::Update()
 {
-	if(input_->PushKey(moveKeys.attack))
-	{
-		player_->TransitionState(
-			new ChargePlayerState(
-				player_,
-				player_->GetTranslate() // offset を 計算
-			)
-		);
-		return;
-	}
-
 	Float2 moveVal{};
 	for(int32_t i = 0; i < 2; i++)
 	{
@@ -86,7 +75,7 @@ void NeutralPlayerState::Update()
 
 	Float3 translate = player_->GetTranslate();
 	translate += Float3(moveVal.x,0.0f,moveVal.y) * (speed_ * DeltaTime::getInstance()->getDeltaTime());
-	translate.y = Lerp(0.1f,defaultPosY_,translate.y);
+	translate.y = Lerp(0.145f,defaultPosY_,translate.y);
 
 	player_->SetTranslate(translate);
 	if(moveVal.x != 0.0f || moveVal.y != 0.0f)
@@ -97,6 +86,21 @@ void NeutralPlayerState::Update()
 	} else {
 		// 動いていない状態
 		player_->SetIsMoving(false);
+	}
+
+	if(translate.y - defaultPosY_ >= 0.1f)
+	{
+		return;
+	}
+	if(input_->TriggerKey(moveKeys.attack))
+	{
+		player_->TransitionState(
+			new ChargePlayerState(
+				player_,
+				player_->GetTranslate() // offset を 計算
+			)
+		);
+		return;
 	}
 }
 //=====================================================
