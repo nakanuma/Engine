@@ -9,6 +9,7 @@
 #include <cmath>
 #include <numbers>
 #include "MyMath.h"
+#include "Easing.h"
 
 #include "DeltaTime.h"
 #include "GlobalVariables.h"
@@ -154,18 +155,23 @@ void TitleScene::Finalize()
 {
 }
 
-void TitleScene::Update()
-{
+void TitleScene::Update() {
 	///
 	///	シーン切り替え
-	/// 
+	///
 
 	stage_->UpdatePlayerAndMapChip(camera);
 	currentUpdate_();
 	// 背景の更新
 	stage_->UpdateBackGround();
 	buttonUI_->Update();
-}
+
+	/*-----------------*/
+	/* タイトル文字の回転 */
+	/*-----------------*/
+
+	RotateTitleTextObject();
+};
 
 void TitleScene::Draw()
 {
@@ -265,6 +271,7 @@ void TitleScene::Draw()
 	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
+
 #endif // _DEBUG
 
 	// ImGuiの内部コマンドを生成する
@@ -362,5 +369,34 @@ void TitleScene::OutSceneUpdate()
 	if(leftTime_ >= outSceneMaxTime_)
 	{
 		SceneManager::GetInstance()->ChangeScene(nextSceneName_);
+	}
+}
+
+void TitleScene::RotateTitleTextObject() {
+	// プレイヤーが地面に衝突したらタイトル回転速度を設定
+	if (stage_->GetPlayer()->GetTranslate().y <= 0.0f) {
+		titleRotSpd_ = kInitialRotSpd_;
+		currentFrame = 0;
+		isRotStart_ = true;
+	}
+
+	// 回転を行う
+	if (isRotStart_) {
+		if (currentFrame <= kTotalFrame) {
+			float t = static_cast<float>(currentFrame) / static_cast<float>(kTotalFrame);
+			titleRotSpd_ = kInitialRotSpd_ * (1.0f - Easing::EaseOutQuart(t));
+			currentFrame++;
+		} else {
+			titleRotSpd_ = 0.0f;
+			isRotStart_ = false;
+		}
+	}
+
+	// タイトルオブジェクトに回転速度を適用
+	titleTextObject_->transform_.rotate.y += titleRotSpd_;
+
+	// 1回転したらY軸を0に戻す
+	if (titleTextObject_->transform_.rotate.y > std::numbers::pi_v<float> * 2.0f) {
+		titleTextObject_->transform_.rotate.y = 0.0f;
 	}
 }

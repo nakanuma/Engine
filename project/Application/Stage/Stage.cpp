@@ -103,14 +103,14 @@ void Stage::Initialize()
 	enemyLandingEmitter_.Initialize(&modelEnemyLandingParticle_,enemyLandingParticleGH);
 
 	// プレイヤー移動時パーティクル関連初期化
-	modelPlayerMoveParticle_ = ModelManager::LoadModelFile("resources/Models","cube.obj",dxBase->GetDevice());
-	uint32_t playerMoveParticleGH = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
+	modelPlayerMoveParticle_ = ModelManager::LoadModelFile("resources/Models", "cube.obj", dxBase->GetDevice());
+	uint32_t playerMoveParticleGH = TextureManager::Load("resources/Images/playerMove.png", dxBase->GetDevice());
 
 	playerMoveEmitter_.Initialize(&modelPlayerMoveParticle_,playerMoveParticleGH);
 
 	// エネミー分裂時パーティクル関連初期化
-	modelEnemyDivideParticle_ = ModelManager::LoadModelFile("resources/Models","sphere.obj",dxBase->GetDevice());
-	uint32_t enemyDivideParticleGH = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
+	modelEnemyDivideParticle_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
+	uint32_t enemyDivideParticleGH = TextureManager::Load("resources/Images/enemyDivide.png", dxBase->GetDevice());
 
 	enemyDivideEmitter_.Initialize(&modelEnemyDivideParticle_,enemyDivideParticleGH);
 
