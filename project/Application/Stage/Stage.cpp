@@ -36,9 +36,10 @@ void Stage::Initialize()
 	player_->SetMapChipField(mapChip_.get());
 	player_->SetStage(this);
 
+	uint32_t enmeyTexture = TextureManager::Load("resources/Images/enemy.png",dxBase->GetDevice());
 	variables->addValue("Game","EnemySpawner_Default","spawnerValue",enemySpawnerValue_);
 	enemyModel = ModelManager::LoadModelFile("resources/Models","enemy.obj",dxBase->GetDevice());
-	enemyModel.material.textureHandle = monsterBallTexture;
+	enemyModel.material.textureHandle = enmeyTexture;
 
 	for(size_t i = 0; i < enemySpawnerValue_; ++i)
 	{
