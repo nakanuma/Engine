@@ -160,9 +160,9 @@ void Stage::Initialize()
 			numberObject_[i][j]->model_ = &numberModel_[i];
 
 			// スケールと位置を設定
-			numberObject_[i][j]->transform_.scale = { 4, 4, 2 };
+			numberObject_[i][j]->transform_.scale = { 6, 6, 2 };
 			numberObject_[i][j]->transform_.rotate = { 0, 3.14f, 0 };
-			numberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -1.3f, 10, 0 };  // X方向にずらして配置
+			numberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -2.0f - 4, 2, 16 };  // X方向にずらして配置
 		}
 	}
 	
