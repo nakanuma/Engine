@@ -46,6 +46,7 @@ public:
 	void SetPosition(const Float3& pos) { object.transform_.translate = pos; }
 
 	float GetRadius() const { return radius_; }
+	void SetRadius(float radius) { radius_ = radius; }
 	void SetTransformParent(Object3D* parent)
 	{
 		object.SetParent(parent);

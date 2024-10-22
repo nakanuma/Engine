@@ -79,9 +79,6 @@ void GameOverScene::Update()
 {
 	stage_->UpdatePlayerAndMapChip(camera);
 	currentUpdate_();
-
-	// 背景の更新
-	stage_->UpdateBackGround();
 }
 
 void GameOverScene::Draw()
@@ -198,6 +195,9 @@ void GameOverScene::EnterSceneUpdate()
 
 		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GameOverScene::SceneUpdate()
@@ -207,6 +207,9 @@ void GameOverScene::SceneUpdate()
 		leftTime_ = outSceneMaxTime_;
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GameOverScene::OutSceneUpdate()
@@ -222,4 +225,10 @@ void GameOverScene::OutSceneUpdate()
 		camera->transform.translate = cameraPosWhenOutScene_;
 		return;
 	}
+
+	// 背景の雲を下へ移動
+	stage_->DownBackGroundCloud();
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
