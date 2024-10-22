@@ -31,6 +31,8 @@ public:
 	void Draw() override;
 
 private:
+	bool CheckTutorialSkip();
+private:
 	Camera* camera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
 	std::unique_ptr<SoundManager> soundManager = nullptr;
@@ -47,6 +49,7 @@ private:
 
 	void EnterSceneUpdate();
 	void SceneUpdate();
+	void OutScene_TutorialSkip();
 	void OutSceneUpdate();
 	float t_;
 	float leftTime_;
@@ -68,6 +71,10 @@ private:
 	ModelManager::ModelData titleTextModel_;
 	std::unique_ptr<Object3D> titleTextObject_;
 
+	std::unique_ptr<TexturePlane> tutorialSkipPlane_;
+
 	Float2 buttonUiOffset_;
 	float signT_;
+
+	std::string nextSceneName_;
 };

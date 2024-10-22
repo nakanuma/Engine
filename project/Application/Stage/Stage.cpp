@@ -263,6 +263,9 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 	if(chargedEnergy_ >= maxEnergy_)
 	{
 		isClear_ = true;
+	} else
+	{
+		isClear_ = false;
 	}
 	player_->Update();
 	mapChip_->Update();

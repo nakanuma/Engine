@@ -23,7 +23,7 @@ class Stage
 {
 public:
 	Stage() = default;
-	~Stage(){}
+	~Stage() {}
 
 	void Initialize();
 	void Update(Camera* camera);
@@ -76,19 +76,20 @@ private:
 	bool isClear_;
 	bool isGameOver_;
 public:
-	bool GetIsClear()const{return isClear_;}
-	bool GetIsGameOver()const{return isGameOver_;}
+	bool GetIsClear()const { return isClear_; }
+	bool GetIsGameOver()const { return isGameOver_; }
 
-	float GetMaxEnergy()const{return maxEnergy_;}
-	float GetChargedEnergy()const{return chargedEnergy_;}
+	float GetMaxEnergy()const { return maxEnergy_; }
+	float GetChargedEnergy()const { return chargedEnergy_; }
 
-	float GetLimitTime()const{return limitTime_;}
-	float GetCurrentTime()const{return currentTime_;}
+	float GetLimitTime()const { return limitTime_; }
+	float GetCurrentTime()const { return currentTime_; }
 
-	void SetEnergy(float energy){ chargedEnergy_ = energy;}
+	void SetEnergy(float energy) { chargedEnergy_ = energy; }
+	void SetMaxEnergy(float maxEnergy) { maxEnergy_ = maxEnergy; }
 
-	Player* GetPlayer(){return player_.get();}
-	std::list<std::unique_ptr<Enemy>>& GetEnemies(){ return enemies_; }
+	Player* GetPlayer() { return player_.get(); }
+	std::list<std::unique_ptr<Enemy>>& GetEnemies() { return enemies_; }
 
 	void ClearEnemies();
 
@@ -96,9 +97,10 @@ public:
 	/// パワーをチャージ
 	/// </summary>
 	/// <param name="power">チャージ量</param>
-	void ChargeEnergy(float energy){ chargedEnergy_ += energy;}
-	float StealEnergy(float stealEnergy){
-		// 総量 が 奪われる 量より多かったら
+	void ChargeEnergy(float energy) { chargedEnergy_ += energy; }
+	float StealEnergy(float stealEnergy)
+	{
+// 総量 が 奪われる 量より多かったら
 		if(chargedEnergy_ <= stealEnergy)
 		{
 			// 全部 奪われる

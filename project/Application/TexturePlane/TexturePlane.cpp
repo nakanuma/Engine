@@ -7,6 +7,8 @@
 #include "externals/imgui/imgui.h"
 #endif // _DEBUG
 
+#include <numbers>
+
 void TexturePlane::Initialize(const std::string& sceneName,const std::string& groupName,uint32_t textureIndex,ID3D12Device* device)
 {
 	const DirectX::TexMetadata& metaData = TextureManager::GetInstance().GetMetaData(textureIndex);
@@ -19,9 +21,9 @@ void TexturePlane::Initialize(const std::string& sceneName,const std::string& gr
 	planeObject_ = std::make_unique<Object3D>();
 	planeObject_->model_ = &planeModel_;
 
-	planeModel_.vertices[0].position = {-textureHalfSize.x,-textureHalfSize.y, 0.0f,1.0f};
-	planeModel_.vertices[1].position = { textureHalfSize.x,textureHalfSize.y, 0.0f,1.0f};
-	planeModel_.vertices[2].position = { textureHalfSize.x,-textureHalfSize.y,0.0f,1.0f};
+	planeModel_.vertices[0].position = {-textureHalfSize.x,-textureHalfSize.y,0.0f,1.0f};
+	planeModel_.vertices[1].position = {textureHalfSize.x,textureHalfSize.y,0.0f,1.0f};
+	planeModel_.vertices[2].position = {textureHalfSize.x,-textureHalfSize.y,0.0f,1.0f};
 	planeModel_.vertices[3].position = {-textureHalfSize.x,-textureHalfSize.y,0.0f,1.0f};
 	planeModel_.vertices[4].position = {-textureHalfSize.x,textureHalfSize.y,0.0f,1.0f};
 	planeModel_.vertices[5].position = {textureHalfSize.x,textureHalfSize.y,0.0f,1.0f};
@@ -33,6 +35,7 @@ void TexturePlane::Initialize(const std::string& sceneName,const std::string& gr
 	// 頂点データをリソースにコピー
 	std::memcpy(vertexData,planeModel_.vertices.data(),sizeof(ModelManager::VertexData) * planeModel_.vertices.size());
 
+	planeObject_->transform_.rotate = {-std::numbers::pi_v<float>*0.5f,std::numbers::pi_v<float>,0.0f};
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->addValue(sceneName,groupName,"scale",planeObject_->transform_.scale);
 	variables->addValue(sceneName,groupName,"rotate",planeObject_->transform_.rotate);
