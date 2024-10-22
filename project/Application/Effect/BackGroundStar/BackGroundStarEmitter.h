@@ -19,4 +19,7 @@ private:
 	uint32_t particleNum = 5;
 
 	SpriteCommon* spriteCommon_;
+
+	int32_t timer_;
+	const int32_t interval = 30;
 };

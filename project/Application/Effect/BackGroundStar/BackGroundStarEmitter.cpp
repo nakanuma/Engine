@@ -12,6 +12,13 @@ void BackGroundStarEmitter::Initialize(uint32_t textureHandle, SpriteCommon* spr
 }
 
 void BackGroundStarEmitter::Update() {
+	timer_++;
+
+	// 設定した頻度毎に生成
+	if (timer_ % 30 == 0) {
+		Emit();
+	}
+
 	for (auto itr = particleList_.begin(); itr != particleList_.end();) {
 		(*itr)->Update();
 

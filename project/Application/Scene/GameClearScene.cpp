@@ -203,6 +203,9 @@ void GameClearScene::EnterSceneUpdate()
 
 		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GameClearScene::SceneUpdate()
@@ -212,6 +215,9 @@ void GameClearScene::SceneUpdate()
 		leftTime_ = outSceneMaxTime_;
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GameClearScene::OutSceneUpdate()
@@ -227,4 +233,7 @@ void GameClearScene::OutSceneUpdate()
 		camera->transform.translate = cameraPosWhenOutScene_;
 		return;
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
