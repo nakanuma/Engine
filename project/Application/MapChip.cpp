@@ -435,7 +435,7 @@ void MapChipField::MapColor()
 			}
 			j++;
 
-			worldTransformBlock->color_ = { 1, 1, 1, 1.0f }; //白
+			worldTransformBlock->color_ = { 0.25f, 0.25f, 0.25f, 1.0f }; //白
 
 			// 列ごとの色変更テスト
 			if (i <= 39 && 35 < i && mapPower >= 10) {
