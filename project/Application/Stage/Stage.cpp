@@ -45,7 +45,7 @@ void Stage::Initialize()
 
 	for(size_t i = 0; i < enemySpawnerValue_; ++i)
 	{
-		enemySpawners_.push_back(std::make_unique<EnemySpawner>());
+		enemySpawners_.push_back(std::make_unique<EnemySpawner>(this));
 		enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
 		enemySpawners_.back()->SetEnemyModel(enemyModel);
 	}
@@ -160,9 +160,9 @@ void Stage::Initialize()
 			numberObject_[i][j]->model_ = &numberModel_[i];
 
 			// スケールと位置を設定
-			numberObject_[i][j]->transform_.scale = { 4, 4, 2 };
+			numberObject_[i][j]->transform_.scale = { 6, 6, 2 };
 			numberObject_[i][j]->transform_.rotate = { 0, 3.14f, 0 };
-			numberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -1.3f, 10, 0 };  // X方向にずらして配置
+			numberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -2.0f - 4, 2, 16 };  // X方向にずらして配置
 		}
 	}
 	
@@ -170,7 +170,7 @@ void Stage::Initialize()
 
 
 	variables->addValue("Game","Stage","limitTime",limitTime_);
-	currentTime_ = limitTime_;
+	leftTime_ = limitTime_;
 
 	chargedEnergy_ = 0.0f;
 
@@ -180,15 +180,15 @@ void Stage::Initialize()
 
 void Stage::Update(Camera* camera)
 {
-	currentTime_ -= DeltaTime::getInstance()->getDeltaTime();
+	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	if(chargedEnergy_ >= maxEnergy_)
 	{
 		isClear_ = true;
 		return;
 	}
-	timerNeedleObject_->transform_.rotate.z = Lerp(currentTime_ / limitTime_,timerNeedleStartRotate_.z,std::numbers::pi_v<float>*2.0f);
+	timerNeedleObject_->transform_.rotate.z = Lerp(leftTime_ / limitTime_,timerNeedleStartRotate_.z,std::numbers::pi_v<float>*2.0f);
 	timerNeedleObject_->UpdateMatrix();
-	if(currentTime_ < 0.0f)
+	if(leftTime_ < 0.0f)
 	{
 			isGameOver_ = true;
 			return;
@@ -205,7 +205,7 @@ void Stage::Update(Camera* camera)
 	{
 		for(int32_t i = 0; i < movingSpawnerValue; ++i)
 		{
-			enemySpawners_.push_back(std::make_unique<EnemySpawner>());
+			enemySpawners_.push_back(std::make_unique<EnemySpawner>(this));
 			enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
 			enemySpawners_.back()->SetEnemyModel(enemyModel);
 		}
@@ -523,7 +523,7 @@ void Stage::InitializeStatus(const std::string& scene)
 		enemySpawners_.clear();
 		for(size_t i = 0; i < enemySpawnerValue_; ++i)
 		{
-			enemySpawners_.push_back(std::make_unique<EnemySpawner>());
+			enemySpawners_.push_back(std::make_unique<EnemySpawner>(this));
 			enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
 			enemySpawners_.back()->SetEnemyModel(enemyModel);
 		}
@@ -533,7 +533,7 @@ void Stage::InitializeStatus(const std::string& scene)
 	variables->addValue(scene,"Stage","maxEnergy",maxEnergy_);
 
 	variables->addValue(scene,"Stage","limitTime",limitTime_);
-	currentTime_ = limitTime_;
+	leftTime_ = limitTime_;
 
 	chargedEnergy_ = 0.0f;
 
@@ -608,3 +608,4 @@ void Stage::RestoreBackGroundCloud() {
 		cloudY = 0.0f;
 	}
 }
+
