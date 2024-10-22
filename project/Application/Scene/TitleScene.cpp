@@ -286,6 +286,9 @@ void TitleScene::EnterSceneUpdate()
 		leftTime_ = 0.0f;
 		t_        = 0.5f;
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void TitleScene::SceneUpdate()
@@ -298,6 +301,9 @@ void TitleScene::SceneUpdate()
 		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
 		t_ = 0.0f;
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void TitleScene::OutSceneUpdate()
@@ -309,4 +315,7 @@ void TitleScene::OutSceneUpdate()
 	{
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }

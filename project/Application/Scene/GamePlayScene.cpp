@@ -134,6 +134,9 @@ void GamePlayScene::Update()
 	for (int i = 0; i < 5; i++) {
 		buttonSprite_[i]->Update();
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GamePlayScene::Draw()

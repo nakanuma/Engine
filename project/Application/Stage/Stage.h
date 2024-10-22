@@ -33,6 +33,7 @@ public:
 	void Update(Camera* camera);
 	void DrawModels();
 
+	void UpdateBackGround();
 	void DrawBackGround();
 
 	void UpdatePlayerAndMapChip(Camera* camera);

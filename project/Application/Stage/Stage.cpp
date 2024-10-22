@@ -239,19 +239,6 @@ void Stage::Update(Camera* camera)
 	// 敵分裂時のパーティクルを更新
 	enemyDivideEmitter_.Update();
 
-	/*--------------------------*/
-	/*  背景の星パーティクル(2D)   */
-	/*--------------------------*/
-
-	// 指定した頻度毎に生成
-	const int32_t kEmitInterval = 30;
-	if (emitTimer_++ % kEmitInterval == 0) {
-		backGroundStarEmitter_.Emit();
-	}
-
-	// 背景の星パーティクルの更新
-	backGroundStarEmitter_.Update();
-
 #pragma endregion
 
 #pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
@@ -265,9 +252,6 @@ void Stage::Update(Camera* camera)
 	camera->UpdateShake();
 
 #pragma endregion
-
-	// 背景スプライト更新
-	backGroundSprite_->Update();
 }
 
 void Stage::DrawModels()
@@ -316,6 +300,18 @@ void Stage::DrawModels()
 	timerNeedleObject_->Draw();
 }
 
+void Stage::UpdateBackGround() {
+	// 背景スプライト更新
+	backGroundSprite_->Update();
+
+	/*--------------------------*/
+	/*  背景の星パーティクル(2D)   */
+	/*--------------------------*/
+
+	// 背景の星パーティクルの生成と更新
+	backGroundStarEmitter_.Update();
+}
+
 void Stage::DrawBackGround() { 
 	// 背景スプライト描画
 	backGroundSprite_->Draw();
@@ -362,9 +358,6 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 
 	// 敵分裂時のパーティクルを更新
 	enemyDivideEmitter_.Update();
-
-	// 背景の星パーティクルの更新
-	backGroundStarEmitter_.Update();
 	
 #pragma endregion
 
@@ -379,9 +372,6 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 	camera->UpdateShake();
 
 #pragma endregion
-
-	// 背景スプライト更新
-	backGroundSprite_->Update();
 }
 
 void Stage::InitializeStatus(const std::string& scene)
