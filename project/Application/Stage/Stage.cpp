@@ -577,6 +577,6 @@ void Stage::UpdateCloudPosition(Sprite& sprite,float& x,float moveSpeed,float re
 		x = resetPosition;
 	}
 
-	sprite.SetPosition({x,0.0f});
+	sprite.SetPosition({x, cloudY});
 	sprite.Update();
 }

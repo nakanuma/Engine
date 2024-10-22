@@ -154,6 +154,7 @@ private:
 	std::unique_ptr<Sprite[]> cloudSprite_;
 	float near0x, near1x;
 	float far2x, far3x;
+	float cloudY = 0.0f; // 雲スプライトに全て共通で持たせる
 	float nearCloudMoveSpeed = 1.0f;
 	float farCloudMoveSpeed = 0.6f;
 
