@@ -88,6 +88,8 @@ void GameClearScene::Update()
 {
 	stage_->UpdatePlayerAndMapChip(camera);
 	currentUpdate_();
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GameClearScene::Draw()

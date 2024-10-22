@@ -40,7 +40,7 @@ void GlobalVariables::Update(){
 		// ImGui の Combo ボックスでグループリストを表示
 		if (ImGui::Combo("GroupList", &currentGroupNum_, groupList.data(), static_cast<int>(groupList.size())))
 		{
-			currentGroupNum_ = 0;
+			std::cout << "err" << std::endl;
 		}
 		currentGroup_ = &data_[currentScene_][groupList[currentGroupNum_]];
 		currentGroupName_ = groupList[currentGroupNum_];
@@ -265,6 +265,7 @@ void GlobalVariables::ImGuiMenu(){
 					if(ImGui::MenuItem(sceneList[i].c_str(),nullptr,currentSceneNum_ == i)){
 						currentScene_ = sceneList[i];
 						currentSceneNum_ = i; // Update currentSceneNum_ index
+						currentGroupNum_ = 0;
 					}
 				}
 				ImGui::EndMenu();  // Ensure this is called to match BeginMenu

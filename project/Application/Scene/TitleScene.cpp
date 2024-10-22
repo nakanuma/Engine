@@ -159,8 +159,10 @@ void TitleScene::Update()
 	/// 
 
 	stage_->UpdatePlayerAndMapChip(camera);
-	buttonUI_->Update();
 	currentUpdate_();
+	// 背景の更新
+	stage_->UpdateBackGround();
+	buttonUI_->Update();
 }
 
 void TitleScene::Draw()
@@ -206,8 +208,6 @@ void TitleScene::Draw()
 	titleTextObject_->Draw();
 	stage_->DrawModels();
 
-	
-
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
 	/// 
@@ -218,10 +218,7 @@ void TitleScene::Draw()
 	///
 	/// ↓ ここから前景スプライトの描画コマンド
 	/// 
-	cloudSprite_[0]->Update();
-	cloudSprite_[0]->Draw();
-	cloudSprite_[1]->Update();
-	cloudSprite_[1]->Draw();
+	
 	buttonUI_->Draw();
 
 	///
@@ -286,36 +283,25 @@ void TitleScene::EnterSceneUpdate()
 		leftTime_ = 0.0f;
 		t_        = 0.5f;
 	}
-
-	// 背景の更新
-	stage_->UpdateBackGround();
 }
 
 void TitleScene::SceneUpdate()
 {
 	t_ += DeltaTime::getInstance()->getDeltaTime() * signT_;
-	stage_->UpdatePlayerAndMapChip(camera);
 	if(stage_->GetIsClear())
 	{
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
 		t_ = 0.0f;
 	}
-
-	// 背景の更新
-	stage_->UpdateBackGround();
 }
 
 void TitleScene::OutSceneUpdate()
 {
 	leftTime_ += DeltaTime::getInstance()->getDeltaTime();
-	stage_->UpdatePlayerAndMapChip(camera);
 	t_ = leftTime_ / outSceneMaxTime_;
 	if(leftTime_ >= outSceneMaxTime_)
 	{
 		SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
 	}
-
-	// 背景の更新
-	stage_->UpdateBackGround();
 }
