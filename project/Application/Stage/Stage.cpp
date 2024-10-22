@@ -276,10 +276,12 @@ void Stage::DrawModels()
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 	// オブジェクトの描画
+#ifdef _DEBUG
 	for(auto& enemySpawner : enemySpawners_)
 	{
 		enemySpawner->Draw();
 	}
+#endif // _DEBUG
 
 	for(auto& enemy : enemies_)
 	{
