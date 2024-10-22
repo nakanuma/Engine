@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "ModelManager.h"
+#include "SpriteCommon.h"
+#include "Sprite.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -18,6 +20,8 @@
 
 #include "EnemyLandingEmitter.h"
 #include "PlayerMoveEmitter.h"
+#include "EnemyDivideEmitter.h"
+#include "BackGroundStarEmitter.h"
 
 class Stage
 {
@@ -28,6 +32,9 @@ public:
 	void Initialize();
 	void Update(Camera* camera);
 	void DrawModels();
+
+	void UpdateBackGround();
+	void DrawBackGround();
 
 	void UpdatePlayerAndMapChip(Camera* camera);
 
@@ -119,4 +126,29 @@ private:
 	PlayerMoveEmitter playerMoveEmitter_;
 	// プレイヤー移動時パーティクルのモデル
 	ModelManager::ModelData modelPlayerMoveParticle_;
+
+	// エネミー分裂時パーティクルのエミッター
+	EnemyDivideEmitter enemyDivideEmitter_;
+	// エネミー分裂時パーティクルのモデル
+	ModelManager::ModelData modelEnemyDivideParticle_;
+
+	// 背景の星パーティクル(2D)
+	BackGroundStarEmitter backGroundStarEmitter_;
+
+private:
+	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
+	// 背景スプライト
+	std::unique_ptr<Sprite> backGroundSprite_;
+	// パーティクルの発生に使用するタイマー
+	int32_t emitTimer_;
+
+	// 背景の雲スプライト
+	std::unique_ptr<Sprite[]> cloudSprite_;
+	float near0x, near1x;
+	float far2x, far3x;
+	float nearCloudMoveSpeed = 1.0f;
+	float farCloudMoveSpeed = 0.6f;
+
+	// 背景の雲を更新
+	void UpdateCloudPosition(Sprite& sprite, float& x, float moveSpeed, float resetThreshold, float resetPosition);
 };

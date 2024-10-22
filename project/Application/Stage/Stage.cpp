@@ -10,6 +10,10 @@ void Stage::Initialize()
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 	GlobalVariables* variables = GlobalVariables::getInstance();
 
+	// SpriteCommonの生成と初期化
+	spriteCommon = std::make_unique<SpriteCommon>();
+	spriteCommon->Initialize(DirectXBase::GetInstance());
+
 	// Texture読み込み
 	uint32_t uvCheckerGH = TextureManager::Load("resources/Images/block.png",dxBase->GetDevice());
 
@@ -85,6 +89,8 @@ void Stage::Initialize()
 	collisionManager_ = std::make_unique<CollisionManager>();
 
 	variables->addValue("Game","Stage","maxEnergy",maxEnergy_);
+
+
 	/* パーティクル関連 */
 	
 	// エネミー着地時パーティクル関連初期化
@@ -98,6 +104,41 @@ void Stage::Initialize()
 	uint32_t playerMoveParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
 
 	playerMoveEmitter_.Initialize(&modelPlayerMoveParticle_, playerMoveParticleGH);
+
+	// エネミー分裂時パーティクル関連初期化
+	modelEnemyDivideParticle_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
+	uint32_t enemyDivideParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
+
+	enemyDivideEmitter_.Initialize(&modelEnemyDivideParticle_, enemyDivideParticleGH);
+
+	// 背景の星パーティクル関連初期化
+	uint32_t backGroundStarParticleGH = TextureManager::Load("resources/Images/backGroundStar.png", dxBase->GetDevice());
+	backGroundStarEmitter_.Initialize(backGroundStarParticleGH, spriteCommon.get());
+
+	// 背景スプライト生成
+	uint32_t backGroundGH = TextureManager::Load("resources/Images/backGround.png", dxBase->GetDevice());
+	backGroundSprite_ = std::make_unique<Sprite>();
+	backGroundSprite_->Initialize(spriteCommon.get(), backGroundGH);
+	backGroundSprite_->SetSize({ static_cast<float>(Window::GetWidth()), static_cast<float>(Window::GetHeight()) });
+
+	// 背景の雲スプライト生成
+	uint32_t nearCloudGH = TextureManager::Load("resources/Images/nearCloud.png", dxBase->GetDevice());
+	cloudSprite_ = std::make_unique<Sprite[]>(4);
+	cloudSprite_[0].Initialize(spriteCommon.get(), nearCloudGH);
+	cloudSprite_[0].SetPosition({0.0f, 0.0f});
+
+	cloudSprite_[1].Initialize(spriteCommon.get(), nearCloudGH);
+	cloudSprite_[1].SetPosition({1280.0f, 0.0f});
+
+	uint32_t farCloudGH = TextureManager::Load("resources/Images/farCloud.png", dxBase->GetDevice());
+	cloudSprite_[2].Initialize(spriteCommon.get(), farCloudGH);
+	cloudSprite_[2].SetPosition({0.0f, 0.0f});
+	cloudSprite_[2].SetColor({1.0f, 1.0f, 1.0f, 0.75f});
+
+	cloudSprite_[3].Initialize(spriteCommon.get(), farCloudGH);
+	cloudSprite_[3].SetPosition({1280.0f, 0.0f});
+	cloudSprite_[3].SetColor({1.0f, 1.0f, 1.0f, 0.75f});
+
 
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
@@ -200,6 +241,22 @@ void Stage::Update(Camera* camera)
 	// 敵着地時のパーティクルを更新
 	enemyLandingEmitter_.Update();
 
+	/*--------------------------*/
+	/*     敵分裂パーティクル      */
+	/*--------------------------*/
+
+	// 敵分裂時にパーティクルを発生させる
+	for (auto& enemy : enemies_) {
+		if (enemy->GetIsCloneThisFrame()) {
+			enemyDivideEmitter_.Emit(enemy->GetTranslate());
+			// パーティクル発生後にフラグを下ろす
+			enemy->SetIsCloneThisFrame(false);
+		}
+	}
+
+	// 敵分裂時のパーティクルを更新
+	enemyDivideEmitter_.Update();
+
 #pragma endregion
 
 #pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
@@ -239,6 +296,9 @@ void Stage::DrawModels()
 	// 敵落下時パーティクルを描画
 	enemyLandingEmitter_.Draw();
 
+	// 敵分裂時パーティクルを描画
+	enemyDivideEmitter_.Draw();
+
 #pragma region マップチップ描画用PSOに変更->マップチップ描画->通常PSOに戻す
 	dxBase->GetCommandList()->SetPipelineState(dxBase->GetPipelineStateMapchip());
 	// マップチップ
@@ -256,6 +316,57 @@ void Stage::DrawModels()
 	timerNeedleObject_->UpdateMatrix();
 	timerObject_->Draw();
 	timerNeedleObject_->Draw();
+}
+
+void Stage::UpdateBackGround() {
+	// 背景スプライト更新
+	backGroundSprite_->Update();
+
+	/*--------------------------*/
+	/*  背景の星パーティクル(2D)   */
+	/*--------------------------*/
+
+	// 背景の星パーティクルの生成と更新
+	backGroundStarEmitter_.Update();
+
+	/*--------------------------*/
+	/*        背景の雲           */
+	/*--------------------------*/
+
+	/* 手前の雲の更新 */
+
+	UpdateCloudPosition(cloudSprite_[0], near0x, nearCloudMoveSpeed, -1280.0f, 0.0f);
+	UpdateCloudPosition(cloudSprite_[1], near1x, nearCloudMoveSpeed, 0.0f, 1280.0f);
+
+	/* 遠くの雲の更新 */
+
+	UpdateCloudPosition(cloudSprite_[2], far2x, farCloudMoveSpeed, -1280.0f, 0.0f);
+	UpdateCloudPosition(cloudSprite_[3], far3x, farCloudMoveSpeed, 0.0f, 1280.0f);
+}
+
+void Stage::DrawBackGround() { 
+	// 背景スプライト描画
+	backGroundSprite_->Draw();
+
+	/* パーティクル関連描画 */
+
+	/*--------------------------*/
+	/*  背景の星パーティクル(2D)   */
+	/*--------------------------*/
+
+	backGroundStarEmitter_.Draw();
+
+	/*--------------------------*/
+	/*        背景の雲           */
+	/*--------------------------*/
+
+	// 遠くの雲を描画
+	cloudSprite_[2].Draw();
+	cloudSprite_[3].Draw();
+
+	// 手前の雲を描画
+	cloudSprite_[0].Draw();
+	cloudSprite_[1].Draw();
 }
 
 void Stage::UpdatePlayerAndMapChip(Camera* camera)
@@ -287,6 +398,9 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 
 	// 敵着地時のパーティクルを更新
 	enemyLandingEmitter_.Update();
+
+	// 敵分裂時のパーティクルを更新
+	enemyDivideEmitter_.Update();
 	
 #pragma endregion
 
@@ -357,8 +471,18 @@ void Stage::Debug() {
 	ImGui::Begin("stage");
 
 	if (ImGui::Button("emit")) {
-		enemyLandingEmitter_.Emit({0.0f, 10.0f, 0.0f});
+		backGroundStarEmitter_.Emit();
 	}
 
 	ImGui::End();
+}
+
+void Stage::UpdateCloudPosition(Sprite& sprite, float& x, float moveSpeed, float resetThreshold, float resetPosition) {
+	x -= moveSpeed; 
+	if (x < resetThreshold) {
+		x = resetPosition;
+	}
+
+	sprite.SetPosition({x, 0.0f});
+	sprite.Update();
 }
