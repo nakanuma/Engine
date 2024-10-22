@@ -10,7 +10,7 @@ public:
 	void Update();
 	void Draw();
 
-	bool GetDelFlag() { return false; }
+	bool GetDelFlag() { return del_; }
 
 private:
 	ModelManager::ModelData* model_;
