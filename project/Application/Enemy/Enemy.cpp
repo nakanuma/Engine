@@ -103,7 +103,7 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 				stage_->ChargeEnergy(stolenEnergy_);
 
 				isHurt_ = true;
-				isClone_ = true;
+ 				isClone_ = true;
 				--numberOfClones2Create_;
 				if (numberOfClones2Create_ < 0.0f)
 				{

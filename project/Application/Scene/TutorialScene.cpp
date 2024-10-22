@@ -135,7 +135,10 @@ void TutorialScene::Initialize()
 
 		for(auto& enemy : stage_->GetEnemies())
 		{
-			enemyHurtNum_ += static_cast<int32_t>(enemy->IsHurt());
+			if(enemy->IsHurt())
+			{
+				enemyHurtNum_ += static_cast<int32_t>(1);
+			}
 		}
 		return enemyHurtNum_ >= 5;
 	};

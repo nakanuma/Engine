@@ -92,7 +92,7 @@ void NeutralPlayerState::Update()
 	{
 		return;
 	}
-	if(input_->PushKey(moveKeys.attack))
+	if(input_->TriggerKey(moveKeys.attack))
 	{
 		player_->TransitionState(
 			new ChargePlayerState(
