@@ -112,6 +112,21 @@ void Player::Update()
 	handObject_->UpdateMatrix();
 
 	handCollider_->SetPosition(handObject_->transform_.translate);
+
+	// 移動制限一旦書いときました(他に書くところがあるなら消してもいいよ!!)
+	// この範囲がマップの叩ける範囲
+	if (handObject_->transform_.translate.x >= 39) {
+		handObject_->transform_.translate.x = 39;
+	}
+	if (handObject_->transform_.translate.x <= -0) {
+		handObject_->transform_.translate.x = -0;
+	}
+	if (handObject_->transform_.translate.z >= 39) {
+		handObject_->transform_.translate.z = 39;
+	}
+	if (handObject_->transform_.translate.z <= -0) {
+		handObject_->transform_.translate.z = -0;
+	}
 }
 
 void Player::Draw()
