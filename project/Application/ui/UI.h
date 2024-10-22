@@ -23,8 +23,6 @@ public:
 
 	void Draw();
 private:
-#ifdef _DEBUG
-#endif // _DEBUG
 	Float2 pos_;
 	Float2 size_ = {10.0f,10.0f};
 	Float4 color_ = {1.0f,1.0f,1.0f,1.0f};

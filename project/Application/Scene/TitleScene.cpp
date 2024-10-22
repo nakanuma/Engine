@@ -43,17 +43,19 @@ void TitleScene::Initialize() {
 	///
 	///	↓ ゲームシーン用
 	///
+	
+	///===========================================================================================
+	/// GlobalVariables
+	///===========================================================================================
+	GlobalVariables* variables = GlobalVariables::getInstance();
 
 
 	stage_ = SceneManager::GetInstance()->GetStage();
 	if (!stage_) {
 		SceneManager::GetInstance()->CreateStage();
 		stage_ = SceneManager::GetInstance()->GetStage();
-	} else {
-		stage_->InitializeStatus("Title");
 	}
-#ifdef _DEBUG
-#endif // _DEBUG
+	stage_->InitializeStatus("Title");
 
 	///===========================================================================================
 	/// Camera
@@ -80,7 +82,8 @@ void TitleScene::Initialize() {
 	buttonUI_ = std::make_unique<UI>();
 	buttonUI_->Init("Title", "buttonUI", buttonTextureIndex_, spriteCommon.get());
 	signT_ = 1.0f;
-
+	// button
+	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
 	// 各 Update
 	buttonUpdateWhenEnterScene_ = [this](Sprite* sprite) {
 		Float4 color = sprite->GetColor();
@@ -120,18 +123,10 @@ void TitleScene::Initialize() {
 	cloudSprite_[1] = std::make_unique<UI>();
 	cloudSprite_[1]->Init("Title", "Cloud2", cloudTexture[1], spriteCommon.get());
 
-	///===========================================================================================
-	/// GlobalVariables
-	///===========================================================================================
-	GlobalVariables* variables = GlobalVariables::getInstance();
-
 	// time
 	variables->addValue("Title", "Times", "enterSceneMaxTime_", enterSceneMaxTime_);
 	variables->addValue("Title", "Times", "outSceneMaxTime_", outSceneMaxTime_);
 	leftTime_ = 0.0f;
-
-	// button
-	variables->addValue("Title", "buttonUI", "buttonUiOffset_", buttonUiOffset_);
 
 	// Camera
 	variables->addValue("Title", "Camera", "cameraHomePosition", cameraHomePos_);

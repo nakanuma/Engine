@@ -104,7 +104,6 @@ void GamePlayScene::Initialize()
 		buttonSprite_[i]->Init("Game", "ButtonUI", bottonTexture[i], spriteCommon.get());
 		buttonSprite_[i]->setUpdate(buttonUpdate_[i]);
 	}
-	
 }
 
 void GamePlayScene::Finalize()
