@@ -75,6 +75,11 @@ private:
 
 	std::unique_ptr<CollisionManager> collisionManager_;
 
+	// 数字
+	ModelManager::ModelData numberModel_[10];
+	std::unique_ptr<Object3D> numberObject_[10][3];
+	//std::unique_ptr<Object3D> numberO_[3];
+
 	float chargedEnergy_;
 	float maxEnergy_;
 
