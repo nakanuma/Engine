@@ -166,6 +166,11 @@ void TutorialScene::Initialize()
 
 	variables->addValue("Tutorial","TextTexture","translate",textTexturePos_);
 	variables->addValue("Tutorial","TaskGuidTexture","translate",taskGuidTexturePos_);
+
+	///===========================================================================================
+	/// Sound 
+	///===========================================================================================
+	clickSound_ = soundManager->LoadWave("resources/Sounds/click.wav");
 }
 
 void TutorialScene::Finalize()
@@ -278,6 +283,7 @@ void TutorialScene::TextTextureUpdate(uint32_t textureSum)
 	if(input->TriggerKey(DIK_SPACE))
 	{
 		currentTextTextureIndex_ += 1;
+		soundManager->PlayWave(clickSound_,false,0.7f);
 		if(currentTextTextureIndex_ >= textureSum)
 		{
 			doTask_ = true;
@@ -295,15 +301,11 @@ void TutorialScene::TextTextureUpdate(uint32_t textureSum)
 				tutorialTextUpdate_.pop_front();
 			}
 
-		} else if(input->TriggerKey(DIK_S) || input->TriggerKey(DIK_A))
-		{
-			currentTextTextureIndex_ = std::clamp(static_cast<int32_t>(currentTextTextureIndex_ - 1),0,static_cast<int32_t>(textureSum) - 1);
-		}
-
-		if(!tutorialTextTextures_.empty())
-		{  // チェックを追加
-			currentTextTexture_->SetTextureIndex(tutorialTextTextures_[currentTextTextureIndex_]);
-		}
+		} 
+	} else if(input->TriggerKey(DIK_S) || input->TriggerKey(DIK_A))
+	{
+		soundManager->PlayWave(clickSound_,false,0.7f);
+		currentTextTextureIndex_ = std::clamp(static_cast<int32_t>(currentTextTextureIndex_ - 1),0,static_cast<int32_t>(textureSum) - 1);
 	}
 }
 
