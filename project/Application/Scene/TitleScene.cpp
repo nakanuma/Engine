@@ -55,7 +55,6 @@ void TitleScene::Initialize()
 	stage_ = SceneManager::GetInstance()->GetStage();
 	if(!stage_)
 	{
-		SceneManager::GetInstance()->CreateStage();
 		stage_ = SceneManager::GetInstance()->GetStage();
 	}
 	stage_->InitializeStatus("Title");
