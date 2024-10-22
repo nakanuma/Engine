@@ -49,6 +49,8 @@ private:
 
 	std::function<void()> currentUpdate_;
 
+	SoundManager::SoundData clickSound_;
+
 	void EnterSceneUpdate();
 	void SceneUpdate();
 	void OutSceneUpdate();

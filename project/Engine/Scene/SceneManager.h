@@ -4,6 +4,8 @@
 
 #include "Application/Stage/Stage.h"
 
+#include "SoundManager.h"
+
 // シーン管理
 class SceneManager
 {
@@ -11,6 +13,8 @@ public:
 	static SceneManager* GetInstance();
 
 	~SceneManager();
+
+	void InitializeSound();
 
 	void CameraInitialize();
 
@@ -39,6 +43,8 @@ private:
 	///===========================================================================================
 	std::unique_ptr<Camera> camera_ = nullptr;
 	std::unique_ptr<Stage> stage_;
+
+	SoundManager::SoundData bgm_;
 public:
 	void CreateStage();
 	Stage* GetStage(){return stage_.get();}
