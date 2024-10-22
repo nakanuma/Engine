@@ -1,9 +1,11 @@
 #include "Stage.h"
 
+#include <numbers>
+
+#include "Application/DeltaTime/DeltaTime.h"
 #include "Camera.h"
 #include "DirectXBase.h"
 #include "ImguiWrapper.h"
-#include "Application/DeltaTime/DeltaTime.h"
 
 void Stage::Initialize()
 {
@@ -49,7 +51,7 @@ void Stage::Initialize()
 	}
 
 	// hand
-	sideHandModel_[0]  = ModelManager::LoadModelFile("resources/Models","bighand.obj",dxBase->GetDevice());
+	sideHandModel_[0] = ModelManager::LoadModelFile("resources/Models","bighand.obj",dxBase->GetDevice());
 	sideHandModel_[0].material.textureHandle = TextureManager::Load("resources/Images/bighand.png",dxBase->GetDevice());
 	sideHandModel_[1] = ModelManager::LoadModelFile("resources/Models","bighand_left.obj",dxBase->GetDevice());
 	sideHandModel_[1].material.textureHandle = TextureManager::Load("resources/Images/bighand.png",dxBase->GetDevice());
@@ -60,15 +62,15 @@ void Stage::Initialize()
 	sideHandObject_[1]->model_ = &sideHandModel_[1];
 
 	// timer
-	timerModel_       = ModelManager::LoadModelFile("resources/Models","timer.obj",dxBase->GetDevice());
+	timerModel_ = ModelManager::LoadModelFile("resources/Models","timer.obj",dxBase->GetDevice());
 	timerModel_.material.textureHandle = TextureManager::Load("resources/Images/timer.png",dxBase->GetDevice());
 
 	timerNeedleModel_ = ModelManager::LoadModelFile("resources/Models","timer_needle.obj",dxBase->GetDevice());
 	timerNeedleModel_.material.textureHandle = TextureManager::Load("resources/Images/timer_needle.png",dxBase->GetDevice());
 
-	timerObject_        = std::make_unique<Object3D>();
+	timerObject_ = std::make_unique<Object3D>();
 	timerObject_->model_ = &timerModel_;
-	timerNeedleObject_  = std::make_unique<Object3D>();
+	timerNeedleObject_ = std::make_unique<Object3D>();
 	timerNeedleObject_->SetParent(timerObject_.get());
 	timerNeedleObject_->model_ = &timerNeedleModel_;
 
@@ -76,8 +78,9 @@ void Stage::Initialize()
 	variables->addValue("Game","Timer","rotate",timerObject_->transform_.rotate);
 	variables->addValue("Game","Timer","translate",timerObject_->transform_.translate);
 	variables->addValue("Game","Timer","needle_scale",timerNeedleObject_->transform_.scale);
-	variables->addValue("Game","Timer","needle_rotate",timerNeedleObject_->transform_.rotate);
+	variables->addValue("Game","Timer","needle_rotate",timerNeedleStartRotate_);
 	variables->addValue("Game","Timer","needle_translate",timerNeedleObject_->transform_.translate);
+	timerNeedleObject_->transform_.rotate = timerNeedleStartRotate_;
 
 	variables->addValue("Game","Hand","LeftHand_scale",sideHandObject_[0]->transform_.scale);
 	variables->addValue("Game","Hand","LeftHand_rotate",sideHandObject_[0]->transform_.rotate);
@@ -91,54 +94,53 @@ void Stage::Initialize()
 
 	variables->addValue("Game","Stage","maxEnergy",maxEnergy_);
 
-
 	/* パーティクル関連 */
-	
-	// エネミー着地時パーティクル関連初期化
-	modelEnemyLandingParticle_ = ModelManager::LoadModelFile("resources/Models", "star.obj", dxBase->GetDevice());
-	uint32_t enemyLandingParticleGH = TextureManager::Load("resources/Images/star.png", dxBase->GetDevice());
 
-	enemyLandingEmitter_.Initialize(&modelEnemyLandingParticle_, enemyLandingParticleGH);
+	// エネミー着地時パーティクル関連初期化
+	modelEnemyLandingParticle_ = ModelManager::LoadModelFile("resources/Models","star.obj",dxBase->GetDevice());
+	uint32_t enemyLandingParticleGH = TextureManager::Load("resources/Images/star.png",dxBase->GetDevice());
+
+	enemyLandingEmitter_.Initialize(&modelEnemyLandingParticle_,enemyLandingParticleGH);
 
 	// プレイヤー移動時パーティクル関連初期化
-	modelPlayerMoveParticle_ = ModelManager::LoadModelFile("resources/Models", "cube.obj", dxBase->GetDevice());
-	uint32_t playerMoveParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
+	modelPlayerMoveParticle_ = ModelManager::LoadModelFile("resources/Models","cube.obj",dxBase->GetDevice());
+	uint32_t playerMoveParticleGH = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
 
-	playerMoveEmitter_.Initialize(&modelPlayerMoveParticle_, playerMoveParticleGH);
+	playerMoveEmitter_.Initialize(&modelPlayerMoveParticle_,playerMoveParticleGH);
 
 	// エネミー分裂時パーティクル関連初期化
-	modelEnemyDivideParticle_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
-	uint32_t enemyDivideParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
+	modelEnemyDivideParticle_ = ModelManager::LoadModelFile("resources/Models","sphere.obj",dxBase->GetDevice());
+	uint32_t enemyDivideParticleGH = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
 
-	enemyDivideEmitter_.Initialize(&modelEnemyDivideParticle_, enemyDivideParticleGH);
+	enemyDivideEmitter_.Initialize(&modelEnemyDivideParticle_,enemyDivideParticleGH);
 
 	// 背景の星パーティクル関連初期化
-	uint32_t backGroundStarParticleGH = TextureManager::Load("resources/Images/backGroundStar.png", dxBase->GetDevice());
-	backGroundStarEmitter_.Initialize(backGroundStarParticleGH, spriteCommon.get());
+	uint32_t backGroundStarParticleGH = TextureManager::Load("resources/Images/backGroundStar.png",dxBase->GetDevice());
+	backGroundStarEmitter_.Initialize(backGroundStarParticleGH,spriteCommon.get());
 
 	// 背景スプライト生成
-	uint32_t backGroundGH = TextureManager::Load("resources/Images/backGround.png", dxBase->GetDevice());
+	uint32_t backGroundGH = TextureManager::Load("resources/Images/backGround.png",dxBase->GetDevice());
 	backGroundSprite_ = std::make_unique<Sprite>();
-	backGroundSprite_->Initialize(spriteCommon.get(), backGroundGH);
-	backGroundSprite_->SetSize({ static_cast<float>(Window::GetWidth()), static_cast<float>(Window::GetHeight()) });
+	backGroundSprite_->Initialize(spriteCommon.get(),backGroundGH);
+	backGroundSprite_->SetSize({static_cast<float>(Window::GetWidth()),static_cast<float>(Window::GetHeight())});
 
 	// 背景の雲スプライト生成
-	uint32_t nearCloudGH = TextureManager::Load("resources/Images/nearCloud.png", dxBase->GetDevice());
+	uint32_t nearCloudGH = TextureManager::Load("resources/Images/nearCloud.png",dxBase->GetDevice());
 	cloudSprite_ = std::make_unique<Sprite[]>(4);
-	cloudSprite_[0].Initialize(spriteCommon.get(), nearCloudGH);
-	cloudSprite_[0].SetPosition({0.0f, 0.0f});
+	cloudSprite_[0].Initialize(spriteCommon.get(),nearCloudGH);
+	cloudSprite_[0].SetPosition({0.0f,0.0f});
 
-	cloudSprite_[1].Initialize(spriteCommon.get(), nearCloudGH);
-	cloudSprite_[1].SetPosition({1280.0f, 0.0f});
+	cloudSprite_[1].Initialize(spriteCommon.get(),nearCloudGH);
+	cloudSprite_[1].SetPosition({1280.0f,0.0f});
 
-	uint32_t farCloudGH = TextureManager::Load("resources/Images/farCloud.png", dxBase->GetDevice());
-	cloudSprite_[2].Initialize(spriteCommon.get(), farCloudGH);
-	cloudSprite_[2].SetPosition({0.0f, 0.0f});
-	cloudSprite_[2].SetColor({1.0f, 1.0f, 1.0f, 0.75f});
+	uint32_t farCloudGH = TextureManager::Load("resources/Images/farCloud.png",dxBase->GetDevice());
+	cloudSprite_[2].Initialize(spriteCommon.get(),farCloudGH);
+	cloudSprite_[2].SetPosition({0.0f,0.0f});
+	cloudSprite_[2].SetColor({1.0f,1.0f,1.0f,0.75f});
 
-	cloudSprite_[3].Initialize(spriteCommon.get(), farCloudGH);
-	cloudSprite_[3].SetPosition({1280.0f, 0.0f});
-	cloudSprite_[3].SetColor({1.0f, 1.0f, 1.0f, 0.75f});
+	cloudSprite_[3].Initialize(spriteCommon.get(),farCloudGH);
+	cloudSprite_[3].SetPosition({1280.0f,0.0f});
+	cloudSprite_[3].SetColor({1.0f,1.0f,1.0f,0.75f});
 
 
 	variables->addValue("Game","Stage","limitTime",limitTime_);
@@ -153,14 +155,17 @@ void Stage::Initialize()
 void Stage::Update(Camera* camera)
 {
 	currentTime_ -= DeltaTime::getInstance()->getDeltaTime();
-	if(chargedEnergy_ >= maxEnergy_){
+	if(chargedEnergy_ >= maxEnergy_)
+	{
 		isClear_ = true;
 		return;
 	}
+	timerNeedleObject_->transform_.rotate.z = Lerp(currentTime_ / limitTime_,timerNeedleStartRotate_.z,std::numbers::pi_v<float>*2.0f);
+	timerNeedleObject_->UpdateMatrix();
 	if(currentTime_ < 0.0f)
 	{
-		 isGameOver_ = true;
-		 return;
+			isGameOver_ = true;
+			return;
 	}
 
 #ifdef _DEBUG
@@ -186,6 +191,7 @@ void Stage::Update(Camera* camera)
 		}
 	}
 #endif // _DEBUG
+
 	player_->Update();
 
 	for(auto& enemySpawner : enemySpawners_)
@@ -205,8 +211,8 @@ void Stage::Update(Camera* camera)
 	{
 		enemy->Update(enemies_);
 	}
-	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy) { return enemy->IsAlive() ? false : true; });
-	
+	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy) { return enemy->IsAlive()?false:true; });
+
 
 	mapChip_->Update();
 
@@ -216,9 +222,10 @@ void Stage::Update(Camera* camera)
 	/*--------------------------*/
 	/* プレイヤー移動時パーティクル */
 	/*--------------------------*/
-	
+
 	// プレイヤー移動時にパーティクルを発生させる
-	if (player_->IsMoving()) {
+	if(player_->IsMoving())
+	{
 		playerMoveEmitter_.Emit(player_->GetTranslate());
 	}
 
@@ -230,10 +237,13 @@ void Stage::Update(Camera* camera)
 	/*--------------------------*/
 
 	// 敵着地時にパーティクルを発生させる
-	for (auto& enemy : enemies_) {
-		if (enemy->GetLanding()) {
-			// ウェーブ中のブロックと衝突して大量にパーティクルが出てしまうのをゴリ押しで防ぐ
-			if (enemy->GetTranslate().y <= 2.0f && enemy->GetTranslate().y >= 0.0f) {
+	for(auto& enemy : enemies_)
+	{
+		if(enemy->GetLanding())
+		{
+// ウェーブ中のブロックと衝突して大量にパーティクルが出てしまうのをゴリ押しで防ぐ
+			if(enemy->GetTranslate().y <= 2.0f && enemy->GetTranslate().y >= 0.0f)
+			{
 				enemyLandingEmitter_.Emit(enemy->GetTranslate());
 			}
 		}
@@ -247,8 +257,10 @@ void Stage::Update(Camera* camera)
 	/*--------------------------*/
 
 	// 敵分裂時にパーティクルを発生させる
-	for (auto& enemy : enemies_) {
-		if (enemy->GetIsCloneThisFrame()) {
+	for(auto& enemy : enemies_)
+	{
+		if(enemy->GetIsCloneThisFrame())
+		{
 			enemyDivideEmitter_.Emit(enemy->GetTranslate());
 			// パーティクル発生後にフラグを下ろす
 			enemy->SetIsCloneThisFrame(false);
@@ -265,7 +277,7 @@ void Stage::Update(Camera* camera)
 	// プレイヤーの手が地面にめり込んだらシェイク開始
 	if(player_->GetTranslate().y <= 0.0f)
 	{
-		camera->ApplyShake(0.5f, 120);
+		camera->ApplyShake(0.5f,120);
 	}
 	// カメラのシェイクを更新
 	camera->UpdateShake();
@@ -321,8 +333,9 @@ void Stage::DrawModels()
 	timerNeedleObject_->Draw();
 }
 
-void Stage::UpdateBackGround() {
-	// 背景スプライト更新
+void Stage::UpdateBackGround()
+{
+// 背景スプライト更新
 	backGroundSprite_->Update();
 
 	/*--------------------------*/
@@ -338,17 +351,18 @@ void Stage::UpdateBackGround() {
 
 	/* 手前の雲の更新 */
 
-	UpdateCloudPosition(cloudSprite_[0], near0x, nearCloudMoveSpeed, -1280.0f, 0.0f);
-	UpdateCloudPosition(cloudSprite_[1], near1x, nearCloudMoveSpeed, 0.0f, 1280.0f);
+	UpdateCloudPosition(cloudSprite_[0],near0x,nearCloudMoveSpeed,-1280.0f,0.0f);
+	UpdateCloudPosition(cloudSprite_[1],near1x,nearCloudMoveSpeed,0.0f,1280.0f);
 
 	/* 遠くの雲の更新 */
 
-	UpdateCloudPosition(cloudSprite_[2], far2x, farCloudMoveSpeed, -1280.0f, 0.0f);
-	UpdateCloudPosition(cloudSprite_[3], far3x, farCloudMoveSpeed, 0.0f, 1280.0f);
+	UpdateCloudPosition(cloudSprite_[2],far2x,farCloudMoveSpeed,-1280.0f,0.0f);
+	UpdateCloudPosition(cloudSprite_[3],far3x,farCloudMoveSpeed,0.0f,1280.0f);
 }
 
-void Stage::DrawBackGround() { 
-	// 背景スプライト描画
+void Stage::DrawBackGround()
+{
+// 背景スプライト描画
 	backGroundSprite_->Draw();
 
 	/* パーティクル関連描画 */
@@ -403,7 +417,7 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 
 	// 敵分裂時のパーティクルを更新
 	enemyDivideEmitter_.Update();
-	
+
 #pragma endregion
 
 #pragma region プレイヤーの手が地面に衝突したらカメラのシェイクを起こす
@@ -440,7 +454,7 @@ void Stage::InitializeStatus(const std::string& scene)
 			enemySpawners_.back()->SetEnemyModel(enemyModel);
 		}
 	}
-	
+
 	collisionManager_->Reset();
 	variables->addValue(scene,"Stage","maxEnergy",maxEnergy_);
 
@@ -469,22 +483,26 @@ void Stage::ClearEnemies()
 	enemyLandingEmitter_.ClearParticles();
 }
 
-void Stage::Debug() {
+void Stage::Debug()
+{
 	ImGui::Begin("stage");
 
-	if (ImGui::Button("emit")) {
+	if(ImGui::Button("emit"))
+	{
 		backGroundStarEmitter_.Emit();
 	}
 
 	ImGui::End();
 }
 
-void Stage::UpdateCloudPosition(Sprite& sprite, float& x, float moveSpeed, float resetThreshold, float resetPosition) {
-	x -= moveSpeed; 
-	if (x < resetThreshold) {
+void Stage::UpdateCloudPosition(Sprite& sprite,float& x,float moveSpeed,float resetThreshold,float resetPosition)
+{
+	x -= moveSpeed;
+	if(x < resetThreshold)
+	{
 		x = resetPosition;
 	}
 
-	sprite.SetPosition({x, 0.0f});
+	sprite.SetPosition({x,0.0f});
 	sprite.Update();
 }

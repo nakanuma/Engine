@@ -68,6 +68,7 @@ private:
 	ModelManager::ModelData timerNeedleModel_;
 	std::unique_ptr<Object3D> timerObject_;
 	std::unique_ptr<Object3D> timerNeedleObject_;
+	Float3 timerNeedleStartRotate_;
 
 	std::unique_ptr<CollisionManager> collisionManager_;
 
