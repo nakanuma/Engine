@@ -160,4 +160,17 @@ private:
 
 	// 背景の雲を更新
 	void UpdateCloudPosition(Sprite& sprite, float& x, float moveSpeed, float resetThreshold, float resetPosition);
+
+public:
+	// 背景の雲を画面上へ移動させる（ゲームクリア->タイトル移行時に呼ぶ）
+	void UpBackGroundCloud();
+	// 背景の雲を画面下へ移動させる（ゲームオーバー->タイトル移行時に呼ぶ）
+	void DownBackGroundCloud();
+	// 背景の雲のY座標が正しい位置ではない場合に元の位置に戻す（タイトル画面で呼ぶ）
+	void RestoreBackGroundCloud();
+
+	const float kCloudUpSpeed = 14.0f;
+	const float kCloudDownSpeed = 12.0f;
+
+	float GetCloudY() { return cloudY; }
 };

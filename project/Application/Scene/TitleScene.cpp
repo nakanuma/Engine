@@ -170,6 +170,9 @@ void TitleScene::Update() {
 	/*-----------------*/
 
 	RotateTitleTextObject();
+
+	// シーンの終了->タイトル移行時にずらした雲の位置を戻す
+	stage_->RestoreBackGroundCloud();
 };
 
 void TitleScene::Draw()
@@ -254,6 +257,7 @@ void TitleScene::Draw()
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
 	ImGui::Text("fps : %.1f",ImGui::GetIO().Framerate);
+	ImGui::Text("%.2f", stage_->GetCloudY());
 
 	ImGui::End();
 
