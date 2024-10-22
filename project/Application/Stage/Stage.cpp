@@ -108,6 +108,8 @@ void Stage::Initialize()
 	modelEnemyDivideParticle_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
 	uint32_t enemyDivideParticleGH = TextureManager::Load("resources/Images/white.png", dxBase->GetDevice());
 
+	enemyDivideEmitter_.Initialize(&modelEnemyDivideParticle_, enemyDivideParticleGH);
+
 	// 背景の星パーティクル関連初期化
 	uint32_t backGroundStarParticleGH = TextureManager::Load("resources/Images/backGroundStar.png", dxBase->GetDevice());
 	backGroundStarEmitter_.Initialize(backGroundStarParticleGH, spriteCommon.get());
@@ -118,8 +120,24 @@ void Stage::Initialize()
 	backGroundSprite_->Initialize(spriteCommon.get(), backGroundGH);
 	backGroundSprite_->SetSize({ static_cast<float>(Window::GetWidth()), static_cast<float>(Window::GetHeight()) });
 
+	// 背景の雲スプライト生成
+	uint32_t nearCloudGH = TextureManager::Load("resources/Images/nearCloud.png", dxBase->GetDevice());
+	cloudSprite_ = std::make_unique<Sprite[]>(4);
+	cloudSprite_[0].Initialize(spriteCommon.get(), nearCloudGH);
+	cloudSprite_[0].SetPosition({0.0f, 0.0f});
 
-	enemyDivideEmitter_.Initialize(&modelEnemyDivideParticle_, enemyDivideParticleGH);
+	cloudSprite_[1].Initialize(spriteCommon.get(), nearCloudGH);
+	cloudSprite_[1].SetPosition({1280.0f, 0.0f});
+
+	uint32_t farCloudGH = TextureManager::Load("resources/Images/farCloud.png", dxBase->GetDevice());
+	cloudSprite_[2].Initialize(spriteCommon.get(), farCloudGH);
+	cloudSprite_[2].SetPosition({0.0f, 0.0f});
+	cloudSprite_[2].SetColor({1.0f, 1.0f, 1.0f, 0.75f});
+
+	cloudSprite_[3].Initialize(spriteCommon.get(), farCloudGH);
+	cloudSprite_[3].SetPosition({1280.0f, 0.0f});
+	cloudSprite_[3].SetColor({1.0f, 1.0f, 1.0f, 0.75f});
+
 
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	currentTime_ = limitTime_;
@@ -310,6 +328,20 @@ void Stage::UpdateBackGround() {
 
 	// 背景の星パーティクルの生成と更新
 	backGroundStarEmitter_.Update();
+
+	/*--------------------------*/
+	/*        背景の雲           */
+	/*--------------------------*/
+
+	/* 手前の雲の更新 */
+
+	UpdateCloudPosition(cloudSprite_[0], near0x, nearCloudMoveSpeed, -1280.0f, 0.0f);
+	UpdateCloudPosition(cloudSprite_[1], near1x, nearCloudMoveSpeed, 0.0f, 1280.0f);
+
+	/* 遠くの雲の更新 */
+
+	UpdateCloudPosition(cloudSprite_[2], far2x, farCloudMoveSpeed, -1280.0f, 0.0f);
+	UpdateCloudPosition(cloudSprite_[3], far3x, farCloudMoveSpeed, 0.0f, 1280.0f);
 }
 
 void Stage::DrawBackGround() { 
@@ -323,6 +355,18 @@ void Stage::DrawBackGround() {
 	/*--------------------------*/
 
 	backGroundStarEmitter_.Draw();
+
+	/*--------------------------*/
+	/*        背景の雲           */
+	/*--------------------------*/
+
+	// 遠くの雲を描画
+	cloudSprite_[2].Draw();
+	cloudSprite_[3].Draw();
+
+	// 手前の雲を描画
+	cloudSprite_[0].Draw();
+	cloudSprite_[1].Draw();
 }
 
 void Stage::UpdatePlayerAndMapChip(Camera* camera)
@@ -432,4 +476,14 @@ void Stage::Debug() {
 	}
 
 	ImGui::End();
+}
+
+void Stage::UpdateCloudPosition(Sprite& sprite, float& x, float moveSpeed, float resetThreshold, float resetPosition) {
+	x -= moveSpeed; 
+	if (x < resetThreshold) {
+		x = resetPosition;
+	}
+
+	sprite.SetPosition({x, 0.0f});
+	sprite.Update();
 }
