@@ -21,6 +21,7 @@ public:
 
 	Enemy* Spawn();
 private:
+
 	int32_t listNum_;
 	Float2   moveDirection_;
 	MyRandom spawnCoolTime_;

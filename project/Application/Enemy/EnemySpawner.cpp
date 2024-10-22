@@ -18,6 +18,7 @@ void EnemySpawner::Initialize(int32_t listNum,ModelManager::ModelData* modelData
 
 	GlobalVariables *variables = GlobalVariables::getInstance();
 	variables->addValue("Game",group,"moveDirection",moveDirection_);
+	moveDirection_ = Float2::Normalize(moveDirection_);
 	variables->addValue("Game",group,"Translate",object_->transform_.translate);
 }
 
@@ -32,7 +33,10 @@ void EnemySpawner::Update()
 		currentCoolTime_ = spawnCoolTime_();
 	}
 
+#ifdef _DEBUG
 	moveDirection_ = Float2::Normalize(moveDirection_);
+#endif // _DEBUG
+
 	object_->UpdateMatrix();
 }
 
