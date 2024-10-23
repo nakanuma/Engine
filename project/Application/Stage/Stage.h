@@ -7,6 +7,7 @@
 #include "ModelManager.h"
 #include "SpriteCommon.h"
 #include "Sprite.h"
+#include "SoundManager.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -30,7 +31,7 @@ public:
 	Stage() = default;
 	~Stage() {}
 
-	void Initialize();
+	void Initialize(SoundManager* soundManager);
 	void Update(Camera* camera);
 	void DrawModels();
 
@@ -73,6 +74,8 @@ private:
 	std::unique_ptr<Object3D> timerObject_;
 	std::unique_ptr<Object3D> timerNeedleObject_;
 	Float3 timerNeedleStartRotate_;
+	float preTimePerSeconds_;
+	bool isPastOneSeconds_;
 
 	std::unique_ptr<CollisionManager> collisionManager_;
 
@@ -94,12 +97,19 @@ private:
 
 	bool isClear_;
 	bool isGameOver_;
-
 #ifdef _DEBUG
 	bool isSpawnerActive_;
 #endif // _DEBUG
-
+	bool playEnemyLandingSound_;
+	// Sound
+	SoundManager::SoundData enemyLandingSound_;
+	SoundManager::SoundData stageUpSound_;
+	SoundManager::SoundData stageDownSound_;
+	SoundManager::SoundData timerSound_;
 public:
+	void PlayStageUpSound();
+	void PlayStageDownSound();
+
 	bool GetIsClear()const { return isClear_; }
 	bool GetIsGameOver()const { return isGameOver_; }
 

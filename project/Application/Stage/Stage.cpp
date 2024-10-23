@@ -7,7 +7,7 @@
 #include "DirectXBase.h"
 #include "ImguiWrapper.h"
 
-void Stage::Initialize()
+void Stage::Initialize(SoundManager* soundManager)
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 	GlobalVariables* variables = GlobalVariables::getInstance();
@@ -149,7 +149,6 @@ void Stage::Initialize()
 	cloudSprite_[3].SetPosition({1280.0f,0.0f});
 	cloudSprite_[3].SetColor({1.0f,1.0f,1.0f,0.75f});
 
-
 	// モデルの読み込みは一度だけ実行
 	for (int i = 0; i < 10; ++i) {
 		std::string modelPath = std::to_string(i) + ".obj";
@@ -159,7 +158,6 @@ void Stage::Initialize()
 		numberModel_[i].material.textureHandle = TextureManager::Load("resources/Images/enempng.png", dxBase->GetDevice());
 	}
 
-	
 	// オブジェクト生成
 	for (int j = 0; j < 3; ++j) {
 		for (int i = 0; i < 10; ++i) {
@@ -177,7 +175,6 @@ void Stage::Initialize()
 	// パーセント
 	percentModel_ = ModelManager::LoadModelFile("resources/Models/", "percent.obj", dxBase->GetDevice());
 	percentModel_.material.textureHandle = TextureManager::Load("resources/Images/enempng.png", dxBase->GetDevice());
-
 
 	percentObject_ = std::make_unique<Object3D>();
 	percentObject_->model_ = &percentModel_;
@@ -205,10 +202,23 @@ void Stage::Initialize()
 
 	isClear_ = false;
 	isGameOver_ = false;
+
+	// Sound 
+	stageDownSound_ = soundManager->LoadWave("resources/Sounds/down.wav");
+	stageUpSound_ = soundManager->LoadWave("resources/Sounds/up.wav");
+	enemyLandingSound_ = soundManager->LoadWave("resources/Sounds/landing.wav");
+	timerSound_ = soundManager->LoadWave("resources/Sounds/timeCount.wav");
 }
 
 void Stage::Update(Camera* camera)
 {
+	playEnemyLandingSound_ = false;
+	isPastOneSeconds_ = false;
+	if(leftTime_ - preTimePerSeconds_ >= 1.0f)
+	{
+		isPastOneSeconds_ = true;
+		preTimePerSeconds_ = leftTime_;
+	}
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	if(chargedEnergy_ >= maxEnergy_)
 	{
@@ -283,7 +293,10 @@ void Stage::Update(Camera* camera)
 	for(auto& enemy : enemies_)
 	{
 		enemy->Update(enemies_);
-		
+		if(enemy->GetLanding())
+		{
+			playEnemyLandingSound_ = true;
+		}
 		///
 		///	敵死亡時パーティクルの発生（敵がelaseされる前に発生させたいのでここで記述）
 		/// 
@@ -369,6 +382,22 @@ void Stage::Update(Camera* camera)
 	camera->UpdateShake();
 
 #pragma endregion
+
+#pragma region Sound
+	if(playEnemyLandingSound_)
+	{
+		SoundManager* soundManager = SoundManager::GetInstance();
+		soundManager->PlayWave(enemyLandingSound_,false,1.3f);
+	}
+	if(leftTime_ <= 5.0f)
+	{
+		if(isPastOneSeconds_)
+		{
+			SoundManager* soundManager = SoundManager::GetInstance();
+			soundManager->PlayWave(timerSound_,false,1.3f);
+		}
+	}
+#pragma endregion
 }
 
 void Stage::DrawModels()
@@ -451,6 +480,10 @@ void Stage::DrawModels()
 		timerNumberObject_[digit][j]->Draw();
 	}
 
+	if(playEnemyLandingSound_)
+	{
+		SoundManager::GetInstance()->PlayWave(enemyLandingSound_);
+	}
 	
 }
 
@@ -635,9 +668,21 @@ void Stage::UpdateEnemies()
 	}
 #endif // _DEBUG
 
+	playEnemyLandingSound_ = false;
 	// Update
 	for(auto& enemy : enemies_)
 	{
+		if(enemy->GetLanding())
+		{
+			playEnemyLandingSound_ = true;
+		}
+		///
+		///	敵死亡時パーティクルの発生（敵がelaseされる前に発生させたいのでここで記述）
+		/// 
+		if(!enemy->IsAlive())
+		{
+			enemyDeadEmitter_.Emit(enemy->GetTranslate());
+		}
 		enemy->Update(enemies_);
 
 		///
@@ -656,6 +701,14 @@ void Stage::UpdateEnemies()
 
 	// 敵着地時のパーティクルを更新
 	enemyLandingEmitter_.Update();
+
+#pragma region Sound
+	if(playEnemyLandingSound_)
+	{
+		SoundManager* soundManager = SoundManager::GetInstance();
+		soundManager->PlayWave(enemyLandingSound_,false,1.3f);
+	}
+#pragma endregion
 }
 
 void Stage::InitializeStatus(const std::string& scene)
@@ -709,6 +762,16 @@ void Stage::CheckAlCollisions()
 	}
 
 	mapChip_->CheckCollision_Collider(player_->GetHandCollider());
+}
+
+void Stage::PlayStageUpSound()
+{
+	SoundManager::GetInstance()->PlayWave(stageUpSound_,false,0.4f);
+}
+
+void Stage::PlayStageDownSound()
+{
+	SoundManager::GetInstance()->PlayWave(stageDownSound_,false,0.4f);
 }
 
 void Stage::ClearEnemies()

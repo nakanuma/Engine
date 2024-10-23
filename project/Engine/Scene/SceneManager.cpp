@@ -82,5 +82,5 @@ void SceneManager::Draw()
 void SceneManager::CreateStage()
 {
 	stage_ = std::make_unique<Stage>();
-	stage_->Initialize();
+	stage_->Initialize(soundManager_.get());
 }
