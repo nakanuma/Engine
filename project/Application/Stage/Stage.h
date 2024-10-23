@@ -31,7 +31,7 @@ public:
 	Stage() = default;
 	~Stage() {}
 
-	void Initialize();
+	void Initialize(SoundManager* soundManager);
 	void Update(Camera* camera);
 	void DrawModels();
 

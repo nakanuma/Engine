@@ -7,7 +7,7 @@
 #include "DirectXBase.h"
 #include "ImguiWrapper.h"
 
-void Stage::Initialize()
+void Stage::Initialize(SoundManager* soundManager)
 {
 	DirectXBase* dxBase = DirectXBase::GetInstance();
 	GlobalVariables* variables = GlobalVariables::getInstance();
@@ -204,7 +204,6 @@ void Stage::Initialize()
 	isGameOver_ = false;
 
 	// Sound 
-	SoundManager* soundManager = SoundManager::GetInstance();
 	stageDownSound_ = soundManager->LoadWave("resources/Sounds/down.wav");
 	stageUpSound_ = soundManager->LoadWave("resources/Sounds/up.wav");
 	/*enemyLandingSound_ = soundManager->LoadWave("resources/Sounds/landing.mp3");*/
