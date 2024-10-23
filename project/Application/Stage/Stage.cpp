@@ -691,6 +691,7 @@ void Stage::ClearEnemies()
 
 void Stage::Debug()
 {
+#ifdef _DEBUG
 	ImGui::Begin("stage");
 
 	if(ImGui::Button("emit"))
@@ -703,6 +704,7 @@ void Stage::Debug()
 	ImGui::End();
 
 	ImGui::End();
+#endif // _DEBUG
 }
 
 void Stage::UpdateCloudPosition(Sprite& sprite,float& x,float moveSpeed,float resetThreshold,float resetPosition)
