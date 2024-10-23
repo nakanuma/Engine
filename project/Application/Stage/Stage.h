@@ -94,6 +94,11 @@ private:
 
 	bool isClear_;
 	bool isGameOver_;
+
+#ifdef _DEBUG
+	bool isSpawnerActive_;
+#endif // _DEBUG
+
 public:
 	bool GetIsClear()const { return isClear_; }
 	bool GetIsGameOver()const { return isGameOver_; }

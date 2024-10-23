@@ -16,7 +16,7 @@ public:
 	EnemySpawner(Stage* stage):stage_(stage){}
 	~EnemySpawner();
 
-	void Initialize(int32_t listNum,ModelManager::ModelData* modelData);
+	void Initialize(const std::string& scene,int32_t listNum,ModelManager::ModelData* modelData);
 	void Update();
 	void Draw();
 

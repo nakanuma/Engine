@@ -8,32 +8,32 @@ EnemySpawner::~EnemySpawner()
 {
 }
 
-void EnemySpawner::Initialize(int32_t listNum,ModelManager::ModelData* modelData)
+void EnemySpawner::Initialize(const std::string& scene,int32_t listNum,ModelManager::ModelData* modelData)
 {
 	listNum_ = listNum;
 	std::string group = "EnemySpawner" + std::to_string(listNum_);
-	spawnCoolTime_ = MyRandom ("Game",group,"spawnCoolTime");
+	spawnCoolTime_ = MyRandom (scene,group,"spawnCoolTime");
 	currentCoolTime_ = spawnCoolTime_();
 	object_ = std::make_unique<Object3D>();
 	object_->model_ = modelData;
 
 	GlobalVariables *variables = GlobalVariables::getInstance();
-	variables->addValue("Game",group,"moveDirection",moveDirection_);
+	variables->addValue(scene,group,"moveDirection",moveDirection_);
 	moveDirection_ = Float2::Normalize(moveDirection_);
-	variables->addValue("Game",group,"Translate",object_->transform_.translate);
+	variables->addValue(scene,group,"Translate",object_->transform_.translate);
 	
 	controlByEnergy_ = false;
 	controlByTime_ = false;
-	variables->addValue("Game",group,"controlByTime_",controlByTime_);
-	variables->addValue("Game",group,"controlByEnergy_",controlByEnergy_);
+	variables->addValue(scene,group,"controlByTime_",controlByTime_);
+	variables->addValue(scene,group,"controlByEnergy_",controlByEnergy_);
 
-	variables->addValue("Game",group,"inactiveEnemyValue_",inactiveEnemyValue_);
-	variables->addValue("Game",group,"inactiveMidTime_",inactiveMidTime_);
+	variables->addValue(scene,group,"inactiveEnemyValue_",inactiveEnemyValue_);
+	variables->addValue(scene,group,"inactiveMidTime_",inactiveMidTime_);
 	inactiveTimeLength_ = stage_->GetLimitTime();
-	variables->addValue("Game",group,"inactiveTimeLegth_",inactiveTimeLength_);
-	variables->addValue("Game",group,"inactiveMidEnergy_",inactiveMidEnergy_);
+	variables->addValue(scene,group,"inactiveTimeLegth_",inactiveTimeLength_);
+	variables->addValue(scene,group,"inactiveMidEnergy_",inactiveMidEnergy_);
 	inactiveEnergyLength_ = stage_->GetMaxEnergy();
-	variables->addValue("Game",group,"inactiveEnergyLength_",inactiveEnergyLength_);
+	variables->addValue(scene,group,"inactiveEnergyLength_",inactiveEnergyLength_);
 }
 
 void EnemySpawner::Update()
