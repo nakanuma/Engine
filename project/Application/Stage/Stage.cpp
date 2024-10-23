@@ -533,6 +533,12 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 		playerMoveEmitter_.Emit(player_->GetTranslate());
 	}
 
+
+
+
+	// 敵死亡時のパーティクルを更新
+	enemyDeadEmitter_.Update();
+
 	// プレイヤー移動時パーティクルを更新
 	playerMoveEmitter_.Update();
 
