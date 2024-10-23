@@ -4,6 +4,7 @@
 SoundManager* SoundManager::GetInstance()
 {
 	static SoundManager instance;
+	instance.Initialize();
 	return &instance;
 }
 

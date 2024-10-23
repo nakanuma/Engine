@@ -27,13 +27,16 @@ private:
 	Enemy* CreateClone();
 private:
 	Stage* stage_;
-	// 奪ったエネルギー
+	// 奪うエネルギー
 	float stealEnergy_;
+	// 奪ったエネルギー
 	float stolenEnergy_;
 
 	bool isAlive_;
 	std::unique_ptr<Object3D> object_;
 	std::unique_ptr<Collider> collider_;
+
+	float scalePerStolenEnergy_;
 
 	Float2 moveDirection_;
 	float speed_;

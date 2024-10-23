@@ -20,6 +20,7 @@ void MyGame::Initialize()
 	//SceneManager::GetInstance()->SetNextScene(scene);
 
 	SceneManager::GetInstance()->CameraInitialize();
+	SceneManager::GetInstance()->InitializeSound();
 	// シーンファクトリーを生成し、マネージャにセット
 	sceneFactory_ = new SceneFactory();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_);
