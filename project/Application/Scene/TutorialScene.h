@@ -75,4 +75,6 @@ private:
 	// タスクに使う 変数 群
 	int32_t playerAttackNum_;
 	int32_t enemyHurtNum_;
+
+	float currentAlpha_ = 0.0f;
 };

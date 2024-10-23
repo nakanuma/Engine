@@ -11,6 +11,7 @@
 #include <cmath>
 #include <numbers>
 #include "MyMath.h"
+#include "Easing.h"
 
 #include "DeltaTime.h"
 #include "GlobalVariables.h"
@@ -198,6 +199,17 @@ void TutorialScene::Update()
 	///	シーン切り替え
 	/// 
 	
+	// タイトル->チュートリアルに遷移した際、currentTextTextureの透明度を上げて表示する
+	static int32_t currentFrame = 0;
+	const int maxFrames = 120;
+
+	float t = static_cast<float>(currentFrame) / maxFrames;
+	currentAlpha_ = Easing::EaseOutCubic(t);
+
+	currentFrame = std::min(currentFrame + 1, maxFrames);
+
+	currentTextTexture_->SetColor({ 1.0f, 1.0f, 1.0f, currentAlpha_ });
+
 	currentUpdate_();
 	stage_->UpdateBackGround();
 
