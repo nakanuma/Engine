@@ -20,7 +20,7 @@ void SceneManager::InitializeSound()
 	soundManager_->Initialize();
 
 	bgm_ = soundManager_->LoadWave("resources/Sounds/BGM.wav");
-	soundManager_->PlayWave(bgm_,true,0.4f);
+	soundManager_->PlayWave(bgm_,true,0.22f);
 }
 
 void SceneManager::CameraInitialize()

@@ -74,6 +74,8 @@ private:
 	std::unique_ptr<Object3D> timerObject_;
 	std::unique_ptr<Object3D> timerNeedleObject_;
 	Float3 timerNeedleStartRotate_;
+	float preTimePerSeconds_;
+	bool isPastOneSeconds_;
 
 	std::unique_ptr<CollisionManager> collisionManager_;
 
@@ -103,6 +105,7 @@ private:
 	SoundManager::SoundData enemyLandingSound_;
 	SoundManager::SoundData stageUpSound_;
 	SoundManager::SoundData stageDownSound_;
+	SoundManager::SoundData timerSound_;
 public:
 	void PlayStageUpSound();
 	void PlayStageDownSound();

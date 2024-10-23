@@ -68,8 +68,6 @@ void GameOverScene::Initialize()
 	leftTime_ = enterSceneMaxTime_;
 
 	variables->addValue("GameOver","Camera","cameraPosWhenOutScene_",cameraPosWhenOutScene_);
-
-	stage_->PlayStageDownSound();
 }
 
 void GameOverScene::Finalize()
@@ -207,6 +205,8 @@ void GameOverScene::SceneUpdate()
 	{
 		leftTime_ = outSceneMaxTime_;
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
+
+		stage_->PlayStageDownSound();
 	}
 
 	// 背景の更新

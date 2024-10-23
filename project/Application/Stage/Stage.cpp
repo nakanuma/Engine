@@ -207,12 +207,18 @@ void Stage::Initialize(SoundManager* soundManager)
 	stageDownSound_ = soundManager->LoadWave("resources/Sounds/down.wav");
 	stageUpSound_ = soundManager->LoadWave("resources/Sounds/up.wav");
 	enemyLandingSound_ = soundManager->LoadWave("resources/Sounds/landing.wav");
+	timerSound_ = soundManager->LoadWave("resources/Sounds/timeCount.wav");
 }
 
 void Stage::Update(Camera* camera)
 {
 	playEnemyLandingSound_ = false;
-
+	isPastOneSeconds_ = false;
+	if(leftTime_ - preTimePerSeconds_ >= 1.0f)
+	{
+		isPastOneSeconds_ = true;
+		preTimePerSeconds_ = leftTime_;
+	}
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	if(chargedEnergy_ >= maxEnergy_)
 	{
@@ -381,7 +387,15 @@ void Stage::Update(Camera* camera)
 	if(playEnemyLandingSound_)
 	{
 		SoundManager* soundManager = SoundManager::GetInstance();
-		soundManager->PlayWave(enemyLandingSound_);
+		soundManager->PlayWave(enemyLandingSound_,false,1.3f);
+	}
+	if(leftTime_ <= 5.0f)
+	{
+		if(isPastOneSeconds_)
+		{
+			SoundManager* soundManager = SoundManager::GetInstance();
+			soundManager->PlayWave(timerSound_,false,1.3f);
+		}
 	}
 #pragma endregion
 }
@@ -664,7 +678,7 @@ void Stage::UpdateEnemies()
 	if(playEnemyLandingSound_)
 	{
 		SoundManager* soundManager = SoundManager::GetInstance();
-		soundManager->PlayWave(enemyLandingSound_);
+		soundManager->PlayWave(enemyLandingSound_,false,1.3f);
 	}
 #pragma endregion
 }
