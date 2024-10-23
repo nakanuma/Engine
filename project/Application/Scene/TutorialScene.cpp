@@ -17,7 +17,7 @@
 
 void TutorialScene::Initialize()
 {
-  	DirectXBase* dxBase = DirectXBase::GetInstance();
+	DirectXBase* dxBase = DirectXBase::GetInstance();
 
 	// SpriteCommonの生成と初期化
 	spriteCommon = std::make_unique<SpriteCommon>();
@@ -54,28 +54,34 @@ void TutorialScene::Initialize()
 	///===========================================================================================
 	/// Textures 
 	///===========================================================================================
-	for(int32_t i = 0; i < 4; i++)
+	std::string directory = "./resources/Images/tutorial/";
+	for(int32_t i = 1; i <= 4; i++)
 	{
-		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/white.png",dxBase->GetDevice()));
+		tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(i ),dxBase->GetDevice()));
 	}
-	for(int32_t i = 0; i < 2; i++)
-	{
-		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice()));
-	}
-	for(int32_t i = 0; i < 2; i++)
-	{
-		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/grass.png",dxBase->GetDevice()));
-	}
-	/*for(int32_t i = 0; i < 2; i++)
-	{
-		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice()));
-	}*/
+	tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(7),dxBase->GetDevice()));
 
-	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/white.png",dxBase->GetDevice()));
-	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice()));
-	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/grass.png",dxBase->GetDevice()));
-	//tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice()));
+	for(int32_t i = 9; i <= 10; i++)
+	{
+		tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(i),dxBase->GetDevice()));
+	}
+	for(int32_t i = 12; i <= 13; i++)
+	{
+		tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(12 + i),dxBase->GetDevice()));
+	}
+
+	for(size_t i = 0; i < 6; i++)
+	{
+		tutorialTaskGuidTextures_.push_back(TextureManager::Load(directory + "tutorial_5_" + std::to_string(i),dxBase->GetDevice()));
+	}
 	
+	tutorialTaskGuidTextures_.push_back(TextureManager::Load(directory + "tutorial_8",dxBase->GetDevice()));
+
+	for(size_t i = 0; i < 6; i++)
+	{
+		tutorialTaskGuidTextures_.push_back(TextureManager::Load(directory + "tutorial_11" + std::to_string(i),dxBase->GetDevice()));
+	}
+
 	currentTextTextureIndex_ = 0;
 
 	currentTextTexture_ = std::make_unique<Sprite>();
@@ -91,22 +97,23 @@ void TutorialScene::Initialize()
 	currentUpdate_ = [this]() { this->SceneUpdate(); };
 
 	 ///=============================///
-    ///    tutorial Text Updates    ///
+	///    tutorial Text Updates    ///
    ///=============================///
-	
+
 	// この順番で 実行される
 	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(4); });
 
-	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
+	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(1); });
 
 	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
 
- 	//tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
+	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
 
 	 ///=============================///
 	///    tutorial Task Updates    ///
    ///=============================///
-	auto punchFloor           = [this]() {
+	auto punchFloor = [this]()
+	{
 		bool isPrePlayerAttack = stage_->GetPlayer()->GetIsAttack();
 		stage_->UpdatePlayerAndMapChip(camera);
 		bool isPlayerAttack = stage_->GetPlayer()->GetIsAttack();
@@ -114,9 +121,12 @@ void TutorialScene::Initialize()
 		{
 			++playerAttackNum_;
 		}
-		return playerAttackNum_ >= 1;
+		currentTaskGuidTexture_->SetTextureIndex(tutorialTaskGuidTextures_[playerAttackNum_]);
+		return playerAttackNum_ >= 5;
 	};
-	auto attackForEnemy       = [this]() {
+	auto attackForEnemy = [this]()
+	{
+		currentTaskGuidTexture_->SetTextureIndex(tutorialTaskGuidTextures_[0]);
 		stage_->UpdatePlayerAndMapChip(camera);
 		stage_->UpdateEnemies();
 
@@ -124,12 +134,14 @@ void TutorialScene::Initialize()
 		{
 			if(enemy->IsHurt())
 			{
+				
 				return true;
 			}
 		}
 		return false;
 	};
-	auto attackForEnemyMore   = [this]() {
+	auto attackForEnemyMore = [this]()
+	{
 		stage_->UpdatePlayerAndMapChip(camera);
 		stage_->UpdateEnemies();
 
@@ -140,6 +152,7 @@ void TutorialScene::Initialize()
 				enemyHurtNum_ += static_cast<int32_t>(1);
 			}
 		}
+		currentTaskGuidTexture_->SetTextureIndex(tutorialTaskGuidTextures_[7 + enemyHurtNum_]);
 		return enemyHurtNum_ >= 5;
 	};
 	/*auto chargingEnergyForMax = [this]() {
@@ -147,7 +160,7 @@ void TutorialScene::Initialize()
 
 		return stage_->GetIsClear();
 	};*/
-	
+
 	// この順番で 実行される
 	tutorialTask_.push_back(punchFloor);
 	tutorialTask_.push_back(attackForEnemy);
@@ -219,7 +232,7 @@ void TutorialScene::Draw()
 
 	// Spriteの描画準備。全ての描画に共通のグラフィックスコマンドを積む
 	spriteCommon->PreDraw();
-	
+
 	if(doTask_)
 	{
 		currentTaskGuidTexture_->Draw();
@@ -301,7 +314,7 @@ void TutorialScene::TextTextureUpdate(uint32_t textureSum)
 				tutorialTextUpdate_.pop_front();
 			}
 
-		} 
+		}
 	} else if(input->TriggerKey(DIK_S) || input->TriggerKey(DIK_A))
 	{
 		soundManager->PlayWave(clickSound_,false,0.7f);
