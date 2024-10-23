@@ -55,7 +55,7 @@ void GameOverScene::Initialize()
 	///===========================================================================================
 	/// ClearTextPlane
 	///===========================================================================================
-	gameoverTextTextureIndex_ = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
+	gameoverTextTextureIndex_ = TextureManager::Load("resources/Images/gameOver.png",dxBase->GetDevice());
 	gameoverTextPlane_ = std::make_unique<TexturePlane>();
 	gameoverTextPlane_->Initialize("GameOver","GameOverText",gameoverTextTextureIndex_,dxBase->GetDevice());
 	
