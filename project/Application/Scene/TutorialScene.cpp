@@ -66,15 +66,15 @@ void TutorialScene::Initialize()
 	{
 		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/grass.png",dxBase->GetDevice()));
 	}
-	for(int32_t i = 0; i < 2; i++)
+	/*for(int32_t i = 0; i < 2; i++)
 	{
 		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice()));
-	}
+	}*/
 
 	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/white.png",dxBase->GetDevice()));
 	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice()));
 	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/grass.png",dxBase->GetDevice()));
-	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice()));
+	//tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice()));
 	
 	currentTextTextureIndex_ = 0;
 
@@ -101,7 +101,7 @@ void TutorialScene::Initialize()
 
 	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
 
- 	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
+ 	//tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
 
 	 ///=============================///
 	///    tutorial Task Updates    ///
@@ -142,17 +142,17 @@ void TutorialScene::Initialize()
 		}
 		return enemyHurtNum_ >= 5;
 	};
-	auto chargingEnergyForMax = [this]() {
+	/*auto chargingEnergyForMax = [this]() {
 		stage_->Update(camera);
 
 		return stage_->GetIsClear();
-	};
+	};*/
 	
 	// この順番で 実行される
 	tutorialTask_.push_back(punchFloor);
 	tutorialTask_.push_back(attackForEnemy);
 	tutorialTask_.push_back(attackForEnemyMore);
-	tutorialTask_.push_back(chargingEnergyForMax);
+	//tutorialTask_.push_back(chargingEnergyForMax);
 
 	///===========================================================================================
 	/// GlobalVariables 
