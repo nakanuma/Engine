@@ -246,6 +246,13 @@ void Stage::Update(Camera* camera)
 	for(auto& enemy : enemies_)
 	{
 		enemy->Update(enemies_);
+		
+		///
+		///	敵死亡時パーティクルの発生（敵がelaseされる前に発生させたいのでここで記述）
+		/// 
+		if (!enemy->IsAlive()) {
+			enemyDeadEmitter_.Emit(enemy->GetTranslate());
+		}
 	}
 	std::erase_if(enemies_,[](std::unique_ptr<Enemy>& enemy) { return enemy->IsAlive() ? false : true; });
 
@@ -308,13 +315,6 @@ void Stage::Update(Camera* camera)
 	/*--------------------------*/
 	/*     敵死亡パーティクル      */
 	/*--------------------------*/
-
-	// 敵死亡時にパーティクルを発生させる
-	for (auto& enemy : enemies_) {
-		if (!enemy->IsAlive()) {
-			enemyDivideEmitter_.Emit(enemy->GetTranslate());
-		}
-	}
 
 	// 敵死亡時のパーティクルを更新
 	enemyDeadEmitter_.Update();
