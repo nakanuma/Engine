@@ -10,7 +10,11 @@ EnemyLandingParticle::EnemyLandingParticle(ModelManager::ModelData* model, uint3
 	object_.transform_.scale = { kScale, kScale, kScale };
 	object_.model_ = model_;
 	object_.model_->material.textureHandle = textureHandle;
-	velocity_ = velocity;
+	velocity_ = {
+		velocity.x * kSpeed_, 
+		velocity.y, 
+		velocity.z * kSpeed_
+	};
 	rotateSpeed_ = rotateSpeed;
 
 	// 経過時間の設定
@@ -29,7 +33,7 @@ void EnemyLandingParticle::Update() {
 	}
 
 	// Y座標が指定以下になったら削除
-	if (object_.transform_.translate.y <= 0.0f) {
+	if (object_.transform_.translate.y <= -1.0f) {
 		del_ = true;
 	}
 

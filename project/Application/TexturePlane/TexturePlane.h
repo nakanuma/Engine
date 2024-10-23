@@ -19,6 +19,7 @@ private:
 public:
 	const ModelManager::ModelData& GetModelData()const { return planeModel_; }
 	const Object3D* GetPlaneObject()const { return planeObject_.get(); }
+	Object3D* GetPlaneObject() { return planeObject_.get(); }
 
 	const Float4& GetLtPos()const { return planeModel_.vertices[0].position; }
 	const Float4& GetLbPos()const { return planeModel_.vertices[4].position; }

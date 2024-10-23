@@ -9,10 +9,11 @@
 
 #include "Enemy.h"
 
+class Stage;
 class EnemySpawner
 {
 public:
-	EnemySpawner() = default;
+	EnemySpawner(Stage* stage):stage_(stage){}
 	~EnemySpawner();
 
 	void Initialize(int32_t listNum,ModelManager::ModelData* modelData);
@@ -21,8 +22,22 @@ public:
 
 	Enemy* Spawn();
 private:
+	Stage* stage_;
+
+	// controlByEnemyValue
+	bool controlByTime_;
+	bool controlByEnergy_;
+
+	float inactiveEnemyValue_;
+	float inactiveMidTime_;
+	float inactiveTimeLength_;
+	float inactiveMidEnergy_;
+	float inactiveEnergyLength_;
+
+	float productionPoint_ = 1.0f;
+
 	int32_t listNum_;
-	Float2   moveDirection_;
+	Float2 moveDirection_;
 	MyRandom spawnCoolTime_;
 	float currentCoolTime_;
 

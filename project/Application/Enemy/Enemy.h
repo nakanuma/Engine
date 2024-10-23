@@ -27,13 +27,16 @@ private:
 	Enemy* CreateClone();
 private:
 	Stage* stage_;
-	// 奪ったエネルギー
+	// 奪うエネルギー
 	float stealEnergy_;
+	// 奪ったエネルギー
 	float stolenEnergy_;
 
 	bool isAlive_;
 	std::unique_ptr<Object3D> object_;
 	std::unique_ptr<Collider> collider_;
+
+	float scalePerStolenEnergy_;
 
 	Float2 moveDirection_;
 	float speed_;
@@ -67,4 +70,10 @@ public:
 	bool GetLanding() { return !preOnGround_ && isOnGround_; }
 	// 位置を取得
 	Float3 GetTranslate() { return object_->transform_.translate; }
+
+	// クローンを生成したフレームのみ立てるフラグ（分裂時パーティクル発生のトリガーに使用）
+	bool isCloneThisFrame_ = false;
+	// クローンを生成した瞬間を取得
+	bool GetIsCloneThisFrame() { return isCloneThisFrame_; }
+	void SetIsCloneThisFrame(bool flag) { isCloneThisFrame_ = flag; }
 };

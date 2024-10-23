@@ -20,9 +20,12 @@ void MyGame::Initialize()
 	//SceneManager::GetInstance()->SetNextScene(scene);
 
 	SceneManager::GetInstance()->CameraInitialize();
+	SceneManager::GetInstance()->InitializeSound();
 	// シーンファクトリーを生成し、マネージャにセット
 	sceneFactory_ = new SceneFactory();
 	SceneManager::GetInstance()->SetSceneFactory(sceneFactory_);
+	// ステージの生成
+	SceneManager::GetInstance()->CreateStage();
 	// シーンマネージャに最初のシーンをセット
 	SceneManager::GetInstance()->ChangeScene("TITLE");
 }

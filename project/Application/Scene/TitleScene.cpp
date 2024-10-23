@@ -9,6 +9,7 @@
 #include <cmath>
 #include <numbers>
 #include "MyMath.h"
+#include "Easing.h"
 
 #include "DeltaTime.h"
 #include "GlobalVariables.h"
@@ -22,7 +23,7 @@ void TitleScene::Initialize()
 	spriteCommon->Initialize(DirectXBase::GetInstance());
 
 	// TextureManagerの初期化
-	TextureManager::Initialize(dxBase->GetDevice(), SRVManager::GetInstance());
+	TextureManager::Initialize(dxBase->GetDevice(),SRVManager::GetInstance());
 
 	// SoundManagerの初期化
 	soundManager = std::make_unique<SoundManager>();
@@ -43,32 +44,33 @@ void TitleScene::Initialize()
 
 	///
 	///	↓ ゲームシーン用
-	///	
+	///
 
-#ifdef _DEBUG
+	///===========================================================================================
+	/// GlobalVariables
+	///===========================================================================================
+	GlobalVariables* variables = GlobalVariables::getInstance();
+
+
 	stage_ = SceneManager::GetInstance()->GetStage();
 	if(!stage_)
 	{
-		SceneManager::GetInstance()->CreateStage();
 		stage_ = SceneManager::GetInstance()->GetStage();
-	} else
-	{
-		stage_->InitializeStatus("Title");
 	}
-#endif // _DEBUG
+	stage_->InitializeStatus("Title");
 
 	///===========================================================================================
-	/// Camera 
+	/// Camera
 	///===========================================================================================
 	cameraPosWhenEnterScene_ = camera->transform.translate;
 
 	///===========================================================================================
-	/// Texture 
+	/// Texture
 	///===========================================================================================
 	buttonTextureIndex_ = TextureManager::Load("./resources/Images/push_space.png",dxBase->GetDevice());
 
 	///===========================================================================================
-	/// Title 
+	/// Title
 	///===========================================================================================
 	titleTextModel_ = ModelManager::LoadModelFile("resources/Models","Title.obj",dxBase->GetDevice());
 	titleTextModel_.material.textureHandle = TextureManager::Load("resources/Images/title_color.png",dxBase->GetDevice());
@@ -77,20 +79,23 @@ void TitleScene::Initialize()
 	titleTextObject_->model_ = &titleTextModel_;
 
 	///===========================================================================================
-	/// UI 
+	/// UI
 	///===========================================================================================
 	buttonUI_ = std::make_unique<UI>();
 	buttonUI_->Init("Title","buttonUI",buttonTextureIndex_,spriteCommon.get());
 	signT_ = 1.0f;
-
+	// button
+	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
 	// 各 Update
-	buttonUpdateWhenEnterScene_ = [this](Sprite* sprite){
+	buttonUpdateWhenEnterScene_ = [this](Sprite* sprite)
+	{
 		Float4 color = sprite->GetColor();
 		color.w = Lerp(t_,0.0f,1.0f);
 		color.w = std::clamp(color.w,0.0f,1.0f);
 		sprite->SetColor(color);
 	};
-	buttonUpdateWhenSceneUpdate_ = [this](Sprite* sprite){
+	buttonUpdateWhenSceneUpdate_ = [this](Sprite* sprite)
+	{
 		if(t_ >= 1.0f)
 		{
 			signT_ = -1.0f;
@@ -102,7 +107,8 @@ void TitleScene::Initialize()
 		Float2 currentButtonOffset = Float2::Lerp(t_,-buttonUiOffset_,buttonUiOffset_);
 		sprite->SetPosition(buttonUI_->GetPosition() + currentButtonOffset);
 	};
-	buttonUpdateWhenOutScene_ = [this](Sprite* sprite){
+	buttonUpdateWhenOutScene_ = [this](Sprite* sprite)
+	{
 		Float4 color = sprite->GetColor();
 		color.w = Lerp(1.0f - t_,0.0f,1.0f);
 		color.w = std::clamp(color.w,0.0f,1.0f);
@@ -112,30 +118,22 @@ void TitleScene::Initialize()
 	buttonUI_->setUpdate(buttonUpdateWhenEnterScene_);
 
 	///===========================================================================================
-	/// cloudPlane_ 
+	/// cloudPlane_
 	///===========================================================================================
 	uint32_t cloudTexture[3];
 	cloudTexture[0] = TextureManager::Load("resources/Images/cloud_1.png",dxBase->GetDevice());
 	cloudTexture[1] = TextureManager::Load("resources/Images/cloud_2.png",dxBase->GetDevice());
-	
+
 	cloudSprite_[0] = std::make_unique<UI>();
 	cloudSprite_[0]->Init("Title","Cloud1",cloudTexture[0],spriteCommon.get());
 
 	cloudSprite_[1] = std::make_unique<UI>();
 	cloudSprite_[1]->Init("Title","Cloud2",cloudTexture[1],spriteCommon.get());
 
-	///===========================================================================================
-	/// GlobalVariables 
-	///===========================================================================================
-	GlobalVariables* variables = GlobalVariables::getInstance();
-
 	// time
 	variables->addValue("Title","Times","enterSceneMaxTime_",enterSceneMaxTime_);
 	variables->addValue("Title","Times","outSceneMaxTime_",outSceneMaxTime_);
 	leftTime_ = 0.0f;
-
-	// button
-	variables->addValue("Title","buttonUI","buttonUiOffset_",buttonUiOffset_);
 
 	// Camera
 	variables->addValue("Title","Camera","cameraHomePosition",cameraHomePos_);
@@ -146,26 +144,36 @@ void TitleScene::Initialize()
 	variables->addValue("Title","Text","Translate",titleTextObject_->transform_.translate);
 
 	///===========================================================================================
-	/// Update State 
+	/// Update State
 	///===========================================================================================
 
-	currentUpdate_ = [this](){ this->EnterSceneUpdate(); };
+	currentUpdate_ = [this]() { this->EnterSceneUpdate(); };
 }
 
 void TitleScene::Finalize()
 {
 }
 
-void TitleScene::Update()
-{
+void TitleScene::Update() {
 	///
 	///	シーン切り替え
-	/// 
+	///
 
 	stage_->UpdatePlayerAndMapChip(camera);
 	currentUpdate_();
+	// 背景の更新
+	stage_->UpdateBackGround();
 	buttonUI_->Update();
-}
+
+	/*-----------------*/
+	/* タイトル文字の回転 */
+	/*-----------------*/
+
+	RotateTitleTextObject();
+
+	// シーンの終了->タイトル移行時にずらした雲の位置を戻す
+	stage_->RestoreBackGroundCloud();
+};
 
 void TitleScene::Draw()
 {
@@ -175,14 +183,33 @@ void TitleScene::Draw()
 	// 描画前処理
 	dxBase->PreDraw();
 	// 描画用のDescriptorHeapの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvManager->descriptorHeap.heap_.Get() };
-	dxBase->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
+	ID3D12DescriptorHeap* descriptorHeaps[] = {srvManager->descriptorHeap.heap_.Get()};
+	dxBase->GetCommandList()->SetDescriptorHeaps(1,descriptorHeaps);
 	// ImGuiのフレーム開始処理
 	ImguiWrapper::NewFrame();
 	// カメラの定数バッファを設定
 	Camera::TransferConstantBuffer();
 	// ライトの定数バッファを設定
 	lightManager->TransferContantBuffer();
+
+	// スプライト描画前処理
+	spriteCommon->PreDraw();
+
+	///
+	///	↓ ここから背景スプライトの描画コマンド
+	/// 
+
+	stage_->DrawBackGround();
+
+	///
+	///	↑ ここまで背景スプライトの描画コマンド
+	/// 
+
+	// スプライト描画後処理
+	spriteCommon->PostDraw();
+	Camera::TransferConstantBuffer();
+	lightManager->TransferContantBuffer();
+
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
@@ -190,11 +217,13 @@ void TitleScene::Draw()
 	titleTextObject_->UpdateMatrix();
 	titleTextObject_->Draw();
 	stage_->DrawModels();
+
 	if(tutorialSkipPlane_)
 	{
 		tutorialSkipPlane_->Update();
 		tutorialSkipPlane_->Draw();
 	}
+
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
 	/// 
@@ -203,16 +232,13 @@ void TitleScene::Draw()
 	spriteCommon->PreDraw();
 
 	///
-	/// ↓ ここからスプライトの描画コマンド
+	/// ↓ ここから前景スプライトの描画コマンド
 	/// 
-	cloudSprite_[0]->Update();
-	cloudSprite_[0]->Draw();
-	cloudSprite_[1]->Update();
-	cloudSprite_[1]->Draw();
+
 	buttonUI_->Draw();
 
 	///
-	/// ↑ ここまでスプライトの描画コマンド
+	/// ↑ ここまで前景スプライトの描画コマンド
 	/// 
 
 #pragma region 丸影の設定
@@ -225,11 +251,13 @@ void TitleScene::Draw()
 	GlobalVariables::getInstance()->Update();
 #endif // _DEBUG
 
+#ifdef _DEBUG
 	ImGui::Begin("Camera");
 
 	ImGui::DragFloat3("Camera translation",&camera->transform.translate.x,0.1f);
 	ImGui::DragFloat3("Camera rotate",&camera->transform.rotate.x,0.1f);
 	ImGui::Text("fps : %.1f",ImGui::GetIO().Framerate);
+	ImGui::Text("%.2f", stage_->GetCloudY());
 
 	ImGui::End();
 
@@ -241,11 +269,13 @@ void TitleScene::Draw()
 	ImGui::InputFloat("CurrentEnergy",&currentEnergy,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	float limitTime = stage_->GetLimitTime();
-	float currentTime = stage_->GetCurrentTime();
+	float currentTime = stage_->GetLeftTime();
 	ImGui::InputFloat("LimitTime",&limitTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
+
+#endif // _DEBUG
 
 	// ImGuiの内部コマンドを生成する
 	ImguiWrapper::Render(dxBase->GetCommandList());
@@ -259,17 +289,18 @@ bool TitleScene::CheckTutorialSkip()
 {
 	const Player* player = stage_->GetPlayer();
 	Float3 playerPos = player->GetWorldPosition();
-	if(playerPos.y > 2.0f)
+
+	if(!player->GetIsAttack() || playerPos.y > 1.0f)
 	{
 		return false;
 	}
-	Float3 planeLt = {tutorialSkipPlane_->GetLbPos().x,tutorialSkipPlane_->GetLbPos().y,tutorialSkipPlane_->GetLbPos().z};
+ 	Float3 planeLt = {tutorialSkipPlane_->GetLbPos().x,tutorialSkipPlane_->GetLbPos().y,tutorialSkipPlane_->GetLbPos().z};
 	Float3 planeRb = {tutorialSkipPlane_->GetRtPos().x,tutorialSkipPlane_->GetRtPos().y,tutorialSkipPlane_->GetRtPos().z};
 
 	const Matrix& planeMat = tutorialSkipPlane_->GetWorldMatrix();
 	planeLt = TransformMatrix(planeLt,planeMat);
 	planeRb = TransformMatrix(planeRb,planeMat);
-	
+
 	// XZ平面での範囲判定
 	bool isWithinX = (playerPos.x >= planeRb.x && playerPos.x <= planeLt.x);
 	bool isWithinZ = (playerPos.z >= planeRb.z && playerPos.z <= planeLt.z);
@@ -293,10 +324,10 @@ void TitleScene::EnterSceneUpdate()
 	if(leftTime_ >= enterSceneMaxTime_)
 	{
 		camera->transform.translate = cameraHomePos_;
-		currentUpdate_ = [this](){ this->SceneUpdate(); };
+		currentUpdate_ = [this]() { this->SceneUpdate(); };
 		buttonUI_->setUpdate(buttonUpdateWhenSceneUpdate_);
 		leftTime_ = 0.0f;
-		t_        = 0.5f;
+		t_ = 0.5f;
 	}
 }
 
@@ -323,10 +354,9 @@ void TitleScene::OutScene_TutorialSkip()
 	if(CheckTutorialSkip())
 	{
 		nextSceneName_ = "GAMEPLAY";
-		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
+ 		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
-	}
-	else if(stage_->GetIsClear())
+	} else if(stage_->GetIsClear())
 	{
 		nextSceneName_ = "TUTORIAL";
 		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
@@ -337,10 +367,39 @@ void TitleScene::OutScene_TutorialSkip()
 void TitleScene::OutSceneUpdate()
 {
 	leftTime_ += DeltaTime::getInstance()->getDeltaTime();
-	stage_->UpdatePlayerAndMapChip(camera);
 	t_ = leftTime_ / outSceneMaxTime_;
 
-	if(leftTime_ >= outSceneMaxTime_){
+	if(leftTime_ >= outSceneMaxTime_)
+	{
 		SceneManager::GetInstance()->ChangeScene(nextSceneName_);
+	}
+}
+
+void TitleScene::RotateTitleTextObject() {
+	// プレイヤーが地面に衝突したらタイトル回転速度を設定
+	if (stage_->GetPlayer()->GetTranslate().y <= 0.0f) {
+		titleRotSpd_ = kInitialRotSpd_;
+		currentFrame = 0;
+		isRotStart_ = true;
+	}
+
+	// 回転を行う
+	if (isRotStart_) {
+		if (currentFrame <= kTotalFrame) {
+			float t = static_cast<float>(currentFrame) / static_cast<float>(kTotalFrame);
+			titleRotSpd_ = kInitialRotSpd_ * (1.0f - Easing::EaseOutQuart(t));
+			currentFrame++;
+		} else {
+			titleRotSpd_ = 0.0f;
+			isRotStart_ = false;
+		}
+	}
+
+	// タイトルオブジェクトに回転速度を適用
+	titleTextObject_->transform_.rotate.y += titleRotSpd_;
+
+	// 1回転したらY軸を0に戻す
+	if (titleTextObject_->transform_.rotate.y > std::numbers::pi_v<float> * 2.0f) {
+		titleTextObject_->transform_.rotate.y = 0.0f;
 	}
 }

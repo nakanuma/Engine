@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "ModelManager.h"
+#include "SpriteCommon.h"
+#include "Sprite.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -18,6 +20,8 @@
 
 #include "EnemyLandingEmitter.h"
 #include "PlayerMoveEmitter.h"
+#include "EnemyDivideEmitter.h"
+#include "BackGroundStarEmitter.h"
 
 class Stage
 {
@@ -30,6 +34,9 @@ public:
 	void DrawModels();
 
 	void Debug();
+  
+	void UpdateBackGround();
+	void DrawBackGround();
 
 	void UpdatePlayerAndMapChip(Camera* camera);
 	void UpdateEnemies();
@@ -64,14 +71,25 @@ private:
 	ModelManager::ModelData timerNeedleModel_;
 	std::unique_ptr<Object3D> timerObject_;
 	std::unique_ptr<Object3D> timerNeedleObject_;
+	Float3 timerNeedleStartRotate_;
 
 	std::unique_ptr<CollisionManager> collisionManager_;
+
+	// 数字
+	ModelManager::ModelData numberModel_[10];
+	std::unique_ptr<Object3D> numberObject_[10][3];
+	
+	std::unique_ptr<Object3D> timerNumberObject_[10][2];
+
+	// パーセント
+	ModelManager::ModelData percentModel_;
+	std::unique_ptr<Object3D> percentObject_;
 
 	float chargedEnergy_;
 	float maxEnergy_;
 
 	float limitTime_;
-	float currentTime_;
+	float leftTime_;
 
 	bool isClear_;
 	bool isGameOver_;
@@ -83,7 +101,7 @@ public:
 	float GetChargedEnergy()const { return chargedEnergy_; }
 
 	float GetLimitTime()const { return limitTime_; }
-	float GetCurrentTime()const { return currentTime_; }
+	float GetLeftTime()const { return leftTime_; }
 
 	void SetEnergy(float energy) { chargedEnergy_ = energy; }
 	void SetMaxEnergy(float maxEnergy) { maxEnergy_ = maxEnergy; }
@@ -121,4 +139,43 @@ private:
 	PlayerMoveEmitter playerMoveEmitter_;
 	// プレイヤー移動時パーティクルのモデル
 	ModelManager::ModelData modelPlayerMoveParticle_;
+
+	// エネミー分裂時パーティクルのエミッター
+	EnemyDivideEmitter enemyDivideEmitter_;
+	// エネミー分裂時パーティクルのモデル
+	ModelManager::ModelData modelEnemyDivideParticle_;
+
+	// 背景の星パーティクル(2D)
+	BackGroundStarEmitter backGroundStarEmitter_;
+
+private:
+	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
+	// 背景スプライト
+	std::unique_ptr<Sprite> backGroundSprite_;
+	// パーティクルの発生に使用するタイマー
+	int32_t emitTimer_;
+
+	// 背景の雲スプライト
+	std::unique_ptr<Sprite[]> cloudSprite_;
+	float near0x, near1x;
+	float far2x, far3x;
+	float cloudY = 0.0f; // 雲スプライトに全て共通で持たせる
+	float nearCloudMoveSpeed = 1.0f;
+	float farCloudMoveSpeed = 0.6f;
+
+	// 背景の雲を更新
+	void UpdateCloudPosition(Sprite& sprite, float& x, float moveSpeed, float resetThreshold, float resetPosition);
+
+public:
+	// 背景の雲を画面上へ移動させる（ゲームクリア->タイトル移行時に呼ぶ）
+	void UpBackGroundCloud();
+	// 背景の雲を画面下へ移動させる（ゲームオーバー->タイトル移行時に呼ぶ）
+	void DownBackGroundCloud();
+	// 背景の雲のY座標が正しい位置ではない場合に元の位置に戻す（タイトル画面で呼ぶ）
+	void RestoreBackGroundCloud();
+
+	const float kCloudUpSpeed = 14.0f;
+	const float kCloudDownSpeed = 12.0f;
+
+	float GetCloudY() { return cloudY; }
 };

@@ -1,6 +1,8 @@
 #include "EnemyLandingEmitter.h"
 #include <cassert>
 #include <random>
+#include <numbers>
+#include <cmath>
 
 EnemyLandingEmitter::EnemyLandingEmitter() {}
 
@@ -39,21 +41,24 @@ void EnemyLandingEmitter::Emit(Float3 translation) {
 	std::random_device rd;
 	std::mt19937 rng(rd());
 
-	// 各移動速度を決める
-	const float kMaxVelX = 0.12f;
+	//// 各移動速度を決める
+	//const float kMaxVelX = 0.12f;
 	const float kMaxVelY = 0.09f;
-	const float kMaxVelZ = 0.10f;
-	std::uniform_real_distribution<float> distX(-kMaxVelX, kMaxVelX);
-	std::uniform_real_distribution<float> distY(0.0f, kMaxVelY); // 最初に下向きにならないように設定
-	std::uniform_real_distribution<float> distZ(-kMaxVelZ, kMaxVelZ);
+	//const float kMaxVelZ = 0.10f;
+	//std::uniform_real_distribution<float> distX(-kMaxVelX, kMaxVelX);
+	std::uniform_real_distribution<float> distY(0.06f, 0.09f); // 最初に下向きにならないように設定
+	//std::uniform_real_distribution<float> distZ(-kMaxVelZ, kMaxVelZ);
 
 	// 各回転速度を決める
-	const float kRotSpd = 0.1f;
+	const float kRotSpd = 0.12f;
 	std::uniform_real_distribution<float> distRot(-kRotSpd, kRotSpd);
 
+	float angleStep = std::numbers::pi_v<float> * 2.0f / kParticleNum;
+
 	for (uint32_t i = 0; i < kParticleNum; i++) {
-		// 速度ベクトルをランダムに生成
-		Float3 velocity(distX(rng), distY(rng), distZ(rng));
+		float angle = angleStep * i;
+		Float3 velocity = {cosf(angle), distY(rng), sinf(angle)};
+
 		// 回転速度をランダムに生成
 		Float3 rotateSpeed(distRot(rng), distRot(rng), distRot(rng));
 

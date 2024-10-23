@@ -34,6 +34,8 @@ public:
 		BYTE* pBuffer;
 		// バッファのサイズ
 		unsigned int bufferSize;
+		// 再生に使用するSourceVoice
+		IXAudio2SourceVoice* pSourceVoice;
 	};
 
 public:
@@ -47,7 +49,9 @@ public:
 
 	void Unload(SoundData* soundData);
 
-	void PlayWave(const SoundData& soundData);
+	void PlayWave(SoundData& soundData, bool loopFlag = false, float volume = 1.0f);
+
+	void StopWave(SoundData& soundData);
 
 private:
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2;

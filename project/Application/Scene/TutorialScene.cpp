@@ -66,15 +66,15 @@ void TutorialScene::Initialize()
 	{
 		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/grass.png",dxBase->GetDevice()));
 	}
-	for(int32_t i = 0; i < 2; i++)
+	/*for(int32_t i = 0; i < 2; i++)
 	{
 		tutorialTextTextures_.push_back(TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice()));
-	}
+	}*/
 
 	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/white.png",dxBase->GetDevice()));
 	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/uvChecker.png",dxBase->GetDevice()));
 	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/grass.png",dxBase->GetDevice()));
-	tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice()));
+	//tutorialTaskGuidTextures_.push_back(TextureManager::Load("resources/Images/monsterBall.png",dxBase->GetDevice()));
 	
 	currentTextTextureIndex_ = 0;
 
@@ -101,7 +101,7 @@ void TutorialScene::Initialize()
 
 	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
 
- 	tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
+ 	//tutorialTextUpdate_.push_back([this]() { return TextTextureUpdate(2); });
 
 	 ///=============================///
 	///    tutorial Task Updates    ///
@@ -135,21 +135,24 @@ void TutorialScene::Initialize()
 
 		for(auto& enemy : stage_->GetEnemies())
 		{
-			enemyHurtNum_ += static_cast<int32_t>(enemy->IsHurt());
+			if(enemy->IsHurt())
+			{
+				enemyHurtNum_ += static_cast<int32_t>(1);
+			}
 		}
 		return enemyHurtNum_ >= 5;
 	};
-	auto chargingEnergyForMax = [this]() {
+	/*auto chargingEnergyForMax = [this]() {
 		stage_->Update(camera);
 
 		return stage_->GetIsClear();
-	};
+	};*/
 	
 	// この順番で 実行される
 	tutorialTask_.push_back(punchFloor);
 	tutorialTask_.push_back(attackForEnemy);
 	tutorialTask_.push_back(attackForEnemyMore);
-	tutorialTask_.push_back(chargingEnergyForMax);
+	//tutorialTask_.push_back(chargingEnergyForMax);
 
 	///===========================================================================================
 	/// GlobalVariables 
@@ -163,6 +166,11 @@ void TutorialScene::Initialize()
 
 	variables->addValue("Tutorial","TextTexture","translate",textTexturePos_);
 	variables->addValue("Tutorial","TaskGuidTexture","translate",taskGuidTexturePos_);
+
+	///===========================================================================================
+	/// Sound 
+	///===========================================================================================
+	clickSound_ = soundManager->LoadWave("resources/Sounds/click.wav");
 }
 
 void TutorialScene::Finalize()
@@ -237,7 +245,7 @@ void TutorialScene::Draw()
 #pragma endregion
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
-#endif // _DEBUG
+
 
 	ImGui::Begin("Camera");
 
@@ -255,11 +263,12 @@ void TutorialScene::Draw()
 	ImGui::InputFloat("CurrentEnergy",&currentEnergy,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	float limitTime = stage_->GetLimitTime();
-	float currentTime = stage_->GetCurrentTime();
+	float currentTime = stage_->GetLeftTime();
 	ImGui::InputFloat("LimitTime",&limitTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
+#endif // _DEBUG
 
 	// ImGuiの内部コマンドを生成する
 	ImguiWrapper::Render(dxBase->GetCommandList());
@@ -274,6 +283,7 @@ void TutorialScene::TextTextureUpdate(uint32_t textureSum)
 	if(input->TriggerKey(DIK_SPACE))
 	{
 		currentTextTextureIndex_ += 1;
+		soundManager->PlayWave(clickSound_,false,0.7f);
 		if(currentTextTextureIndex_ >= textureSum)
 		{
 			doTask_ = true;
@@ -291,15 +301,11 @@ void TutorialScene::TextTextureUpdate(uint32_t textureSum)
 				tutorialTextUpdate_.pop_front();
 			}
 
-		} else if(input->TriggerKey(DIK_S) || input->TriggerKey(DIK_A))
-		{
-			currentTextTextureIndex_ = std::clamp(static_cast<int32_t>(currentTextTextureIndex_ - 1),0,static_cast<int32_t>(textureSum) - 1);
-		}
-
-		if(!tutorialTextTextures_.empty())
-		{  // チェックを追加
-			currentTextTexture_->SetTextureIndex(tutorialTextTextures_[currentTextTextureIndex_]);
-		}
+		} 
+	} else if(input->TriggerKey(DIK_S) || input->TriggerKey(DIK_A))
+	{
+		soundManager->PlayWave(clickSound_,false,0.7f);
+		currentTextTextureIndex_ = std::clamp(static_cast<int32_t>(currentTextTextureIndex_ - 1),0,static_cast<int32_t>(textureSum) - 1);
 	}
 }
 

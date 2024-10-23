@@ -14,6 +14,15 @@ SceneManager::~SceneManager()
 	delete scene_;
 }
 
+void SceneManager::InitializeSound()
+{
+	soundManager_ = std::make_unique<SoundManager>();
+	soundManager_->Initialize();
+
+	bgm_ = soundManager_->LoadWave("resources/Sounds/BGM.wav");
+	soundManager_->PlayWave(bgm_,true,0.4f);
+}
+
 void SceneManager::CameraInitialize()
 {
 	// カメラのインスタンスを生成

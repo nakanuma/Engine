@@ -23,14 +23,13 @@ public:
 
 	void Draw();
 private:
-#ifdef _DEBUG
 	Float2 pos_;
 	Float2 size_ = {10.0f,10.0f};
 	Float4 color_ = {1.0f,1.0f,1.0f,1.0f};
 	Float2 anchor_ = {0.0f,0.0f};
 	bool isFlipX_ = false;
 	bool isFlipY_ = false;
-#endif // _DEBUG
+
 
 	std::unique_ptr<Sprite> sprite_;
 

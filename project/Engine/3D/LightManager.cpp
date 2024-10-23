@@ -31,7 +31,7 @@ void LightManager::Initialize()
 		spotLightsCB_.data_->spotLights[i].position = { 0.0f, 2.0f, 0.0f }; // 初期座標
 		spotLightsCB_.data_->spotLights[i].distance = 50.0f; // 大きめに設定
 		spotLightsCB_.data_->spotLights[i].direction = { 0.0f, -1.0f, 0.0f }; // 真下を向ける
-		spotLightsCB_.data_->spotLights[i].intensity = 4.0f;
+		spotLightsCB_.data_->spotLights[i].intensity = 5.0f;
 		spotLightsCB_.data_->spotLights[i].decay = 2.0f;
 		spotLightsCB_.data_->spotLights[i].cosAngle = std::cos(std::numbers::pi_v<float> / 9.0f);
 		spotLightsCB_.data_->spotLights[i].cosFalloffStart = 1.26f;

@@ -56,15 +56,10 @@ void GameOverScene::Initialize()
 	///===========================================================================================
 	/// ClearTextPlane
 	///===========================================================================================
-	planeModel_ = ModelManager::LoadModelFile("resources/Models","plane.obj",dxBase->GetDevice());
-	gameOverTextTextureIndex_ = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
-
-	planeModel_.material.textureHandle = gameOverTextTextureIndex_;
-
-	gameOverTextPlane_ = std::make_unique<Object3D>();
-	gameOverTextPlane_->materialCB_.data_->color = {0.0f,0.0f,0.0f,1.0f};
-	gameOverTextPlane_->model_ = &planeModel_;
-
+	gameoverTextTextureIndex_ = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
+	gameoverTextPlane_ = std::make_unique<TexturePlane>();
+	gameoverTextPlane_->Initialize("GameOver","GameOverText",gameoverTextTextureIndex_,dxBase->GetDevice());
+	
 	///===========================================================================================
 	/// GlobalVariables
 	///===========================================================================================
@@ -74,9 +69,6 @@ void GameOverScene::Initialize()
 	leftTime_ = enterSceneMaxTime_;
 
 	variables->addValue("GameOver","Camera","cameraPosWhenOutScene_",cameraPosWhenOutScene_);
-	variables->addValue("GameOver","GameOverText","scale"   ,gameOverTextPlane_->transform_.scale);
-	variables->addValue("GameOver","GameOverText","rotate"  ,gameOverTextPlane_->transform_.rotate);
-	variables->addValue("GameOver","GameOverText","position",gameOverTextPlane_->transform_.translate);
 }
 
 void GameOverScene::Finalize()
@@ -106,13 +98,31 @@ void GameOverScene::Draw()
 	// ライトの定数バッファを設定
 	lightManager->TransferContantBuffer();
 
+	// スプライト描画前処理
+	spriteCommon->PreDraw();
+
+	///
+	///	↓ ここから背景スプライトの描画コマンド
+	///
+
+	stage_->DrawBackGround();
+
+	///
+	///	↑ ここまで背景スプライトの描画コマンド
+	///
+
+	// スプライト描画後処理
+	spriteCommon->PostDraw();
+	Camera::TransferConstantBuffer();
+	lightManager->TransferContantBuffer();
+
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
 
 	stage_->DrawModels();
-	gameOverTextPlane_->UpdateMatrix();
-	gameOverTextPlane_->Draw();
+	gameoverTextPlane_->Update();
+	gameoverTextPlane_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -122,11 +132,11 @@ void GameOverScene::Draw()
 	spriteCommon->PreDraw();
 
 	///
-	/// ↓ ここからスプライトの描画コマンド
+	/// ↓ ここから前景スプライトの描画コマンド
 	/// 
 
 	///
-	/// ↑ ここまでスプライトの描画コマンド
+	/// ↑ ここまで前景スプライトの描画コマンド
 	/// 
 
 #pragma region 丸影の設定
@@ -137,7 +147,7 @@ void GameOverScene::Draw()
 #pragma endregion
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
-#endif // _DEBUG
+
 
 	ImGui::Begin("Camera");
 
@@ -156,11 +166,12 @@ void GameOverScene::Draw()
 	ImGui::InputFloat("CurrentEnergy",&currentEnergy,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	float limitTime = stage_->GetLimitTime();
-	float currentTime = stage_->GetCurrentTime();
+	float currentTime = stage_->GetLeftTime();
 	ImGui::InputFloat("LimitTime",&limitTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 	ImGui::InputFloat("CurrentTime",&currentTime,0.0f,0.0f,"%.1f",ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
+#endif // _DEBUG
 
 	// ImGuiの内部コマンドを生成する
 	ImguiWrapper::Render(dxBase->GetCommandList());
@@ -174,16 +185,19 @@ void GameOverScene::EnterSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
-	gameOverTextPlane_->materialCB_.data_->color.w = Lerp(t,0.0f,1.0f);
+	gameoverTextPlane_->GetPlaneObject()->materialCB_.data_->color.w = Lerp(t,0.0f,1.0f);
 
 	if(leftTime_ <= 0.0f)
 	{
-		gameOverTextPlane_->materialCB_.data_->color.w = 1.0f;
+		gameoverTextPlane_->GetPlaneObject()->materialCB_.data_->color.w = 1.0f;
 
 		stage_->ClearEnemies();
 
 		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GameOverScene::SceneUpdate()
@@ -193,6 +207,9 @@ void GameOverScene::SceneUpdate()
 		leftTime_ = outSceneMaxTime_;
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 	}
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }
 
 void GameOverScene::OutSceneUpdate()
@@ -208,4 +225,10 @@ void GameOverScene::OutSceneUpdate()
 		camera->transform.translate = cameraPosWhenOutScene_;
 		return;
 	}
+
+	// 背景の雲を下へ移動
+	stage_->DownBackGroundCloud();
+
+	// 背景の更新
+	stage_->UpdateBackGround();
 }

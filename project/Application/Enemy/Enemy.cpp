@@ -70,7 +70,8 @@ void Enemy::Initialize(Float3 spawnPos,Float2 moveDirection,ModelManager::ModelD
 	variables->addValue("Game","Enemy","maxJumpPower",maxJumpPower_);
 	variables->addValue("Game","Enemy","cloneOffset",cloneOffset_);
 	variables->addValue("Game","Enemy","stealEnergy_",stealEnergy_);
-	variables->addValue("Game","Enemy","numberOfClones2Create_",numberOfClones2Create_);
+	variables->addValue("Game","Enemy","numberOfClones2Create_",numberOfClones2Create_); 
+		variables->addValue("Game","Enemy","scalePerStolenEnergy_",scalePerStolenEnergy_);
 	variables->DestroyItem("Game","Enemy","numberOfClones2Create_");
 }
 
@@ -103,7 +104,7 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 				stage_->ChargeEnergy(stolenEnergy_);
 
 				isHurt_ = true;
-				isClone_ = true;
+ 				isClone_ = true;
 				--numberOfClones2Create_;
 				if (numberOfClones2Create_ < 0.0f)
 				{
@@ -152,7 +153,15 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 
 	object_->transform_.translate += velocity_;
 
+	float objectScale = (scalePerStolenEnergy_ * floor(stolenEnergy_)) + 1;
+	object_->transform_.scale = {
+		objectScale,
+		objectScale,
+		objectScale
+	};
+
 	collider_->SetPosition(object_->transform_.translate);
+	collider_->SetRadius(objectScale);
 
 	preOnGround_ = isOnGround_;
 	isOnGround_ = false;
@@ -223,5 +232,9 @@ Enemy* Enemy::CreateClone()
 	// Clone 用の 初期化
 	clone->CloneInitialize(cloneSpawnPos,moveDirection_,object_->model_,numberOfClones2Create_);
 	clone->SetStage(stage_);
+
+	// クローン先のパーティクル発生フラグを立てる
+	clone->isCloneThisFrame_ = true;
+
 	return clone;
 }
