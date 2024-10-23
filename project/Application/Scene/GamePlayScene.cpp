@@ -1,11 +1,12 @@
 #include "GamePlayScene.h" 
 #include "SceneManager.h"
 
-#include "ImguiWrapper.h" 
 #include "DirectXBase.h"
-#include "SRVManager.h"
+#include "ImguiWrapper.h" 
 #include "SpriteCommon.h"
+#include "SRVManager.h"
 
+#include "DeltaTime.h"
 #include "GlobalVariables.h"
 
 void GamePlayScene::Initialize()
@@ -52,9 +53,6 @@ void GamePlayScene::Initialize()
 	///	
 	stage_ = SceneManager::GetInstance()->GetStage();
 	stage_->InitializeStatus("Game");
-
-	soundData1 = soundManager->LoadWave("resources/Sounds/yay.wav");
-
 
 	buttonUpdate_[0] = [this](Sprite* sprite) {
 		bool isActive = Input::GetInstance()->PushKey(DIK_UP) || Input::GetInstance()->PushKey(DIK_W);
@@ -104,6 +102,20 @@ void GamePlayScene::Initialize()
 		buttonSprite_[i]->Init("Game", "ButtonUI", bottonTexture[i], spriteCommon.get());
 		buttonSprite_[i]->setUpdate(buttonUpdate_[i]);
 	}
+
+	cutInTexture_ = std::make_unique<Sprite>();
+	cutInTexture_->Initialize(spriteCommon.get(),TextureManager::Load("resources/Images/StartCutIn.png",dxBase->GetDevice()));
+	cutInTexture_->SetAnchorPoint({0.5f,0.5f});
+
+	GlobalVariables* variables = GlobalVariables::getInstance();
+	variables->addValue("Game","Times","enterSceneMaxTime_",enterSceneMaxTime_);
+	leftTime_ = 0.0f;
+
+	variables->addValue("Game","cutInTexture","startCutInTexturePos_",startCutInTexturePos_);
+	variables->addValue("Game","cutInTexture","stopCutInTexturePos_",stopCutInTexturePos_);
+	variables->addValue("Game","cutInTexture","endCutInTexturePos_",endCutInTexturePos_);
+	currentUpdate = [this](){ EnterSceneUpdate(); };
+	isCutIn_ = false;
 }
 
 void GamePlayScene::Finalize()
@@ -115,24 +127,8 @@ void GamePlayScene::Update()
 #ifdef _DEBUG // デバッグカメラ
 	DebugCameraUpdate(input);
 #endif
-	if(stage_->GetIsClear())
-	{
-		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
-		return;
-	} else if(stage_->GetIsGameOver())
-	{
-		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
-		return;
-	}
-
-	// パーティクルマネージャーの更新
-	particleManager->Update();
-  
-	stage_->Update(camera);
-
-	for (int i = 0; i < 5; i++) {
-		buttonSprite_[i]->Update();
-	}
+	
+	currentUpdate();
 
 	// 背景の更新
 	stage_->UpdateBackGround();
@@ -190,6 +186,11 @@ void GamePlayScene::Draw()
 	/// ↓ ここから前景スプライトの描画コマンド
 	/// 
 	 
+	if(isCutIn_)
+	{
+		cutInTexture_->Draw();
+	}
+
 	for (int i = 0; i < 5; i++) {
 		buttonSprite_[i]->Draw();
 	}
@@ -323,4 +324,50 @@ void GamePlayScene::ButtonSpriteUI(Sprite* sprite, bool isActive, const Float2& 
 
 	// サイズを設定
 	sprite->SetSize(size);
+}
+
+void GamePlayScene::EnterSceneUpdate()
+{
+	isCutIn_ = true;
+	leftTime_ += DeltaTime::getInstance()->getDeltaTime();
+
+	float t = leftTime_/enterSceneMaxTime_;
+
+	if(t <= 0.3f)
+	{
+		cutInTexture_->SetPosition(Float2::Lerp(t / 0.3f,startCutInTexturePos_,stopCutInTexturePos_));
+	} else if(t >= 0.7f)
+	{
+		cutInTexture_->SetPosition(Float2::Lerp((t - 0.7f) / 0.4f,stopCutInTexturePos_,endCutInTexturePos_));
+	}
+	cutInTexture_->Update();
+
+	if(leftTime_  >= enterSceneMaxTime_)
+	{
+		isCutIn_ = false;
+		currentUpdate = [this](){SceneUpdate();};
+	}
+}
+
+void GamePlayScene::SceneUpdate()
+{
+	if(stage_->GetIsClear())
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMECLEAR");
+		return;
+	} else if(stage_->GetIsGameOver())
+	{
+		SceneManager::GetInstance()->ChangeScene("GAMEOVER");
+		return;
+	}
+
+	// パーティクルマネージャーの更新
+	particleManager->Update();
+
+	stage_->Update(camera);
+
+	for(int i = 0; i < 5; i++)
+	{
+		buttonSprite_[i]->Update();
+	}
 }
