@@ -31,7 +31,7 @@ public:
 	void Draw() override;
 
 private:
-	bool CheckTutorialSkip();
+	bool CheckTutorialSkip(const TexturePlane* texturePlane);
 private:
 	Camera* camera = nullptr;
 	std::unique_ptr<SpriteCommon> spriteCommon = nullptr;
@@ -72,6 +72,9 @@ private:
 	std::unique_ptr<Object3D> titleTextObject_;
 
 	std::unique_ptr<TexturePlane> tutorialSkipPlane_;
+	std::unique_ptr<TexturePlane> tutorialNonSkipPlane_;
+	uint32_t tutorialSkipTextureIndex_;
+	uint32_t tutorialNonTextureIndex_;
 
 	Float2 buttonUiOffset_;
 	float signT_;
