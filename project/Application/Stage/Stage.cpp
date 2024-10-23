@@ -321,7 +321,7 @@ void Stage::Update(Camera* camera)
 		if(enemy->GetLanding())
 		{
 // ウェーブ中のブロックと衝突して大量にパーティクルが出てしまうのをゴリ押しで防ぐ
-			if(enemy->GetTranslate().y <= 2.0f && enemy->GetTranslate().y >= 0.0f)
+			if(enemy->GetTranslate().y <= 2.0f && enemy->GetTranslate().y >= 1.0f)
 			{
 				enemyLandingEmitter_.Emit(enemy->GetTranslate());
 			}
