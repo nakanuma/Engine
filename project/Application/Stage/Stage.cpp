@@ -206,7 +206,7 @@ void Stage::Initialize(SoundManager* soundManager)
 	// Sound 
 	stageDownSound_ = soundManager->LoadWave("resources/Sounds/down.wav");
 	stageUpSound_ = soundManager->LoadWave("resources/Sounds/up.wav");
-	/*enemyLandingSound_ = soundManager->LoadWave("resources/Sounds/landing.mp3");*/
+	enemyLandingSound_ = soundManager->LoadWave("resources/Sounds/landing.wav");
 }
 
 void Stage::Update(Camera* camera)
@@ -378,15 +378,11 @@ void Stage::Update(Camera* camera)
 #pragma endregion
 
 #pragma region Sound
-	/*SoundManager* soundManager = SoundManager::GetInstance();
-	if(player_->GetIsPlayAttackSound())
-	{
-		soundManager->PlayWave(playerAttackSound_);
-	}
 	if(playEnemyLandingSound_)
 	{
+		SoundManager* soundManager = SoundManager::GetInstance();
 		soundManager->PlayWave(enemyLandingSound_);
-	}*/
+	}
 #pragma endregion
 }
 
@@ -470,6 +466,10 @@ void Stage::DrawModels()
 		timerNumberObject_[digit][j]->Draw();
 	}
 
+	if(playEnemyLandingSound_)
+	{
+		SoundManager::GetInstance()->PlayWave(enemyLandingSound_);
+	}
 	
 }
 
@@ -633,9 +633,21 @@ void Stage::UpdateEnemies()
 	}
 #endif // _DEBUG
 
+	playEnemyLandingSound_ = false;
 	// Update
 	for(auto& enemy : enemies_)
 	{
+		if(enemy->GetLanding())
+		{
+			playEnemyLandingSound_ = true;
+		}
+		///
+		///	敵死亡時パーティクルの発生（敵がelaseされる前に発生させたいのでここで記述）
+		/// 
+		if(!enemy->IsAlive())
+		{
+			enemyDeadEmitter_.Emit(enemy->GetTranslate());
+		}
 		enemy->Update(enemies_);
 	}
 	// Collision
@@ -647,6 +659,14 @@ void Stage::UpdateEnemies()
 
 	// 敵着地時のパーティクルを更新
 	enemyLandingEmitter_.Update();
+
+#pragma region Sound
+	if(playEnemyLandingSound_)
+	{
+		SoundManager* soundManager = SoundManager::GetInstance();
+		soundManager->PlayWave(enemyLandingSound_);
+	}
+#pragma endregion
 }
 
 void Stage::InitializeStatus(const std::string& scene)
