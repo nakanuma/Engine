@@ -47,7 +47,6 @@ void GameOverScene::Initialize()
 
 	currentUpdate_ = [this]() { this->EnterSceneUpdate(); };
 
-
 	///===========================================================================================
 	/// Camera
 	///===========================================================================================
@@ -206,6 +205,8 @@ void GameOverScene::SceneUpdate()
 	{
 		leftTime_ = outSceneMaxTime_;
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
+
+		stage_->PlayStageDownSound();
 	}
 
 	// 背景の更新

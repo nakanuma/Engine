@@ -5,6 +5,7 @@
 #include "ModelManager.h"
 #include "Object3D.h"
 #include "PlayerState.h"
+#include "SoundManager.h"
 
 #include "Application/Collision/Collider.h"
 
@@ -47,6 +48,9 @@ private:
 	float initialYVelocity_;
 
 	bool isAttack_;
+
+	SoundManager::SoundData attackSound_;
+	SoundManager::SoundData chargeSound_;
 public:
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 	void SetStage(Stage* stage){stage_ = stage;}
@@ -74,6 +78,10 @@ public:
 
 	bool GetIsAttack()const{return isAttack_;}
 	void SetIsAttack(bool isAttack){isAttack_ = isAttack;}
+
+	void PlayAttackSound();
+	void PlayChargeSound();
+	void StopChargeSound();
 // nakanuma追加分
 public:
 	// 動いている最中かどうかを返す
