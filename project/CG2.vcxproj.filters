@@ -84,6 +84,8 @@
     <ClCompile Include="Application\TexturePlane\TexturePlane.cpp" />
     <ClCompile Include="Application\Effect\BackGroundStar\BackGroundStarParticle.cpp" />
     <ClCompile Include="Application\Effect\BackGroundStar\BackGroundStarEmitter.cpp" />
+    <ClCompile Include="Application\Effect\EnemyDead\EnemyDeadParticle.cpp" />
+    <ClCompile Include="Application\Effect\EnemyDead\EnemyDeadEmitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
@@ -108,6 +110,8 @@
     <ClInclude Include="Application\TexturePlane\TexturePlane.h" />
     <ClInclude Include="Application\Effect\BackGroundStar\BackGroundStarParticle.h" />
     <ClInclude Include="Application\Effect\BackGroundStar\BackGroundStarEmitter.h" />
+    <ClInclude Include="Application\Effect\EnemyDead\EnemyDeadParticle.h" />
+    <ClInclude Include="Application\Effect\EnemyDead\EnemyDeadEmitter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />
