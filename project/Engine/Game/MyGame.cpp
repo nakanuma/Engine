@@ -26,7 +26,7 @@ void MyGame::Initialize()
 	// ステージの生成
 	SceneManager::GetInstance()->CreateStage();
 	// シーンマネージャに最初のシーンをセット
-	SceneManager::GetInstance()->ChangeScene("GAMEPLAY");
+	SceneManager::GetInstance()->ChangeScene("TITLE");
 }
 
 void MyGame::Finalize()
