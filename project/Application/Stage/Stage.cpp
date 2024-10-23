@@ -397,12 +397,13 @@ void Stage::DrawModels()
 		// j桁目の数字を取り出す（右から左へ）
 		int digit = (static_cast<int>(chargedEnergy_) / static_cast<int>(pow(10, j))) % 10;
 
+		numberObject_[digit][j]->transform_.translate.x = static_cast<float>(j) * -2.0f - 5.5f;
 		// 桁に対応する数字を描画
 		numberObject_[digit][j]->UpdateMatrix();
 		numberObject_[digit][j]->Draw();
 	}
 	
-
+	percentObject_->transform_.translate = { -2.5f + (-0.1f*numDigits), 3.5f, 16 };
 	percentObject_->UpdateMatrix();
 	percentObject_->Draw();
 
