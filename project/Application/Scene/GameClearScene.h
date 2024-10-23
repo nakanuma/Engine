@@ -65,6 +65,12 @@ private:
 	Float3 cameraPosWhenOutScene_;
 	Float3 cameraPosWhenEnterScene_;
 
+	// buddha
+	ModelManager::ModelData buddhaModel_;
+	std::unique_ptr<Object3D> buddhaObject_;
+	Float3 buddhaStartPos_;
+	Float3 buddhaDownedPos_;
+
 	// clearText
 	uint32_t clearTextTextureIndex_;
 	std::unique_ptr<TexturePlane> clearTextPlane_;

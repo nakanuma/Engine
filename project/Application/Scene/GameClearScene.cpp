@@ -58,6 +58,9 @@ void GameClearScene::Initialize()
 
 	variables->addValue("GameClear","Camera","cameraPosWhenOutScene_",cameraPosWhenOutScene_);
 
+	variables->addValue("GameClear","Buddha","startPos",buddhaStartPos_);
+	variables->addValue("GameClear","Buddha","downedPos_",buddhaDownedPos_);
+
 	///===========================================================================================
 	/// ClearTextPlane
 	///===========================================================================================
@@ -70,6 +73,19 @@ void GameClearScene::Initialize()
 	///===========================================================================================
 	cameraPosWhenEnterScene_ = camera->transform.translate;
 
+	///===========================================================================================
+	/// Buddha
+	///===========================================================================================
+	buddhaModel_ = ModelManager::LoadModelFile("resources/Models","buddha.obj",dxBase->GetDevice());
+	buddhaModel_.material.textureHandle = TextureManager::Load(buddhaModel_.material.textureFilePath,dxBase->GetDevice());
+
+	buddhaObject_ = std::make_unique<Object3D>();
+	buddhaObject_->model_ = &buddhaModel_;
+	buddhaObject_->transform_.translate = buddhaStartPos_;
+	buddhaObject_->UpdateMatrix();
+
+	variables->addValue("GameClear","Buddha","scale",buddhaObject_->transform_.scale);
+	variables->addValue("GameClear","Buddha","rotate",buddhaObject_->transform_.rotate);
 }
 
 void GameClearScene::Finalize()
@@ -124,6 +140,7 @@ void GameClearScene::Draw()
 	stage_->DrawModels();
 	clearTextPlane_->Update();
 	clearTextPlane_->Draw();
+	buddhaObject_->Draw();
 
 	///
 	///	↑ ここまで3Dオブジェクトの描画コマンド
@@ -186,8 +203,14 @@ void GameClearScene::Draw()
 void GameClearScene::EnterSceneUpdate()
 {
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
-	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
+	float t = 1.0f - (leftTime_ / enterSceneMaxTime_);
 	clearTextPlane_->GetPlaneObject()->materialCB_.data_->color.w = Lerp(t,0.0f,1.0f);
+
+	buddhaObject_->transform_.translate  = Float3::Lerp(buddhaStartPos_,buddhaDownedPos_,t);
+	buddhaObject_->UpdateMatrix();
+	
+	// 背景の更新
+	stage_->UpdateBackGround();
 
 	if(leftTime_ <= 0.0f)
 	{
@@ -197,9 +220,6 @@ void GameClearScene::EnterSceneUpdate()
 
 		currentUpdate_ = [this]() { this->SceneUpdate(); };
 	}
-
-	// 背景の更新
-	stage_->UpdateBackGround();
 }
 
 void GameClearScene::SceneUpdate()
@@ -209,7 +229,7 @@ void GameClearScene::SceneUpdate()
 		leftTime_ = outSceneMaxTime_;
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
 	}
-
+	buddhaObject_->UpdateMatrix();
 	// 背景の更新
 	stage_->UpdateBackGround();
 }
@@ -220,6 +240,11 @@ void GameClearScene::OutSceneUpdate()
 	float t = 1.0f - (leftTime_ / outSceneMaxTime_);
 
 	camera->transform.translate = Float3::Lerp(cameraPosWhenEnterScene_,cameraPosWhenOutScene_,t);
+	// 背景の雲を上へ移動
+	stage_->UpBackGroundCloud();
+	// 背景の更新
+	stage_->UpdateBackGround();
+	buddhaObject_->UpdateMatrix();
 
 	if(leftTime_ <= 0.0f)
 	{ 
@@ -228,9 +253,4 @@ void GameClearScene::OutSceneUpdate()
 		return;
 	}
 
-	// 背景の雲を上へ移動
-	stage_->UpBackGroundCloud();
-
-	// 背景の更新
-	stage_->UpdateBackGround();
 }
