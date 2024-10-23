@@ -403,7 +403,7 @@ void MapChipField::TriggerWave(int hitX,int hitZ,float waveRange,float initialYV
 			// 衝突位置のマップチップは動作させない
 			if (r == hitX && c == hitZ)
 			{
-				continue;
+				//continue;
 			}
 
 			// ウェーブしている物は動作させない
