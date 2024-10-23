@@ -7,6 +7,7 @@
 #include "ModelManager.h"
 #include "SpriteCommon.h"
 #include "Sprite.h"
+#include "SoundManager.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -57,6 +58,7 @@ private:
 	ModelManager::ModelData enemyModel;
 	int32_t enemySpawnerValue_;
 	std::vector<std::unique_ptr<EnemySpawner>> enemySpawners_;
+	SoundManager::SoundData enemyLandingSound_;
 
 	std::list<std::unique_ptr<Enemy>> enemies_;
 
@@ -98,8 +100,13 @@ private:
 #ifdef _DEBUG
 	bool isSpawnerActive_;
 #endif // _DEBUG
-
+	// Sound
+	SoundManager::SoundData stageUpSound_;
+	SoundManager::SoundData stageDownSound_;
 public:
+	void PlayStageUpSound();
+	void PlayStageDownSound();
+
 	bool GetIsClear()const { return isClear_; }
 	bool GetIsGameOver()const { return isGameOver_; }
 
@@ -177,6 +184,7 @@ private:
 	// 背景の雲を更新
 	void UpdateCloudPosition(Sprite& sprite, float& x, float moveSpeed, float resetThreshold, float resetPosition);
 
+	bool playEnemyLandingSound_;
 public:
 	// 背景の雲を画面上へ移動させる（ゲームクリア->タイトル移行時に呼ぶ）
 	void UpBackGroundCloud();

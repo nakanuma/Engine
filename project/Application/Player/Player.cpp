@@ -54,6 +54,9 @@ void Player::Initialize(uint32_t uvCheckerGH)
 		float chargingEnergy = Lerp(chargePercent_,minChargingEnergy_,maxChargingEnergy_);
 		stage_->ChargeEnergy(chargingEnergy);
 		chargePercent_ = 0.0f;
+
+
+		TransitionState(new NeutralPlayerState(this));
 	};
 	handCollider_ = std::make_unique<Collider>();
 	handCollider_->Init(handObject_->transform_.translate,0.3f,onCollision,onCollisionMapChip);
@@ -62,6 +65,13 @@ void Player::Initialize(uint32_t uvCheckerGH)
 /// State
 ///===========================================================================================
 	TransitionState(new NeutralPlayerState(this));
+
+///===========================================================================================
+/// Sound
+///===========================================================================================
+	SoundManager* soundManager = SoundManager::GetInstance();
+	attackSound_ = soundManager->LoadWave("resources/Sounds/attack.wav");
+	chargeSound_ = soundManager->LoadWave("resources/Sounds/charge.wav");
 }
 
 void Player::InitializeStatus()
@@ -138,4 +148,19 @@ void Player::TransitionState(IPlayerState* state)
 {
 	currentState_.reset(state);
 	currentState_->Initialize();
+}
+
+void Player::PlayAttackSound()
+{
+	SoundManager::GetInstance()->PlayWave(attackSound_,false,1.4f);
+}
+
+void Player::PlayChargeSound()
+{
+	SoundManager::GetInstance()->PlayWave(chargeSound_,true,0.3f);
+}
+
+void Player::StopChargeSound()
+{
+	SoundManager::GetInstance()->StopWave(chargeSound_);
 }

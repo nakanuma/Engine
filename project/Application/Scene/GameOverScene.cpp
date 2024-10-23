@@ -47,7 +47,6 @@ void GameOverScene::Initialize()
 
 	currentUpdate_ = [this]() { this->EnterSceneUpdate(); };
 
-
 	///===========================================================================================
 	/// Camera
 	///===========================================================================================
@@ -69,6 +68,8 @@ void GameOverScene::Initialize()
 	leftTime_ = enterSceneMaxTime_;
 
 	variables->addValue("GameOver","Camera","cameraPosWhenOutScene_",cameraPosWhenOutScene_);
+
+	stage_->PlayStageDownSound();
 }
 
 void GameOverScene::Finalize()

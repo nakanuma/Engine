@@ -149,7 +149,6 @@ void Stage::Initialize()
 	cloudSprite_[3].SetPosition({1280.0f,0.0f});
 	cloudSprite_[3].SetColor({1.0f,1.0f,1.0f,0.75f});
 
-
 	// モデルの読み込みは一度だけ実行
 	for (int i = 0; i < 10; ++i) {
 		std::string modelPath = std::to_string(i) + ".obj";
@@ -159,7 +158,6 @@ void Stage::Initialize()
 		numberModel_[i].material.textureHandle = TextureManager::Load("resources/Images/enempng.png", dxBase->GetDevice());
 	}
 
-	
 	// オブジェクト生成
 	for (int j = 0; j < 3; ++j) {
 		for (int i = 0; i < 10; ++i) {
@@ -177,7 +175,6 @@ void Stage::Initialize()
 	// パーセント
 	percentModel_ = ModelManager::LoadModelFile("resources/Models/", "percent.obj", dxBase->GetDevice());
 	percentModel_.material.textureHandle = TextureManager::Load("resources/Images/enempng.png", dxBase->GetDevice());
-
 
 	percentObject_ = std::make_unique<Object3D>();
 	percentObject_->model_ = &percentModel_;
@@ -205,10 +202,18 @@ void Stage::Initialize()
 
 	isClear_ = false;
 	isGameOver_ = false;
+
+	// Sound 
+	SoundManager* soundManager = SoundManager::GetInstance();
+	stageDownSound_ = soundManager->LoadWave("resources/Sounds/down.wav");
+	stageUpSound_ = soundManager->LoadWave("resources/Sounds/up.wav");
+	/*enemyLandingSound_ = soundManager->LoadWave("resources/Sounds/landing.mp3");*/
 }
 
 void Stage::Update(Camera* camera)
 {
+	playEnemyLandingSound_ = false;
+
 	leftTime_ -= DeltaTime::getInstance()->getDeltaTime();
 	if(chargedEnergy_ >= maxEnergy_)
 	{
@@ -283,7 +288,10 @@ void Stage::Update(Camera* camera)
 	for(auto& enemy : enemies_)
 	{
 		enemy->Update(enemies_);
-		
+		if(enemy->GetLanding())
+		{
+			playEnemyLandingSound_ = true;
+		}
 		///
 		///	敵死亡時パーティクルの発生（敵がelaseされる前に発生させたいのでここで記述）
 		/// 
@@ -368,6 +376,18 @@ void Stage::Update(Camera* camera)
 	// カメラのシェイクを更新
 	camera->UpdateShake();
 
+#pragma endregion
+
+#pragma region Sound
+	/*SoundManager* soundManager = SoundManager::GetInstance();
+	if(player_->GetIsPlayAttackSound())
+	{
+		soundManager->PlayWave(playerAttackSound_);
+	}
+	if(playEnemyLandingSound_)
+	{
+		soundManager->PlayWave(enemyLandingSound_);
+	}*/
 #pragma endregion
 }
 
@@ -681,6 +701,16 @@ void Stage::CheckAlCollisions()
 	}
 
 	mapChip_->CheckCollision_Collider(player_->GetHandCollider());
+}
+
+void Stage::PlayStageUpSound()
+{
+	SoundManager::GetInstance()->PlayWave(stageUpSound_,false,0.4f);
+}
+
+void Stage::PlayStageDownSound()
+{
+	SoundManager::GetInstance()->PlayWave(stageDownSound_,false,0.4f);
 }
 
 void Stage::ClearEnemies()

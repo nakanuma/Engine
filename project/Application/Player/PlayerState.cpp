@@ -110,7 +110,7 @@ void NeutralPlayerState::Update()
 ChargePlayerState::ChargePlayerState(Player* player,const Float3& beforePos)
 	:IPlayerState(player),beforePos_(beforePos)
 {
-
+	player_->PlayChargeSound();
 }
 ChargePlayerState::~ChargePlayerState()
 {
@@ -122,7 +122,6 @@ ChargePlayerState::~ChargePlayerState()
 
 void ChargePlayerState::Initialize()
 {
-
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->addValue("Game","Player_ChargeState","maxTime",maxTime_);
 	variables->addValue("Game","Player_ChargeState","minTime",minTime_);
@@ -186,6 +185,9 @@ AttackPlayerState::AttackPlayerState(Player* player,float chargePercent):IPlayer
 AttackPlayerState::~AttackPlayerState()
 {
 	player_->SetIsAttack(false);
+
+	player_->PlayAttackSound();
+	
 	GlobalVariables* variables = GlobalVariables::getInstance();
 	variables->DestroyItem("Game","Player_AttackState","accel");
 	variables->DestroyItem("Game","Player_AttackState","maxSpeed");

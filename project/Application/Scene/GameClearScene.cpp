@@ -86,6 +86,8 @@ void GameClearScene::Initialize()
 
 	variables->addValue("GameClear","Buddha","scale",buddhaObject_->transform_.scale);
 	variables->addValue("GameClear","Buddha","rotate",buddhaObject_->transform_.rotate);
+
+	stage_->PlayStageDownSound();
 }
 
 void GameClearScene::Finalize()
