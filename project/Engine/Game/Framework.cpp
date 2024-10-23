@@ -11,7 +11,7 @@ void Framework::Initialize()
 
 	// ゲームウィンドウの生成
 	window = new Window;
-	window->Create(L"CG2WindowClass",1280,720);
+	window->Create(L"2107_仏打",1280,720);
 
 	// DirectX初期化処理
 	dxBase = DirectXBase::GetInstance();
