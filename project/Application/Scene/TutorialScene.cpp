@@ -201,10 +201,12 @@ void TutorialScene::Update()
 	currentUpdate_();
 	stage_->UpdateBackGround();
 
+//#ifdef _DEBUG
 	currentTextTexture_->SetPosition(textTexturePos_);
 	currentTextTexture_->Update();
 	currentTaskGuidTexture_->SetPosition(taskGuidTexturePos_);
 	currentTaskGuidTexture_->Update();
+//#endif // _DEBUG
 }
 
 void TutorialScene::Draw()

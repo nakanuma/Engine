@@ -1,22 +1,22 @@
 {
-    "EnemySpawner1": {
+    "EnemySpawner3": {
         "Translate": [
-            39.20000076293945,
-            2.700000047683716,
-            26.600000381469727
+            0.0,
+            0.0,
+            0.0
         ],
         "controlByEnergy_": false,
         "controlByTime_": false,
         "inactiveEnemyValue_": 0.0,
-        "inactiveEnergyLength_": 100.0,
+        "inactiveEnergyLength_": 16.0,
         "inactiveMidEnergy_": 0.0,
         "inactiveMidTime_": 0.0,
-        "inactiveTimeLegth_": 100.0,
+        "inactiveTimeLegth_": 60.0,
         "moveDirection": [
-            -3.5,
-            -3.5
+            0.0,
+            0.0
         ],
-        "spawnCoolTimeMax": 11.0,
+        "spawnCoolTimeMax": 10.0,
         "spawnCoolTimeMin": 10.0
     }
 }
