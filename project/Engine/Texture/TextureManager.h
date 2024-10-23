@@ -9,6 +9,10 @@
 #include "SRVManager.h"
 #include <unordered_map>
 
+#include <future>
+#include <thread>  
+#include <mutex>   
+
 class TextureManager final
 {
 public:
@@ -24,6 +28,8 @@ public:
 	static void Initialize(ID3D12Device* device, SRVManager* srvManager);
 
 	static int Load(const std::string& filePath, ID3D12Device* device);
+
+	static std::future<int> LoadAsync(const std::string& filePath, ID3D12Device* device);
 
 	static TextureManager& GetInstance();
 

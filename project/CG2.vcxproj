@@ -29,6 +29,7 @@
     <ClCompile Include="Application\Effect\BackGroundStar\BackGroundStarEmitter.cpp" />
     <ClCompile Include="Application\Effect\EnemyDead\EnemyDeadParticle.cpp" />
     <ClCompile Include="Application\Effect\EnemyDead\EnemyDeadEmitter.cpp" />
+    <ClCompile Include="Application\Beforehand\BeforehandLoadingTexture.cpp" />
     <ClCompile Include="Engine\Math\Easing.cpp" />
     <ClCompile Include="Engine\3D\DebugCamera.cpp" />
     <ClCompile Include="Application\myRandom\MyRandom.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="Application\Effect\BackGroundStar\BackGroundStarEmitter.h" />
     <ClInclude Include="Application\Effect\EnemyDead\EnemyDeadParticle.h" />
     <ClInclude Include="Application\Effect\EnemyDead\EnemyDeadEmitter.h" />
+    <ClInclude Include="Application\Beforehand\BeforehandLoadingTexture.h" />
     <ClInclude Include="Engine\Math\Easing.h" />
     <ClInclude Include="Engine\3D\DebugCamera.h" />
     <ClInclude Include="Application\myRandom\MyRandom.h" />
@@ -315,7 +317,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;$(ProjectDir)application\GlobalVariables;$(ProjectDir)application\DeltaTime;$(ProjectDir)application\Effect;$(ProjectDir)application\Effect\EnemyLanding;$(ProjectDir)application\Effect\PlayerMove;$(ProjectDir)application\Effect\EnemyDivide;$(ProjectDir)application\Effect\BackGroundStar;$(ProjectDir)application\Effect\EnemyDead;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;$(ProjectDir)application\GlobalVariables;$(ProjectDir)application\DeltaTime;$(ProjectDir)application\Effect;$(ProjectDir)application\Effect\EnemyLanding;$(ProjectDir)application\Effect\PlayerMove;$(ProjectDir)application\Effect\EnemyDivide;$(ProjectDir)application\Effect\BackGroundStar;$(ProjectDir)application\Effect\EnemyDead;$(ProjectDir)application\Beforehand;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -347,7 +349,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;$(ProjectDir)application\GlobalVariables;$(ProjectDir)application\DeltaTime;$(ProjectDir)application\Effect;$(ProjectDir)application\Effect\EnemyLanding;$(ProjectDir)application\Effect\PlayerMove;$(ProjectDir)application\Effect\EnemyDivide;$(ProjectDir)application\Effect\BackGroundStar;$(ProjectDir)application\Effect\EnemyDead;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)engine\2D;$(ProjectDir)engine\3D;$(ProjectDir)engine\Input;$(ProjectDir)externals\assimp\include;$(ProjectDir)engine\Particle;$(ProjectDir)engine\Sound;$(ProjectDir)engine\Game;$(ProjectDir)engine\Scene;$(ProjectDir)application\Scene;$(ProjectDir)application\GlobalVariables;$(ProjectDir)application\DeltaTime;$(ProjectDir)application\Effect;$(ProjectDir)application\Effect\EnemyLanding;$(ProjectDir)application\Effect\PlayerMove;$(ProjectDir)application\Effect\EnemyDivide;$(ProjectDir)application\Effect\BackGroundStar;$(ProjectDir)application\Effect\EnemyDead;$(ProjectDir)application\Beforehand;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

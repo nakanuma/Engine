@@ -86,6 +86,7 @@
     <ClCompile Include="Application\Effect\BackGroundStar\BackGroundStarEmitter.cpp" />
     <ClCompile Include="Application\Effect\EnemyDead\EnemyDeadParticle.cpp" />
     <ClCompile Include="Application\Effect\EnemyDead\EnemyDeadEmitter.cpp" />
+    <ClCompile Include="Application\Beforehand\BeforehandLoadingTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\GlobalVariables\GlobalVariables.h" />
@@ -112,6 +113,7 @@
     <ClInclude Include="Application\Effect\BackGroundStar\BackGroundStarEmitter.h" />
     <ClInclude Include="Application\Effect\EnemyDead\EnemyDeadParticle.h" />
     <ClInclude Include="Application\Effect\EnemyDead\EnemyDeadEmitter.h" />
+    <ClInclude Include="Application\Beforehand\BeforehandLoadingTexture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\DeltaTime\DeltaTime.h" />

@@ -53,6 +53,13 @@ int TextureManager::Load(const std::string& filePath, ID3D12Device* device)
 	return GetInstance().srvManager->Allocate();
 }
 
+std::future<int> TextureManager::LoadAsync(const std::string& filePath, ID3D12Device* device)
+{
+	return std::async(std::launch::async, [filePath, device]() {
+		return Load(filePath, device); // 既存のLoadメソッドを呼び出す
+		});
+}
+
 TextureManager& TextureManager::GetInstance()
 {
 	static TextureManager instance;

@@ -21,6 +21,9 @@ void SceneManager::InitializeSound()
 
 	bgm_ = soundManager_->LoadWave("resources/Sounds/BGM.wav");
 	soundManager_->PlayWave(bgm_,true,0.4f);
+
+	beforeHand_ = std::make_unique<BeforehandLoadingTexture>();
+	beforeHand_->Initialize();
 }
 
 void SceneManager::CameraInitialize()
