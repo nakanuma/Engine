@@ -2,10 +2,11 @@
 #include <cassert>
 #include "Easing.h"
 
-EnemyDeadParticle::EnemyDeadParticle(ModelManager::ModelData* model, uint32_t textureHandle, Float3 translation, float scale, Float3 velocity, int32_t delTime) { 
+EnemyDeadParticle::EnemyDeadParticle(ModelManager::ModelData* model, uint32_t textureHandle, Float3 translation, Float3 rotate, float scale, Float3 velocity, int32_t delTime) {
 	assert(model);
 	model_ = model;
 	object_.transform_.translate = translation;
+	object_.transform_.rotate = rotate;
 	object_.model_ = model;
 	object_.model_->material.textureHandle = textureHandle;
 	velocity_ = velocity;

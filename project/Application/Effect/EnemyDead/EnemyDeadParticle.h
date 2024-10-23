@@ -4,7 +4,7 @@
 
 class EnemyDeadParticle {
 public:
-	EnemyDeadParticle(ModelManager::ModelData* model, uint32_t textureHandle, Float3 translation, float scale, Float3 velocity, int32_t delTime);
+	EnemyDeadParticle(ModelManager::ModelData* model, uint32_t textureHandle, Float3 translation, Float3 rotate, float scale, Float3 velocity, int32_t delTime);
 	~EnemyDeadParticle();
 
 	void Update();

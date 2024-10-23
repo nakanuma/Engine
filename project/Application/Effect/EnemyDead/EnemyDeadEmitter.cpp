@@ -1,6 +1,7 @@
 #include "EnemyDeadEmitter.h"
 #include <cassert>
 #include <random>
+#include <numbers>
 
 EnemyDeadEmitter::EnemyDeadEmitter() {}
 
@@ -44,8 +45,8 @@ void EnemyDeadEmitter::Emit(Float3 translation) {
 	std::uniform_real_distribution<float> distVelY(0.0f, velY);
 
 	// スケールの設定
-	const float minScale = 0.3f;
-	const float maxScale = 0.6f;
+	const float minScale = 0.4f;
+	const float maxScale = 0.8f;
 	std::uniform_real_distribution<float> distScale(minScale, maxScale);
 
 	// 消えるまでの時間をランダムに生成
@@ -58,6 +59,11 @@ void EnemyDeadEmitter::Emit(Float3 translation) {
 	const int32_t maxOffset = static_cast<int32_t>(0.5f);
 	std::uniform_int_distribution<int32_t> distOffset(minOffset, maxOffset);
 
+	// 初期回転角の設定
+	const float minRot = 0.0f;
+	const float maxRot = std::numbers::pi_v<float> * 2.0f;
+	std::uniform_real_distribution<float> distRot(minRot, maxRot);
+
 	for (uint32_t i = 0; i < kParticleNum; i++) {
 		// 速度の生成
 		Float3 velocity = {distVelX(rng), distVelY(rng), distVelZ(rng)};
@@ -67,11 +73,14 @@ void EnemyDeadEmitter::Emit(Float3 translation) {
 		int32_t delTime = distDelTime(rng);
 		// オフセット生成
 		int32_t offset = distOffset(rng);
+		// 初期回転角を生成
+		Float3 rotate = { distRot(rng), distRot(rng), distRot(rng) };
+
 
 		Float3 rTranslation = {translation.x + offset, translation.y + offset + 2.0f, translation.z + offset};
 
 		std::unique_ptr<EnemyDeadParticle> newParticle = 
-			std::make_unique<EnemyDeadParticle>(model_, textureHandle_, rTranslation, scale, velocity, delTime);
+			std::make_unique<EnemyDeadParticle>(model_, textureHandle_, rTranslation, rotate, scale, velocity, delTime);
 		particleList_.push_back(std::move(newParticle));
 	}
 }
