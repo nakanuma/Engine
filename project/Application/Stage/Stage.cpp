@@ -243,6 +243,23 @@ void Stage::Update(Camera* camera)
 
 	player_->Update();
 
+#ifdef _DEBUG
+	if(isSpawnerActive_)
+	{
+		for(auto& enemySpawner : enemySpawners_)
+		{
+			enemySpawner->Update();
+			if(!enemySpawner->IsSpawn())
+			{
+				continue;
+			}
+			std::unique_ptr<Enemy> enemy;
+			enemy.reset(enemySpawner->Spawn());
+			enemy->SetStage(this);
+			enemies_.emplace_back(std::move(enemy));
+		}
+	}
+#else
 	for(auto& enemySpawner : enemySpawners_)
 	{
 		enemySpawner->Update();
@@ -255,6 +272,7 @@ void Stage::Update(Camera* camera)
 		enemy->SetStage(this);
 		enemies_.emplace_back(std::move(enemy));
 	}
+#endif // _DEBUG
 
 	for(auto& enemy : enemies_)
 	{
@@ -540,7 +558,24 @@ void Stage::UpdateEnemies()
 		}
 	}
 #endif // _DEBUG
-	// スポーン
+
+#ifdef _DEBUG
+	if(isSpawnerActive_)
+	{
+		for(auto& enemySpawner : enemySpawners_)
+		{
+			enemySpawner->Update();
+			if(!enemySpawner->IsSpawn())
+			{
+				continue;
+			}
+			std::unique_ptr<Enemy> enemy;
+			enemy.reset(enemySpawner->Spawn());
+			enemy->SetStage(this);
+			enemies_.emplace_back(std::move(enemy));
+		}
+	}
+#else
 	for(auto& enemySpawner : enemySpawners_)
 	{
 		enemySpawner->Update();
@@ -553,6 +588,7 @@ void Stage::UpdateEnemies()
 		enemy->SetStage(this);
 		enemies_.emplace_back(std::move(enemy));
 	}
+#endif // _DEBUG
 
 	// Update
 	for(auto& enemy : enemies_)
@@ -637,6 +673,10 @@ void Stage::Debug()
 	{
 		backGroundStarEmitter_.Emit();
 	}
+
+	ImGui::Begin("EnemySpawners State");
+	ImGui::Checkbox("Spawner is Active",&isSpawnerActive_);
+	ImGui::End();
 
 	ImGui::End();
 }
