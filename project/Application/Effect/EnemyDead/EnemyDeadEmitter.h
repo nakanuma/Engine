@@ -16,5 +16,5 @@ private:
 	ModelManager::ModelData* model_;
 	uint32_t textureHandle_;
 	std::list<std::unique_ptr<EnemyDeadParticle>> particleList_;
-	const uint32_t kParticleNum = 8;
+	const uint32_t kParticleNum = 6;
 };
