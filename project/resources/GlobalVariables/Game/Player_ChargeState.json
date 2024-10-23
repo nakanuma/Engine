@@ -1,7 +1,7 @@
 {
     "Player_ChargeState": {
         "maxTime": 0.800000011920929,
-        "minTime": 0.30000001192092896,
+        "minTime": 0.0,
         "movedPosY": 8.0
     }
 }

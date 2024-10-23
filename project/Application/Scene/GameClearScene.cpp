@@ -64,7 +64,7 @@ void GameClearScene::Initialize()
 	///===========================================================================================
 	/// ClearTextPlane
 	///===========================================================================================
-	clearTextTextureIndex_ = TextureManager::Load("resources/Images/white.png",dxBase->GetDevice());
+	clearTextTextureIndex_ = TextureManager::Load("resources/Images/gameClear.png",dxBase->GetDevice());
 	clearTextPlane_ = std::make_unique<TexturePlane>();
 	clearTextPlane_->Initialize("GameClear","clearTextPlane_",clearTextTextureIndex_,dxBase->GetDevice());
 
