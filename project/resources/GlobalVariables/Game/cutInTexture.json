@@ -1,0 +1,16 @@
+{
+    "cutInTexture": {
+        "endCutInTexturePos_": [
+            -256.0,
+            360.0
+        ],
+        "startCutInTexturePos_": [
+            1560.0,
+            360.0
+        ],
+        "stopCutInTexturePos_": [
+            640.0,
+            360.0
+        ]
+    }
+}
