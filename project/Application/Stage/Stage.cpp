@@ -46,7 +46,7 @@ void Stage::Initialize()
 	for(size_t i = 0; i < enemySpawnerValue_; ++i)
 	{
 		enemySpawners_.push_back(std::make_unique<EnemySpawner>(this));
-		enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+		enemySpawners_.back()->Initialize("Game",static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
 		enemySpawners_.back()->SetEnemyModel(enemyModel);
 	}
 
@@ -191,9 +191,6 @@ void Stage::Initialize()
 			timerNumberObject_[i][j]->transform_.translate = { static_cast<float>(j) * -2.0f + 47.1f, 4.7f, 17.1f };  // X方向にずらして配置
 		}
 	}
-	
-
-
 
 	variables->addValue("Game","Stage","limitTime",limitTime_);
 	leftTime_ = limitTime_;
@@ -220,10 +217,6 @@ void Stage::Update(Camera* camera)
 			return;
 	}
 
-
-	
-	
-
 #ifdef _DEBUG
 	int32_t movingSpawnerValue = enemySpawnerValue_ - static_cast<int32_t>(enemySpawners_.size());
 
@@ -232,7 +225,7 @@ void Stage::Update(Camera* camera)
 		for(int32_t i = 0; i < movingSpawnerValue; ++i)
 		{
 			enemySpawners_.push_back(std::make_unique<EnemySpawner>(this));
-			enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+			enemySpawners_.back()->Initialize("Game",static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
 			enemySpawners_.back()->SetEnemyModel(enemyModel);
 		}
 	} else if(movingSpawnerValue < 0)  // 減少する場合
@@ -524,6 +517,29 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 
 void Stage::UpdateEnemies()
 {
+#ifdef _DEBUG
+	int32_t movingSpawnerValue = enemySpawnerValue_ - static_cast<int32_t>(enemySpawners_.size());
+
+	if(movingSpawnerValue > 0)  // 増加する場合
+	{
+		for(int32_t i = 0; i < movingSpawnerValue; ++i)
+		{
+			enemySpawners_.push_back(std::make_unique<EnemySpawner>(this));
+			enemySpawners_.back()->Initialize("Tutorial",static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+			enemySpawners_.back()->SetEnemyModel(enemyModel);
+		}
+	} else if(movingSpawnerValue < 0)  // 減少する場合
+	{
+		// 減少させる数だけポップバックする
+		for(int32_t i = 0; i < abs(movingSpawnerValue); ++i)
+		{
+			if(!enemySpawners_.empty())
+			{
+				enemySpawners_.pop_back();
+			}
+		}
+	}
+#endif // _DEBUG
 	// スポーン
 	for(auto& enemySpawner : enemySpawners_)
 	{
@@ -569,7 +585,18 @@ void Stage::InitializeStatus(const std::string& scene)
 		for(size_t i = 0; i < enemySpawnerValue_; ++i)
 		{
 			enemySpawners_.push_back(std::make_unique<EnemySpawner>(this));
-			enemySpawners_.back()->Initialize(static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+			enemySpawners_.back()->Initialize("Game",static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
+			enemySpawners_.back()->SetEnemyModel(enemyModel);
+		}
+	} else if(scene == "Tutorial")
+	{
+		variables->addValue("Tutorial","EnemySpawner_Default","spawnerValue",enemySpawnerValue_);
+		enemies_.clear();
+		enemySpawners_.clear();
+		for(size_t i = 0; i < enemySpawnerValue_; ++i)
+		{
+			enemySpawners_.push_back(std::make_unique<EnemySpawner>(this));
+			enemySpawners_.back()->Initialize("Tutorial",static_cast<int32_t>(enemySpawners_.size() - 1),&enemyModel);
 			enemySpawners_.back()->SetEnemyModel(enemyModel);
 		}
 	}
