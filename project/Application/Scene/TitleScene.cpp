@@ -69,6 +69,9 @@ void TitleScene::Initialize()
 	///===========================================================================================
 	buttonTextureIndex_ = TextureManager::Load("./resources/Images/push_space.png",dxBase->GetDevice());
 
+	tutorialSkipTextureIndex_ = TextureManager::Load("./resources/Images/tutorial_skip.png",dxBase->GetDevice());
+	tutorialNonTextureIndex_ = TextureManager::Load("./resources/Images/DontTry_tutorial.png",dxBase->GetDevice());
+
 	///===========================================================================================
 	/// Title
 	///===========================================================================================
@@ -217,11 +220,16 @@ void TitleScene::Draw()
 	titleTextObject_->UpdateMatrix();
 	titleTextObject_->Draw();
 	stage_->DrawModels();
-
+	
 	if(tutorialSkipPlane_)
 	{
 		tutorialSkipPlane_->Update();
 		tutorialSkipPlane_->Draw();
+	}
+	if(tutorialNonSkipPlane_)
+	{
+		tutorialNonSkipPlane_->Update();
+		tutorialNonSkipPlane_->Draw();
 	}
 
 	///
@@ -285,7 +293,7 @@ void TitleScene::Draw()
 	dxBase->EndFrame();
 }
 
-bool TitleScene::CheckTutorialSkip()
+bool TitleScene::CheckTutorialSkip(const TexturePlane* texturePlane)
 {
 	const Player* player = stage_->GetPlayer();
 	Float3 playerPos = player->GetWorldPosition();
@@ -294,10 +302,10 @@ bool TitleScene::CheckTutorialSkip()
 	{
 		return false;
 	}
- 	Float3 planeLt = {tutorialSkipPlane_->GetLbPos().x,tutorialSkipPlane_->GetLbPos().y,tutorialSkipPlane_->GetLbPos().z};
-	Float3 planeRb = {tutorialSkipPlane_->GetRtPos().x,tutorialSkipPlane_->GetRtPos().y,tutorialSkipPlane_->GetRtPos().z};
+ 	Float3 planeLt = {texturePlane->GetLbPos().x,texturePlane->GetLbPos().y,texturePlane->GetLbPos().z};
+	Float3 planeRb = {texturePlane->GetRtPos().x,texturePlane->GetRtPos().y,texturePlane->GetRtPos().z};
 
-	const Matrix& planeMat = tutorialSkipPlane_->GetWorldMatrix();
+	const Matrix& planeMat = texturePlane->GetWorldMatrix();
 	planeLt = TransformMatrix(planeLt,planeMat);
 	planeRb = TransformMatrix(planeRb,planeMat);
 
@@ -339,24 +347,25 @@ void TitleScene::SceneUpdate()
 		currentUpdate_ = [this]() { this->OutScene_TutorialSkip(); };
 		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
 		stage_->SetEnergy(0.0f);
-		stage_->SetMaxEnergy(16.0f);
 		t_ = 0.0f;
 
 		// plane
 		DirectXBase* dxBase = DirectXBase::GetInstance();
 		tutorialSkipPlane_ = std::make_unique<TexturePlane>();
-		tutorialSkipPlane_->Initialize("Title","TutorialSkipPlane",buttonTextureIndex_,dxBase->GetDevice());
+		tutorialSkipPlane_->Initialize("Title","TutorialSkipPlane",tutorialSkipTextureIndex_,dxBase->GetDevice());
+		tutorialNonSkipPlane_ = std::make_unique<TexturePlane>();
+		tutorialNonSkipPlane_->Initialize("Title","TutorialNonSkipPlane",tutorialNonTextureIndex_,dxBase->GetDevice());
 	}
 }
 
 void TitleScene::OutScene_TutorialSkip()
 {
-	if(CheckTutorialSkip())
+	if(CheckTutorialSkip(tutorialSkipPlane_.get()))
 	{
 		nextSceneName_ = "GAMEPLAY";
  		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);
 		currentUpdate_ = [this]() { this->OutSceneUpdate(); };
-	} else if(stage_->GetIsClear())
+	} else if(CheckTutorialSkip(tutorialNonSkipPlane_.get()))
 	{
 		nextSceneName_ = "TUTORIAL";
 		buttonUI_->setUpdate(buttonUpdateWhenOutScene_);

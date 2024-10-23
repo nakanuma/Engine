@@ -342,6 +342,11 @@ void GamePlayScene::EnterSceneUpdate()
 	}
 	cutInTexture_->Update();
 
+	for(int i = 0; i < 5; i++)
+	{
+		buttonSprite_[i]->Update();
+	}
+
 	if(leftTime_  >= enterSceneMaxTime_)
 	{
 		isCutIn_ = false;
