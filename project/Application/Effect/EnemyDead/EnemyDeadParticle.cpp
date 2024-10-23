@@ -34,7 +34,7 @@ void EnemyDeadParticle::Update() {
 	if (timer_ > 10) {
 		velocity_.y += acceleratorY;
 	}
-	acceleratorY += 0.00001f;
+	acceleratorY += 0.00005f;
 
 	// 移動
 	object_.transform_.translate += velocity_;
