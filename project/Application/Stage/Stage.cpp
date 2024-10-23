@@ -533,8 +533,20 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 		playerMoveEmitter_.Emit(player_->GetTranslate());
 	}
 
+	/*--------------------------*/
+	/*     敵分裂パーティクル      */
+	/*--------------------------*/
 
-
+	// 敵分裂時にパーティクルを発生させる
+	for (auto& enemy : enemies_)
+	{
+		if (enemy->GetIsCloneThisFrame())
+		{
+			enemyDivideEmitter_.Emit(enemy->GetTranslate());
+			// パーティクル発生後にフラグを下ろす
+			enemy->SetIsCloneThisFrame(false);
+		}
+	}
 
 	// 敵死亡時のパーティクルを更新
 	enemyDeadEmitter_.Update();
@@ -547,6 +559,9 @@ void Stage::UpdatePlayerAndMapChip(Camera* camera)
 
 	// 敵分裂時のパーティクルを更新
 	enemyDivideEmitter_.Update();
+
+	// 敵死亡時のパーティクルを更新
+	enemyDeadEmitter_.Update();
 
 #pragma endregion
 
@@ -624,6 +639,13 @@ void Stage::UpdateEnemies()
 	for(auto& enemy : enemies_)
 	{
 		enemy->Update(enemies_);
+
+		///
+		///	敵死亡時パーティクルの発生（敵がelaseされる前に発生させたいのでここで記述）
+		/// 
+		if (!enemy->IsAlive()) {
+			enemyDeadEmitter_.Emit(enemy->GetTranslate());
+		}
 	}
 	// Collision
 	for(auto& enemy : enemies_)
