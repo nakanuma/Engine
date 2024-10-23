@@ -6,6 +6,8 @@
 
 #include "SoundManager.h"
 
+#include "BeforehandLoadingTexture.h"
+
 // シーン管理
 class SceneManager
 {
@@ -50,5 +52,7 @@ public:
 	void CreateStage();
 	Stage* GetStage(){return stage_.get();}
 	Camera* GetCamera(){return camera_.get();}
+
+	std::unique_ptr<BeforehandLoadingTexture> beforeHand_ = nullptr;
 };
 
