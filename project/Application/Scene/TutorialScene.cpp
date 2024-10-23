@@ -57,29 +57,29 @@ void TutorialScene::Initialize()
 	std::string directory = "./resources/Images/tutorial/";
 	for(int32_t i = 1; i <= 4; i++)
 	{
-		tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(i ),dxBase->GetDevice()));
+		tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(i) + ".png",dxBase->GetDevice()));
 	}
-	tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(7),dxBase->GetDevice()));
+	tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(7) + ".png",dxBase->GetDevice()));
 
 	for(int32_t i = 9; i <= 10; i++)
 	{
-		tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(i),dxBase->GetDevice()));
+		tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(i) + ".png",dxBase->GetDevice()));
 	}
 	for(int32_t i = 12; i <= 13; i++)
 	{
-		tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(12 + i),dxBase->GetDevice()));
+		tutorialTextTextures_.push_back(TextureManager::Load(directory + "tutorial_" + std::to_string(i) + ".png",dxBase->GetDevice()));
 	}
 
 	for(size_t i = 0; i < 6; i++)
 	{
-		tutorialTaskGuidTextures_.push_back(TextureManager::Load(directory + "tutorial_5_" + std::to_string(i),dxBase->GetDevice()));
+		tutorialTaskGuidTextures_.push_back(TextureManager::Load(directory + "tutorial_5_" + std::to_string(i) + ".png",dxBase->GetDevice()));
 	}
 	
-	tutorialTaskGuidTextures_.push_back(TextureManager::Load(directory + "tutorial_8",dxBase->GetDevice()));
+	tutorialTaskGuidTextures_.push_back(TextureManager::Load(directory + "tutorial_8" + ".png",dxBase->GetDevice()));
 
 	for(size_t i = 0; i < 6; i++)
 	{
-		tutorialTaskGuidTextures_.push_back(TextureManager::Load(directory + "tutorial_11" + std::to_string(i),dxBase->GetDevice()));
+		tutorialTaskGuidTextures_.push_back(TextureManager::Load(directory + "tutorial_11_" + std::to_string(i) + ".png",dxBase->GetDevice()));
 	}
 
 	currentTextTextureIndex_ = 0;
@@ -126,7 +126,7 @@ void TutorialScene::Initialize()
 	};
 	auto attackForEnemy = [this]()
 	{
-		currentTaskGuidTexture_->SetTextureIndex(tutorialTaskGuidTextures_[0]);
+		currentTaskGuidTexture_->SetTextureIndex(tutorialTaskGuidTextures_[5]);
 		stage_->UpdatePlayerAndMapChip(camera);
 		stage_->UpdateEnemies();
 
@@ -152,7 +152,8 @@ void TutorialScene::Initialize()
 				enemyHurtNum_ += static_cast<int32_t>(1);
 			}
 		}
-		currentTaskGuidTexture_->SetTextureIndex(tutorialTaskGuidTextures_[7 + enemyHurtNum_]);
+		enemyHurtNum_ = std::min(enemyHurtNum_,5);
+		currentTaskGuidTexture_->SetTextureIndex(tutorialTaskGuidTextures_[6 + enemyHurtNum_ - 1 ]);
 		return enemyHurtNum_ >= 5;
 	};
 	/*auto chargingEnergyForMax = [this]() {
@@ -196,12 +197,16 @@ void TutorialScene::Update()
 	///
 	///	シーン切り替え
 	/// 
+	
 	currentUpdate_();
+	stage_->UpdateBackGround();
 
+#ifdef _DEBUG
 	currentTextTexture_->SetPosition(textTexturePos_);
 	currentTextTexture_->Update();
 	currentTaskGuidTexture_->SetPosition(taskGuidTexturePos_);
 	currentTaskGuidTexture_->Update();
+#endif // _DEBUG
 }
 
 void TutorialScene::Draw()
@@ -220,6 +225,25 @@ void TutorialScene::Draw()
 	Camera::TransferConstantBuffer();
 	// ライトの定数バッファを設定
 	lightManager->TransferContantBuffer();
+
+		// スプライト描画前処理
+	spriteCommon->PreDraw();
+
+	///
+	///	↓ ここから背景スプライトの描画コマンド
+	/// 
+
+	stage_->DrawBackGround();
+
+	///
+	///	↑ ここまで背景スプライトの描画コマンド
+	/// 
+
+	// スプライト描画後処理
+	spriteCommon->PostDraw();
+	Camera::TransferConstantBuffer();
+	lightManager->TransferContantBuffer();
+
 	///
 	///	↓ ここから3Dオブジェクトの描画コマンド
 	/// 
@@ -238,6 +262,7 @@ void TutorialScene::Draw()
 		currentTaskGuidTexture_->Draw();
 	} else
 	{
+		currentTextTexture_->SetTextureIndex(tutorialTextTextures_[currentTextTextureIndex_]);
 		currentTextTexture_->Draw();
 	}
 
@@ -256,9 +281,9 @@ void TutorialScene::Draw()
 	lightManager->spotLightsCB_.data_->spotLights[0].position = stage_->GetPlayer()->GetTranslate();
 
 #pragma endregion
+
 #ifdef _DEBUG
 	GlobalVariables::getInstance()->Update();
-
 
 	ImGui::Begin("Camera");
 
@@ -299,6 +324,7 @@ void TutorialScene::TextTextureUpdate(uint32_t textureSum)
 		soundManager->PlayWave(clickSound_,false,0.7f);
 		if(currentTextTextureIndex_ >= textureSum)
 		{
+			currentTextTextureIndex_ = textureSum;
 			doTask_ = true;
 			currentTextTextureIndex_ = 0;
 

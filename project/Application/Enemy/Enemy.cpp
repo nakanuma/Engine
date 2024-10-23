@@ -99,7 +99,7 @@ void Enemy::Update(std::list<std::unique_ptr<Enemy>>& enemies)
 		// waveRange を 複製体作成 の 切符として 機能させる
 		if (waveRange_ != 0.0f)
 		{
-			if (object_->transform_.translate.y <= 1)
+			if (object_->transform_.translate.y - collider_->GetRadius() <= 0.1f)
 			{
 				stage_->ChargeEnergy(stolenEnergy_);
 
