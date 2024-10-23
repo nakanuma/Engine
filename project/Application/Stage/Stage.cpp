@@ -116,7 +116,7 @@ void Stage::Initialize()
 	enemyDivideEmitter_.Initialize(&modelEnemyDivideParticle_,enemyDivideParticleGH);
 
 	// エネミー死亡時パーティクル関連初期化
-	modelEnemyDeadParticle_ = ModelManager::LoadModelFile("resources/Models", "sphere.obj", dxBase->GetDevice());
+	modelEnemyDeadParticle_ = ModelManager::LoadModelFile("resources/Models", "enemyDead.obj", dxBase->GetDevice());
 	uint32_t enemyDeadParticleGH = TextureManager::Load("resources/Images/enemyDead.png", dxBase->GetDevice());
 
 	enemyDeadEmitter_.Initialize(&modelEnemyDeadParticle_, enemyDeadParticleGH);
