@@ -16,7 +16,7 @@
             3.5,
             0.0
         ],
-        "spawnCoolTimeMax": 4.0,
-        "spawnCoolTimeMin": 3.0
+        "spawnCoolTimeMax": 6.0,
+        "spawnCoolTimeMin": 5.0
     }
 }
