@@ -1,6 +1,6 @@
 {
     "Stage": {
         "limitTime": 60.0,
-        "maxEnergy": 30.0
+        "maxEnergy": 10.0
     }
 }
