@@ -44,8 +44,8 @@ void EnemyDeadEmitter::Emit(Float3 translation) {
 	std::uniform_real_distribution<float> distVelY(0.0f, velY);
 
 	// スケールの設定
-	const float minScale = 0.4f;
-	const float maxScale = 0.8f;
+	const float minScale = 0.3f;
+	const float maxScale = 0.6f;
 	std::uniform_real_distribution<float> distScale(minScale, maxScale);
 
 	// 消えるまでの時間をランダムに生成

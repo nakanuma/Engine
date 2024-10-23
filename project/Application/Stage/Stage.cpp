@@ -315,21 +315,21 @@ void Stage::Update(Camera* camera)
 	/*     敵着地パーティクル      */
 	/*--------------------------*/
 
-	// 敵着地時にパーティクルを発生させる
-	for(auto& enemy : enemies_)
-	{
-		if(enemy->GetLanding())
-		{
-// ウェーブ中のブロックと衝突して大量にパーティクルが出てしまうのをゴリ押しで防ぐ
-			if(enemy->GetTranslate().y <= 2.0f && enemy->GetTranslate().y >= 1.0f)
-			{
-				enemyLandingEmitter_.Emit(enemy->GetTranslate());
-			}
-		}
-	}
-
-	// 敵着地時のパーティクルを更新
-	enemyLandingEmitter_.Update();
+//	// 敵着地時にパーティクルを発生させる
+//	for(auto& enemy : enemies_)
+//	{
+//		if(enemy->GetLanding())
+//		{
+//// ウェーブ中のブロックと衝突して大量にパーティクルが出てしまうのをゴリ押しで防ぐ
+//			if(enemy->GetTranslate().y <= 2.0f && enemy->GetTranslate().y >= 1.0f)
+//			{
+//				enemyLandingEmitter_.Emit(enemy->GetTranslate());
+//			}
+//		}
+//	}
+//
+//	// 敵着地時のパーティクルを更新
+//	enemyLandingEmitter_.Update();
 
 	/*--------------------------*/
 	/*     敵分裂パーティクル      */
